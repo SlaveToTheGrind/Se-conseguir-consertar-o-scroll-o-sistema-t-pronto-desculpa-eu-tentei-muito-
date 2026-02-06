@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste de Toast - MacDavis</title>
+    <link rel="stylesheet" href="toast-notifications.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 40px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #2196f3;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 8px;
+            font-weight: 600;
+        }
+        button:hover {
+            background: #1976d2;
+        }
+        .info {
+            background: #e3f2fd;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 16px 0;
+            border-left: 4px solid #2196f3;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 24px;
+        }
+        .status {
+            margin: 16px 0;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🧪 Teste de Sistema de Notificações</h1>
+        
+        <div class="info">
+            <strong>🎯 Instruções:</strong><br>
+            1. Clique nos botões abaixo para testar cada tipo de Toast<br>
+            2. Clique em "Pedir Permissão" para ativar notificações do navegador<br>
+            3. Clique em "Toast + Notificação" para testar ambos juntos
+        </div>
+
+        <div class="status" id="status">
+            Carregando...
+        </div>
+
+        <h3>📱 Toasts Visuais</h3>
+        <button onclick="testSuccess()">✅ Toast Success</button>
+        <button onclick="testError()">❌ Toast Error</button>
+        <button onclick="testWarning()">⚠️ Toast Warning</button>
+        <button onclick="testInfo()">ℹ️ Toast Info</button>
+
+        <h3>🔔 Notificações do Navegador</h3>
+        <button onclick="requestPermission()">🔑 Pedir Permissão</button>
+        <button onclick="testBrowserNotification()">🔔 Notificação do Navegador</button>
+        <button onclick="testBoth()">🎉 Toast + Notificação</button>
+
+        <h3>🏍️ Simulação de Agendamento</h3>
+        <button onclick="simulateAppointment()">📅 Novo Agendamento (Simulação)</button>
+    </div>
+
+    <script src="toast-notifications.js"></script>
+    <script>
+        // Atualizar status
+        function updateStatus() {
+            const status = document.getElementById('status');
+            const permission = Notification?.permission || 'não suportado';
+            
+            status.innerHTML = `
+                <strong>Status do Sistema:</strong><br>
+                Toast carregado: ${window.Toast ? '✅ SIM' : '❌ NÃO'}<br>
+                Toast.container: ${window.Toast?.container ? '✅ EXISTE' : '❌ NÃO EXISTE'}<br>
+                Suporte a Notification: ${typeof Notification !== 'undefined' ? '✅ SIM' : '❌ NÃO'}<br>
+                Permissão atual: <strong>${permission}</strong><br>
+                showNotificationBanner: ${typeof Toast?.showNotificationBanner === 'function' ? '✅ EXISTE' : '❌ NÃO EXISTE'}
+            `;
+        }
+
+        // Testar Toasts
+        function testSuccess() {
+            Toast.success('Este é um Toast de SUCESSO! ✅', 5000);
+        }
+
+        function testError() {
+            Toast.error('Este é um Toast de ERRO! ❌', 5000);
+        }
+
+        function testWarning() {
+            Toast.warning('Este é um Toast de AVISO! ⚠️', 5000);
+        }
+
+        function testInfo() {
+            Toast.info('Este é um Toast de INFORMAÇÃO!\nCom múltiplas linhas! 📘', 5000);
+        }
+
+        // Pedir permissão
+        async function requestPermission() {
+            console.log('🔔 Botão Pedir Permissão clicado');
+            console.log('Permissão atual:', Toast.notificationPermission);
+            
+            if (Toast.showNotificationBanner) {
+                Toast.showNotificationBanner();
+                // Atualizar status após 1 segundo (tempo para processar a resposta)
+                setTimeout(updateStatus, 1000);
+            } else if (Toast.requestNotificationPermission) {
+                const permission = await Toast.requestNotificationPermission();
+                Toast.info(`Permissão: ${permission}`, 3000);
+                updateStatus();
+            }
+        }
+
+        // Testar notificação do navegador
+        function testBrowserNotification() {
+            if (Toast.browserNotification) {
+                Toast.browserNotification(
+                    '🏍️ MacDavis Motos',
+                    'Esta é uma notificação do navegador! Funciona mesmo em outras abas.'
+                );
+            } else {
+                alert('browserNotification não disponível');
+            }
+        }
+
+        // Testar ambos
+        function testBoth() {
+            if (Toast.infoWithBrowserNotification) {
+                Toast.infoWithBrowserNotification(
+                    'Cliente: João Silva\nMoto: Honda CG 160\n📅 16/01/2026 às 14:00',
+                    '🏍️ Novo Agendamento - MacDavis Motos',
+                    8000
+                );
+            } else {
+                alert('infoWithBrowserNotification não disponível');
+            }
+        }
+
+        // Simular agendamento
+        function simulateAppointment() {
+            const clientes = ['João Silva', 'Maria Santos', 'Pedro Costa'];
+            const motos = ['Honda CG 160', 'Yamaha Factor 150', 'Kawasaki Ninja 400'];
+            
+            const cliente = clientes[Math.floor(Math.random() * clientes.length)];
+            const moto = motos[Math.floor(Math.random() * motos.length)];
+            const data = '16/01/2026';
+            const horario = '14:00';
+
+            console.log('📋 Simulando novo agendamento:', { cliente, moto, data, horario });
+
+            if (Toast.infoWithBrowserNotification) {
+                Toast.infoWithBrowserNotification(
+                    `${cliente}\n${moto}\n📅 ${data} às ${horario}`,
+                    '🏍️ Novo Agendamento - MacDavis Motos',
+                    8000
+                );
+            }
+        }
+
+        // Atualizar status ao carregar
+        setTimeout(updateStatus, 500);
+    </script>
+</body>
+</html>

@@ -1,0 +1,419 @@
+/* MacDavis Motos - CSS Global Tema Escuro Moderno */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+:root {
+    /* Cores Principais - Sistema Global */
+    --macdavis-primary: #ff6600;
+    --macdavis-secondary: #ff8533;
+    --macdavis-accent: #ffaa66;
+    --macdavis-gray-light: #cccccc;
+    --macdavis-gray-medium: #666666;
+    --macdavis-gray-dark: #1a1a1a;
+    
+    /* Backgrounds Escuros */
+    --bg-primary: #0a0a0a;
+    --bg-secondary: #151515;
+    --bg-tertiary: #202020;
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --bg-glass-hover: rgba(255, 255, 255, 0.1);
+    
+    /* Gradientes Globais - Apenas Preto e Laranja */
+    --gradient-brand: linear-gradient(135deg, var(--macdavis-primary) 0%, #000000 30%, var(--macdavis-primary) 60%, #000000 100%);
+    --gradient-brand-hover: linear-gradient(135deg, #ff8533 0%, #1a1a1a 30%, #ff8533 60%, #1a1a1a 100%);
+    
+    /* Texto Global */
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #666666;
+    
+    /* Bordas e Sombras Globais */
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --shadow-glow: 0 0 20px rgba(255, 102, 0, 0.3);
+    --shadow-strong: 0 10px 30px rgba(0, 0, 0, 0.5);
+    
+    /* Raios Globais */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+
+/* Reset Global Melhorado */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Efeitos de Fundo Global - Brilho Laranja Elegante */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 15%, rgba(255, 102, 0, 0.06) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(255, 133, 51, 0.04) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(255, 102, 0, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(255, 153, 102, 0.02) 0%, transparent 35%),
+        radial-gradient(circle at 20% 50%, rgba(26, 26, 26, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(51, 51, 51, 0.15) 0%, transparent 50%);
+    z-index: -1;
+    animation: globalBackgroundPulse 18s ease-in-out infinite alternate;
+}
+
+@keyframes globalBackgroundPulse {
+    0% { 
+        opacity: 0.15; 
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.3;
+        transform: scale(1.01);
+    }
+    100% { 
+        opacity: 0.45; 
+        transform: scale(1);
+    }
+}
+
+/* Scrollbar Personalizada */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--gradient-brand);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--gradient-brand-hover);
+}
+
+/* Seleção de Texto */
+::selection {
+    background: rgba(255, 102, 0, 0.3);
+    color: var(--text-primary);
+}
+
+::-moz-selection {
+    background: rgba(255, 102, 0, 0.3);
+    color: var(--text-primary);
+}
+
+/* Elementos Base Modernizados */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+}
+
+p {
+    margin-bottom: 1rem;
+}
+
+a {
+    color: var(--macdavis-primary);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+a:hover {
+    color: var(--macdavis-secondary);
+}
+
+/* Botões Base Globais */
+button {
+    cursor: pointer;
+    border: none;
+    font-family: inherit;
+    transition: all 0.3s ease;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    font-size: 1rem;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: var(--gradient-brand);
+    color: var(--text-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-brand-hover);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.btn-primary:hover::before {
+    left: 0;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-strong), var(--shadow-glow);
+}
+
+.btn-secondary {
+    background: var(--bg-glass);
+    color: var(--text-secondary);
+    border: 1px solid var(--border-glass);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+.btn-secondary:hover {
+    background: var(--bg-glass-hover);
+    color: var(--text-primary);
+    border-color: var(--macdavis-primary);
+    transform: translateY(-2px);
+}
+
+.btn-admin {
+    background: var(--gradient-brand);
+    color: var(--text-primary);
+    border: 2px solid transparent;
+    background-clip: padding-box;
+}
+
+.btn-admin:hover {
+    background: var(--gradient-brand-hover);
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: var(--shadow-strong);
+}
+
+/* Formulários Globais */
+input, select, textarea {
+    font-family: inherit;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--macdavis-primary);
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    background: var(--bg-glass-hover);
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-muted);
+}
+
+/* Cards Globais */
+.card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    border-color: var(--macdavis-primary);
+    box-shadow: var(--shadow-glow);
+}
+
+/* Grids Responsivos */
+.grid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+.grid-2 { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
+.grid-3 { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+.grid-4 { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+
+/* Flex Utilities */
+.flex { display: flex; }
+.flex-col { flex-direction: column; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+
+/* Spacing Utilities */
+.p-4 { padding: 1rem; }
+.p-8 { padding: 2rem; }
+.m-4 { margin: 1rem; }
+.m-8 { margin: 2rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-8 { margin-bottom: 2rem; }
+
+/* Text Utilities */
+.text-center { text-align: center; }
+.text-gradient {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.font-bold { font-weight: 700; }
+.font-semibold { font-weight: 600; }
+.uppercase { text-transform: uppercase; }
+
+/* Loading Global */
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--bg-tertiary);
+    border-top: 4px solid var(--macdavis-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Glass Effect Global */
+.glass {
+    background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+}
+
+.glass-strong {
+    background: var(--bg-glass-hover);
+    -webkit-backdrop-filter: blur(30px);
+    backdrop-filter: blur(30px);
+    border: 1px solid var(--border-glass);
+}
+
+/* Gradients Utilities */
+.gradient-text {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.gradient-bg {
+    background: var(--gradient-brand);
+}
+
+.gradient-border {
+    border: 2px solid transparent;
+    background: var(--gradient-brand) border-box;
+    background-clip: padding-box, border-box;
+}
+
+/* Hover Effects */
+.hover-lift {
+    transition: all 0.3s ease;
+}
+
+.hover-lift:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-glow);
+}
+
+.hover-glow {
+    transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+    box-shadow: var(--shadow-glow);
+    border-color: var(--macdavis-primary);
+}
+
+/* Animation Delays */
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+.delay-300 { animation-delay: 0.3s; }
+.delay-400 { animation-delay: 0.4s; }
+.delay-500 { animation-delay: 0.5s; }
+
+/* Responsividade Global */
+@media (max-width: 768px) {
+    .grid-2, .grid-3, .grid-4 {
+        grid-template-columns: 1fr;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+    }
+    
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+    h3 { font-size: 1.5rem; }
+}
+
+@media (max-width: 480px) {
+    h1 { font-size: 1.75rem; }
+    h2 { font-size: 1.5rem; }
+    h3 { font-size: 1.25rem; }
+    
+    .btn {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* Print Styles */
+@media print {
+    body {
+        background: white;
+        color: black;
+    }
+    
+    .floating-shapes,
+    .btn,
+    nav {
+        display: none !important;
+    }
+}

@@ -1,0 +1,58 @@
+# ⚠️ DOCUMENTOS CONFIDENCIAIS - NÃO VAZAR
+DOCS Motos/
+*.pdf
+*.PDF
+
+# Dados sensíveis
+*.crlv
+*.renavam
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Backups
+Backup_*/
+backup_*/
+*.backup
+*.bak
+
+# Versões antigas
+_old_versions/
+_obsolete_*/
+
+# Problemas/Cache
+arquivos-cache-problemas/
+.cache/
+
+# Logs
+logs/
+*.log
+
+# Variáveis de ambiente
+.env
+.env.local
+.env.production
+
+# Sistema Operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporários
+temp/
+tmp/
+*.tmp
+
+# Uploads temporários (criar pasta separada para produção)
+uploads/temp/

@@ -1,0 +1,210 @@
+{
+  "generated": 1761767604029,
+  "exactMatches": [],
+  "unmatchedFolders": [
+    {
+      "folder": "Biz 110-i branca 2023",
+      "norm": "biz 110 i branca 2023"
+    },
+    {
+      "folder": "Biz 125 branca 2022",
+      "norm": "biz 125 branca 2022"
+    },
+    {
+      "folder": "Biz 125 ES 2009",
+      "norm": "biz 125 es 2009"
+    },
+    {
+      "folder": "Biz 125 prata 2023",
+      "norm": "biz 125 prata 2023"
+    },
+    {
+      "folder": "Bros preta 2023",
+      "norm": "bros preta 2023"
+    },
+    {
+      "folder": "Bros vermelha 2019",
+      "norm": "bros vermelha 2019"
+    },
+    {
+      "folder": "CBX STRADA 1999",
+      "norm": "cbx strada 1999"
+    },
+    {
+      "folder": "CG 150 Titan 2011",
+      "norm": "cg 150 titan 2011"
+    },
+    {
+      "folder": "CG 160 Titan 2025",
+      "norm": "cg 160 titan 2025"
+    },
+    {
+      "folder": "Crosser 150 Z 2024",
+      "norm": "crosser 150 z 2024"
+    },
+    {
+      "folder": "Elite 125 2025",
+      "norm": "elite 125 2025"
+    },
+    {
+      "folder": "Fan 125 KS 2007",
+      "norm": "fan 125 ks 2007"
+    },
+    {
+      "folder": "Fan 125 KS 2010",
+      "norm": "fan 125 ks 2010"
+    },
+    {
+      "folder": "Fazer 150 2024",
+      "norm": "fazer 150 2024"
+    },
+    {
+      "folder": "NC 750X 2015",
+      "norm": "nc 750x 2015"
+    },
+    {
+      "folder": "Titan 150 2005",
+      "norm": "titan 150 2005"
+    },
+    {
+      "folder": "Twister 2016",
+      "norm": "twister 2016"
+    },
+    {
+      "folder": "Twister 2022",
+      "norm": "twister 2022"
+    },
+    {
+      "folder": "XTZ 125E 2012",
+      "norm": "xtz 125e 2012"
+    }
+  ],
+  "remainingMotos": [
+    {
+      "id": "moto-20",
+      "name": "CB 250 TWISTER",
+      "year": "2022/22",
+      "norm": "cb 250 twister 2022 22"
+    },
+    {
+      "id": "moto-19",
+      "name": "CB 250 TWISTER",
+      "year": "2017/17",
+      "norm": "cb 250 twister 2017 17"
+    },
+    {
+      "id": "moto-18",
+      "name": "CB 250 TWISTER",
+      "year": "2016/16",
+      "norm": "cb 250 twister 2016 16"
+    },
+    {
+      "id": "moto-17",
+      "name": "CBX 250 TWISTER",
+      "year": "2006/07",
+      "norm": "cbx 250 twister 2006 07"
+    },
+    {
+      "id": "moto-22",
+      "name": "XV 250S VIRAGO",
+      "year": "1998/98",
+      "norm": "xv 250s virago 1998 98"
+    },
+    {
+      "id": "moto-16",
+      "name": "CBX 200 STRADA",
+      "year": "1999/99",
+      "norm": "cbx 200 strada 1999 99"
+    },
+    {
+      "id": "moto-15",
+      "name": "CG Titan 160cc",
+      "year": "2025/25",
+      "norm": "cg titan 160cc 2025 25"
+    },
+    {
+      "id": "moto-13",
+      "name": "BROS 160cc ESDD",
+      "year": "2022/23",
+      "norm": "bros 160cc esdd 2022 23"
+    },
+    {
+      "id": "moto-12",
+      "name": "BROS 160cc ESDD",
+      "year": "2019/19",
+      "norm": "bros 160cc esdd 2019 19"
+    },
+    {
+      "id": "moto-14",
+      "name": "CROSSER Z 150cc",
+      "year": "2023/24",
+      "norm": "crosser z 150cc 2023 24"
+    },
+    {
+      "id": "moto-11",
+      "name": "CG Titan 150cc EX",
+      "year": "2011/11",
+      "norm": "cg titan 150cc ex 2011 11"
+    },
+    {
+      "id": "moto-10",
+      "name": "CG Titan 150cc ES",
+      "year": "2005/05",
+      "norm": "cg titan 150cc es 2005 05"
+    },
+    {
+      "id": "moto-6",
+      "name": "ELITE 125cc",
+      "year": "2025/25",
+      "norm": "elite 125cc 2025 25"
+    },
+    {
+      "id": "moto-4",
+      "name": "Biz 125cc",
+      "year": "2023/23",
+      "norm": "biz 125cc 2023 23"
+    },
+    {
+      "id": "moto-3",
+      "name": "Biz 125cc",
+      "year": "2022/22",
+      "norm": "biz 125cc 2022 22"
+    },
+    {
+      "id": "moto-2",
+      "name": "Biz 125cc EX",
+      "year": "2014/14",
+      "norm": "biz 125cc ex 2014 14"
+    },
+    {
+      "id": "moto-9",
+      "name": "XTZ 125E",
+      "year": "2012/12",
+      "norm": "xtz 125e 2012 12"
+    },
+    {
+      "id": "moto-8",
+      "name": "CG Fan 125cc KS",
+      "year": "2009/10",
+      "norm": "cg fan 125cc ks 2009 10"
+    },
+    {
+      "id": "moto-1",
+      "name": "Biz 125cc",
+      "year": "2008/09",
+      "norm": "biz 125cc 2008 09"
+    },
+    {
+      "id": "moto-7",
+      "name": "CG Fan 125cc KS",
+      "year": "2007/07",
+      "norm": "cg fan 125cc ks 2007 07"
+    },
+    {
+      "id": "moto-5",
+      "name": "Biz 110i",
+      "year": "2023/23",
+      "norm": "biz 110i 2023 23"
+    }
+  ]
+}

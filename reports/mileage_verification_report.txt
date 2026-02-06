@@ -1,0 +1,98 @@
+RELATÓRIO DE VERIFICAÇÃO DE QUILOMETRAGEM
+Gerado em: 04/11/2025, 10:35:20
+Total de motocicletas: 19
+
+
+250cc CILINDRADAS:
+--------------------------------------------------
+1. CB 250 TWISTER 2022/22 (Verm.)
+   ID: moto-20 | Quilometragem: 76.000 km
+   Imagem: images/Twister 2022/thumb-Foto 1.jpg
+
+2. CBX 250 TWISTER 2006/07 (Amarela)
+   ID: moto-17 | Quilometragem: 15.256 km
+   Imagem: images/Fan 125 KS 2007/thumb-Foto 1.jpg
+
+3. XV 250S VIRAGO 1998/98 (Preta)
+   ID: moto-22 | Quilometragem: 91.614 km
+   Imagem: images/Bros preta 2023/thumb-Foto 1.jpg
+
+
+200cc CILINDRADAS:
+--------------------------------------------------
+1. CBX 200 STRADA 1999/99 (Roxa)
+   ID: moto-16 | Quilometragem: 0 km
+   Imagem: images/CBX STRADA 1999/thumb-Foto 1.jpg
+
+
+160cc CILINDRADAS:
+--------------------------------------------------
+1. CG Titan 160cc 2025/25 (Laranja)
+   ID: moto-15 | Quilometragem: 0 km
+   Imagem: images/CG 160 Titan 2025/thumb-Foto 1.jpg
+
+2. BROS 160cc ESDD 2022/23 (Cinza)
+   ID: moto-13 | Quilometragem: 41.824 km
+   Imagem: images/Bros preta 2023/thumb-Foto 1.jpg
+
+3. BROS 160cc ESDD 2019/19 (Verm.)
+   ID: moto-12 | Quilometragem: 6.478 km
+   Imagem: images/Bros vermelha 2019/thumb-FOTO 1.jpg
+
+
+150cc CILINDRADAS:
+--------------------------------------------------
+1. CROSSER Z 150cc 2023/24 (Beje)
+   ID: moto-14 | Quilometragem: 6.659 km
+   Imagem: images/Crosser 150 Z 2024/thumb-Foto 1.jpg
+
+2. CG Titan 150cc EX 2011/11 (Preta)
+   ID: moto-11 | Quilometragem: 400 km
+   Imagem: images/moto-11.jpg
+
+3. CG Titan 150cc ES 2005/05 (Verm.)
+   ID: moto-10 | Quilometragem: 36.920 km
+   Imagem: images/Titan 150 2005/thumb-Foto 1.jpg
+
+
+125cc CILINDRADAS:
+--------------------------------------------------
+1. ELITE 125cc 2025/25 (Branca)
+   ID: moto-6 | Quilometragem: 0 km
+   Imagem: images/Elite 125 2025/thumb-Foto 1.jpg
+
+2. Biz 125cc 2023/23 (Prata)
+   ID: moto-4 | Quilometragem: 16.620 km
+   Imagem: images/Biz 125 prata 2023/thumb-Foto 1.jpg
+
+3. Biz 125cc 2022/22 (Branca)
+   ID: moto-3 | Quilometragem: 10.000 km
+   Imagem: images/Biz 125 branca 2022/thumb-Foto 1.jpg
+
+4. Biz 125cc EX 2014/14 (Preta)
+   ID: moto-2 | Quilometragem: 75.357 km
+   Imagem: images/Biz 125 ES 2009/thumb-Foto 1.jpg
+
+5. XTZ 125E 2012/12 (Azul)
+   ID: moto-9 | Quilometragem: 33.504 km
+   Imagem: images/XTZ 125E 2012/thumb-FOTO 1.jpg
+
+6. CG Fan 125cc KS 2009/10 (Preta)
+   ID: moto-8 | Quilometragem: 62.921 km
+   Imagem: images/Fan 125 KS 2010/thumb-Foto 1.jpg
+
+7. Biz 125cc 2008/09 (Preta)
+   ID: moto-1 | Quilometragem: 55.116 km
+   Imagem: images/thumb-moto-1.jpg
+
+8. CG Fan 125cc KS 2007/07 (Preta)
+   ID: moto-7 | Quilometragem: 60.844 km
+   Imagem: images/Fan 125 KS 2007/thumb-Foto 1.jpg
+
+
+110cc CILINDRADAS:
+--------------------------------------------------
+1. Biz 110i 2023/23 (Branca)
+   ID: moto-5 | Quilometragem: 1.000 km
+   Imagem: images/Biz 110-i branca 2023/thumb-Foto 1.jpg
+

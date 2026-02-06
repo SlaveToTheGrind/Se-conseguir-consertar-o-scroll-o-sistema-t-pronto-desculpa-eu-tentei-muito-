@@ -1,0 +1,1367 @@
+/* MacDavis Motos - Tema Escuro Moderno com Gradientes RGB */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&display=swap');
+
+/* === SCROLL SUAVE E MODERNO === */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+}
+
+/* Scrollbar customizada - com fallback para navegadores antigos */
+@supports (scrollbar-width: thin) {
+    * {
+        scrollbar-width: thin;
+        scrollbar-color: #ff6600 #1a1a1a;
+    }
+}
+
+:root {
+    /* Cores Principais - Tema Escuro */
+    --bg-primary: #0f0f0f;
+    --bg-secondary: #1a1a1a;
+    --bg-tertiary: #242424;
+    --bg-glass: rgba(255, 255, 255, 0.05);
+    --bg-glass-hover: rgba(255, 255, 255, 0.1);
+    
+    /* Laranja Principal */
+    --orange-primary: #ff6600;
+    --orange-light: #ff8533;
+    --orange-dark: #cc5200;
+    --orange-glow: rgba(255, 102, 0, 0.3);
+    
+    /* Gradientes RGB Focados - Apenas Preto e Laranja */
+    --gradient-main: linear-gradient(135deg, #ff6600 0%, #000000 30%, #ff6600 60%, #000000 100%);
+    --gradient-hover: linear-gradient(135deg, #ff8533 0%, #1a1a1a 30%, #ff8533 60%, #1a1a1a 100%);
+    --gradient-card: linear-gradient(145deg, rgba(255, 102, 0, 0.1) 0%, rgba(0, 0, 0, 0.8) 50%, rgba(255, 102, 0, 0.1) 100%);
+    --gradient-text: linear-gradient(90deg, #ff6600, #000000, #ff6600);
+    
+    /* Texto */
+    --text-primary: #ffffff;
+    --text-secondary: #b3b3b3;
+    --text-muted: #666666;
+    --text-accent: #ff6600;
+    
+    /* Bordas e Sombras - Mais sutis */
+    --border-glass: rgba(255, 255, 255, 0.1);
+    --border-accent: rgba(255, 102, 0, 0.3);
+    --shadow-glow: 0 0 15px rgba(255, 102, 0, 0.15);
+    --shadow-strong: 0 6px 20px rgba(0, 0, 0, 0.3);
+    --shadow-rgb: 0 3px 15px rgba(255, 102, 0, 0.2);
+    
+    /* Bordas */
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+}
+
+/* Reset e Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    scroll-behavior: smooth;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(ellipse at 50% 20%, rgba(255, 102, 0, 0.03) 0%, transparent 60%),
+        radial-gradient(ellipse at 80% 50%, rgba(255, 133, 51, 0.02) 0%, transparent 70%);
+    z-index: -2;
+    animation: backgroundShimmer 25s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundShimmer {
+    0% { opacity: 0.3; }
+    100% { opacity: 0.7; }
+}
+
+/* Efeitos de Fundo - Escuro com Brilho Laranja Elegante */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 15% 15%, rgba(255, 102, 0, 0.08) 0%, transparent 45%),
+        radial-gradient(circle at 85% 20%, rgba(255, 133, 51, 0.06) 0%, transparent 50%),
+        radial-gradient(circle at 70% 80%, rgba(255, 102, 0, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 30% 70%, rgba(255, 153, 102, 0.04) 0%, transparent 35%),
+        radial-gradient(circle at 20% 50%, rgba(26, 26, 26, 0.3) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(51, 51, 51, 0.2) 0%, transparent 50%),
+        radial-gradient(circle at 40% 60%, rgba(13, 13, 13, 0.4) 0%, transparent 50%);
+    z-index: -1;
+    animation: backgroundPulse 15s ease-in-out infinite alternate;
+}
+
+@keyframes backgroundPulse {
+    0% { 
+        opacity: 0.2; 
+        transform: scale(1);
+    }
+    50% {
+        opacity: 0.4;
+        transform: scale(1.02);
+    }
+    100% { 
+        opacity: 0.6; 
+        transform: scale(1);
+    }
+}
+
+/* Header Moderno */
+.hero-header {
+    background: linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #0d0d0d 100%);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--orange-primary);
+    padding: 2.5rem;
+    margin: 1rem;
+    border-radius: var(--radius-xl);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+.hero-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(
+        from 0deg, 
+        transparent, 
+        rgba(255, 102, 0, 0.15), 
+        rgba(255, 133, 51, 0.08), 
+        rgba(51, 51, 51, 0.05), 
+        transparent,
+        rgba(255, 102, 0, 0.1),
+        transparent
+    );
+    animation: rotate 20s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotate {
+    to { transform: rotate(360deg); }
+}
+
+.header-content {
+    position: relative;
+    z-index: 2;
+}
+
+.main-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--orange-primary);
+    margin-bottom: 1rem;
+    text-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+}
+
+.hero-subtitle {
+    font-size: 1.2rem;
+    color: #ffffff;
+    margin-bottom: 2rem;
+    opacity: 0.95;
+    font-weight: 400;
+}
+
+/* Brand Container - Professional Logo */
+.brand-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.brand-logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-image {
+    height: 120px;
+    width: auto;
+    max-width: 300px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 20px rgba(255, 102, 0, 0.4));
+    transition: transform 0.3s ease, filter 0.3s ease;
+}
+
+.logo-image:hover {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 30px rgba(255, 102, 0, 0.6));
+}
+
+.brand-text {
+    text-align: left;
+}
+
+.brand-tagline {
+    font-size: 1rem;
+    color: #b3b3b3;
+    margin-top: 0.5rem;
+    font-weight: 400;
+    letter-spacing: 0.5px;
+}
+
+/* User Info e Botões do Header */
+.user-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    color: #b3b3b3;
+    font-size: 0.9rem;
+}
+
+#userName {
+    font-weight: 600;
+    color: var(--orange-primary);
+    margin-left: 0.5rem;
+}
+
+.header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.header-btn {
+    background: linear-gradient(135deg, var(--orange-primary) 0%, var(--orange-dark) 100%);
+    color: #000000;
+    border: 1px solid var(--orange-primary);
+    padding: 0.6rem 1.5rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+}
+
+.header-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+}
+
+.header-btn:hover::before {
+    left: 100%;
+}
+
+.header-btn:hover {
+    background: linear-gradient(135deg, var(--orange-light) 0%, var(--orange-primary) 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+}
+
+.header-btn:active {
+    transform: translateY(0) scale(0.98);
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+}
+
+.header-stats {
+    display: flex;
+    gap: 2rem;
+    justify-content: center;
+}
+
+.stat-item {
+    text-align: center;
+    padding: 1rem;
+    background: var(--orange-primary);
+    border: 1px solid #000000;
+    border-radius: var(--radius-md);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+    background: var(--orange-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+}
+
+.stat-number {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    color: #000000;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #000000;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+}
+
+/* Filtros Modernos */
+.filters-section {
+    margin: 2rem;
+}
+
+.filters-container {
+    background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-2xl);
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 2rem;
+    box-shadow: var(--shadow-strong);
+    animation: fadeInDown 0.6s ease-out;
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.filter-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    background: white;
+    color: #1a1a1a;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.85rem 1.4rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    will-change: transform;
+    animation: bounceIn 0.6s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+@keyframes bounceIn {
+    0% {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.filter-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.filter-btn:hover::before,
+.filter-btn.active::before {
+    left: 0;
+}
+
+.filter-btn:hover,
+.filter-btn.active {
+    color: white;
+    border-color: #ff6600;
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2),
+                0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+/* Botões de Filtro de Cilindrada - Mesmo estilo */
+.filter-btn-cil {
+    background: white;
+    color: #1a1a1a;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 0.85rem 1.4rem;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-weight: 600;
+    font-size: 0.95rem;
+    position: relative;
+    overflow: hidden;
+    animation: bounceIn 0.6s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.filter-btn-cil::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    transition: left 0.3s ease;
+    z-index: -1;
+}
+
+.filter-btn-cil:hover::before,
+.filter-btn-cil.active::before {
+    left: 0;
+}
+
+.filter-btn-cil:hover,
+.filter-btn-cil.active {
+    color: white;
+    border-color: #ff6600;
+    transform: translateY(-2px);
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2),
+                0 4px 12px rgba(255, 102, 0, 0.3);
+}
+
+/* Barra de Busca - Texto Claro e Visível */
+.search-group {
+    position: relative;
+    min-width: 350px;
+}
+
+.search-group h3 {
+    margin-bottom: 0.75rem;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+#searchInput {
+    background: rgba(26, 26, 26, 0.7);
+    border: 2px solid rgba(255, 102, 0, 0.3);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+    width: 100%;
+    min-width: 350px;
+    color: #ffffff;
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    font-weight: 500;
+}
+
+#searchInput:focus {
+    outline: none;
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2), 0 8px 25px rgba(255, 102, 0, 0.3);
+    background: rgba(30, 30, 30, 0.8);
+}
+
+#searchInput:hover {
+    border-color: rgba(255, 102, 0, 0.5);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+#searchInput::placeholder {
+    color: rgba(179, 179, 179, 0.7);
+    font-weight: 400;
+}
+
+.search-container {
+    position: relative;
+}
+
+.search-container input {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.25rem;
+    font-size: 1rem;
+    width: 320px;
+    color: var(--text-primary);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.search-container input:focus {
+    outline: none;
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 0 3px var(--orange-glow);
+    background: var(--bg-glass-hover);
+}
+
+.search-container input::placeholder {
+    color: var(--text-muted);
+}
+
+/* Grid de Motocicletas */
+.motorcycle-gallery {
+    padding: 2rem;
+}
+
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 2rem;
+    max-width: 1600px;
+    margin: 0 auto;
+}
+
+/* Cards Modernos com Inversão de Cores */
+.moto-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    color: var(--text-primary);
+    opacity: 1;
+    will-change: transform;
+    animation: fadeInUp 0.5s ease-out;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    /* Performance */
+    transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.moto-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(240, 240, 240, 0.98));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+/* ⚡ Performance: renderização lazy nativa */
+.moto-card {
+    content-visibility: auto;
+    contain-intrinsic-size: 350px 500px; /* Tamanho estimado */
+}
+
+.moto-card:hover::before {
+    opacity: 1;
+}
+
+.moto-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    border-color: var(--orange-primary);
+    box-shadow: 0 20px 40px rgba(255, 102, 0, 0.3), 0 12px 25px rgba(0, 0, 0, 0.5);
+    color: #000000;
+    z-index: 10;
+}
+
+/* Inversão de cores nos elementos internos */
+.moto-card:hover .moto-title {
+    color: #000000;
+    text-shadow: 0 1px 3px rgba(255, 255, 255, 0.5);
+}
+
+.moto-card:hover .detail-label {
+    color: #333333;
+}
+
+.moto-card:hover .detail-value {
+    color: #000000;
+}
+
+.moto-card:hover .moto-badge {
+    background: var(--orange-primary);
+    color: #ffffff;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4);
+}
+
+.moto-image {
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    background: linear-gradient(135deg, #1a1a1a 0%, #252525 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.moto-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    transition: opacity 0.3s ease;
+    filter: brightness(0.95);
+    background: #1a1a1a; /* Placeholder enquanto carrega */
+}
+
+/* Hover apenas em desktop (pointer fino = mouse) */
+@media (hover: hover) and (pointer: fine) {
+    .moto-card:hover .moto-image img {
+        transform: scale(1.15) rotate(1deg);
+        filter: brightness(1.15) saturate(1.3) contrast(1.1);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+}
+
+.no-image {
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.moto-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: var(--orange-primary);
+    color: #000000;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-lg);
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    border: 1px solid var(--orange-dark);
+    transition: all 0.3s ease;
+}
+
+.moto-card:hover .moto-badge {
+    transform: scale(1.1);
+    box-shadow: 0 6px 16px rgba(255, 102, 0, 0.5);
+}
+
+.moto-info {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.moto-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1.5rem;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.moto-details {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex: 1;
+}
+
+.detail-row {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.detail-row:hover {
+    background: var(--bg-glass-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+}
+
+/* Inversão dos detail-rows quando card está em hover */
+.moto-card:hover .detail-row {
+    background: rgba(0, 0, 0, 0.1);
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.moto-card:hover .detail-row:hover {
+    background: rgba(0, 0, 0, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.detail-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+}
+
+.detail-value {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.view-btn {
+    background: var(--orange-primary);
+    color: #000000;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: var(--radius-lg);
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: auto;
+    position: relative;
+    overflow: hidden;
+    will-change: transform, box-shadow;
+}
+
+.view-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, #ff8533, #ff6600);
+    transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: -1;
+}
+
+.view-btn:hover::before {
+    left: 0;
+}
+
+.view-btn:hover {
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 32px rgba(255, 102, 0, 0.4);
+}
+
+/* Inversão do botão quando card está em hover */
+.moto-card:hover .view-btn {
+    background: #000000;
+    color: var(--orange-primary);
+    border: 1px solid var(--orange-primary);
+}
+
+.moto-card:hover .view-btn:hover {
+    background: linear-gradient(135deg, #ff8533, #ff6600);
+    color: #000000;
+    border: 1px solid #ff8533;
+    box-shadow: 0 8px 32px rgba(255, 102, 0, 0.5);
+}
+
+/* Botões de Controle - Laranja com texto preto */
+.reload-btn, .logout-btn {
+    background: var(--orange-primary);
+    color: #000000;
+    border: 1px solid var(--orange-dark);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-lg);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.reload-btn:hover, .logout-btn:hover {
+    background: var(--orange-light);
+    color: #000000;
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(255, 102, 0, 0.4);
+}
+
+.reload-btn {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    font-size: 1.2rem;
+}
+
+/* Loading Moderno - Sistema Alternante de Motos */
+.loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 15, 15, 0.95);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+}
+
+.loading-overlay.show {
+    display: flex;
+    animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+.loading-overlay.hidden {
+    display: none;
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+}
+
+/* ========== LOADING SPINNER - MOTOS ========== */
+.spinner {
+    position: relative;
+    width: 600px;
+    height: 360px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    max-width: 90vw;
+    max-height: 50vh;
+}
+
+.spinner .motorcycle-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.8s ease;
+    transform: none !important;
+    will-change: opacity;
+}
+
+/* Responsivo - Tablets */
+@media (max-width: 768px) {
+    .spinner {
+        width: 400px;
+        height: 240px;
+    }
+}
+
+/* Responsivo - Mobile */
+@media (max-width: 480px) {
+    .spinner {
+        width: 280px;
+        height: 168px;
+    }
+} 
+        transform: translateY(0) translateX(4px);
+    }
+    75% { 
+        transform: translateY(-4px) translateX(2px);
+    }
+}
+
+@keyframes sportBounce {
+    0%, 100% { 
+        transform: translateY(0) translateX(0) rotate(-1deg);
+    }
+    50% { 
+        transform: translateY(-2px) translateX(8px) rotate(0deg);
+    }
+}
+
+@keyframes trailBounce {
+    0%, 100% { 
+        transform: translateY(0) translateX(0);
+    }
+
+.loading-text {
+    color: var(--text-secondary);
+    font-weight: 600;
+    font-size: 1.1rem;
+    transition: color 0.6s ease, opacity 0.3s ease;
+}
+
+@keyframes textPulse {
+    0%, 100% { opacity: 0.7; }
+    50% { opacity: 1; }
+}
+
+/* Responsividade Aprimorada */
+
+/* Tablets e telas médias */
+@media (max-width: 1024px) {
+    .gallery-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .hero-header {
+        padding: 2.5rem;
+    }
+    
+    .main-title {
+        font-size: 3rem;
+    }
+}
+
+/* Smartphones e telas pequenas */
+@media (max-width: 768px) {
+    .hero-header {
+        margin: 0.5rem;
+        padding: 2rem 1.5rem;
+    }
+    
+    .main-title {
+        font-size: 2.5rem;
+        line-height: 1.2;
+    }
+    
+    .brand-container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .brand-logo {
+        margin-bottom: 0.5rem;
+    }
+    
+    .logo-image {
+        height: 90px;
+        max-width: 220px;
+    }
+    
+    .brand-text {
+        text-align: center;
+    }
+    
+    .brand-tagline {
+        font-size: 0.9rem;
+    }
+    
+    .subtitle {
+        font-size: 1rem;
+    }
+    
+    .header-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch;
+        margin: 1rem;
+        gap: 1rem;
+    }
+    
+    .filter-group {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .search-container {
+        width: 100%;
+    }
+    
+    .search-container input {
+        width: 100%;
+        font-size: 1rem;
+    }
+    
+    .gallery-grid {
+        grid-template-columns: 1fr;
+        padding: 1rem;
+        gap: 1.5rem;
+    }
+    
+    .moto-card {
+        max-width: 100%;
+    }
+    
+    .moto-image {
+        height: 250px;
+    }
+    
+    .moto-details {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    /* Modal responsivo */
+    .modal-content {
+        width: 95%;
+        margin: 1rem;
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+    
+    .modal-image-gallery {
+        height: 300px;
+    }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 480px) {
+    .main-title {
+        font-size: 2rem;
+    }
+    
+    .subtitle {
+        font-size: 0.9rem;
+    }
+    
+    .moto-card-title {
+        font-size: 1.3rem;
+    }
+    
+    .moto-price {
+        font-size: 1.4rem;
+    }
+    
+    /* Touch targets maiores */
+    .filter-btn {
+        min-height: 44px;
+        padding: 0.8rem 1.2rem;
+    }
+    
+    /* Reduzir animações em devices fracos */
+    @media (prefers-reduced-motion: reduce) {
+        * {
+            animation-duration: 0.01ms !important;
+            animation-iteration-count: 1 !important;
+            transition-duration: 0.01ms !important;
+        }
+    }
+}
+        font-size: 0.9rem;
+    }
+    
+    .moto-image {
+        height: 160px; /* Menor = carrega mais rápido no mobile */
+    }
+    
+    .moto-info {
+        padding: 1rem;
+    }
+    
+    .moto-title {
+        font-size: 1.3rem;
+    }
+    
+    .view-btn {
+        font-size: 0.9rem;
+        padding: 0.75rem 1.5rem;
+    }
+}
+
+/* Animações de entrada */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.moto-card {
+    animation: fadeInUp 0.6s ease-out;
+}
+
+.moto-card:nth-child(even) {
+    animation-delay: 0.1s;
+}
+
+/* Container da imagem do modal - NECESSÁRIO para posicionamento dos botões */
+.modal-image-container {
+    position: relative !important;
+    width: 100%;
+    height: 400px;
+    background: #1a1a1a;
+    border-radius: var(--radius-md);
+    overflow: visible !important;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: center;
+    border-radius: var(--radius-md);
+    transition: opacity 0.15s ease-in-out; /* Transição suave ao trocar fotos */
+}
+
+/* Galeria de Imagens no Modal */
+.modal-image-gallery {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: #1a1a1a;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-image-gallery img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.gallery-nav {
+    position: absolute !important;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 102, 0, 0.95) !important;
+    color: white !important;
+    border: 2px solid white !important;
+    padding: 1rem;
+    cursor: pointer !important;
+    font-size: 2rem !important;
+    transition: all 0.3s ease;
+    z-index: 9999 !important;
+    border-radius: var(--radius-sm);
+    width: 50px !important;
+    height: 50px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    pointer-events: auto !important;
+}
+
+.gallery-nav:hover {
+    background: var(--orange-primary) !important;
+    color: #000 !important;
+    transform: translateY(-50%) scale(1.1) !important;
+}
+
+.gallery-nav.prev {
+    left: 1rem !important;
+}
+
+.gallery-nav.next {
+    right: 1rem !important;
+}
+
+.gallery-nav:disabled {
+    opacity: 0.3 !important;
+    cursor: not-allowed !important;
+}
+
+.gallery-counter {
+    position: absolute !important;
+    bottom: 1rem !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    background: rgba(255, 102, 0, 0.95) !important;
+    color: white !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: var(--radius-sm);
+    font-size: 1rem !important;
+    font-weight: 700 !important;
+    z-index: 9999 !important;
+    border: 2px solid white !important;
+}
+
+/* Botão de fechar painel lateral */
+.close-panel-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(231, 76, 60, 0.9);
+    color: #fff;
+    border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+    z-index: 10;
+}
+
+.close-panel-btn:hover {
+    background: rgba(231, 76, 60, 1);
+    transform: scale(1.1);
+}
+
+/* Imagem do painel */
+#panelImage {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+/* Controle de visibilidade da galeria */
+.gallery-nav,
+.gallery-counter,
+#panelScheduleBtn {
+    display: none;
+}
+
+.gallery-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.gallery-thumb {
+    width: 80px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.gallery-thumb:hover {
+    border-color: var(--orange-primary);
+    transform: scale(1.05);
+}
+
+.gallery-thumb.active {
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 10px var(--orange-primary);
+}
+
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}

@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel Administrativo - MacDavis Motos</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles-dark-modern.css?v=20251216152400">
+    <link rel="stylesheet" href="page-transitions.css">
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="cache-control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta name="expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
+
+    <!-- CSS para loading e outros estilos -->
+    <style>
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .admin-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            color: white;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
+        }
+        
+        .admin-loading-overlay.show {
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: all !important;
+        }
+
+        .loading-content {
+            text-align: center;
+        }
+        
+        .loading-content h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ff7a18;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .loading-spinner {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Moto animada */
+        .moto-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 50px;
+            animation: motoRide 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(255, 122, 24, 0.8));
+            z-index: 10;
+        }
+        
+        .moto-animation svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        @keyframes motoRide {
+            0%, 100% {
+                transform: translate(-50%, -50%) rotate(-5deg);
+            }
+            25% {
+                transform: translate(-50%, -55%) rotate(0deg) scale(1.1);
+            }
+            50% {
+                transform: translate(-50%, -50%) rotate(5deg);
+            }
+            75% {
+                transform: translate(-50%, -45%) rotate(0deg) scale(0.9);
+            }
+        }
+        
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        
+        .spinner-ring:nth-child(2) {
+            border-top-color: #ff7a18;
+            border-bottom-color: #ff7a18;
+            opacity: 0.8;
+        }
+        
+        .spinner-ring:nth-child(3) {
+            border-right-color: #e74c3c;
+            border-left-color: #e74c3c;
+            animation-delay: 0.2s;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            opacity: 0.6;
+        }
+        
+        .spinner-ring:nth-child(4) {
+            border-top-color: #3498db;
+            border-bottom-color: #3498db;
+            animation-delay: 0.4s;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            opacity: 0.4;
+        }
+        
+        /* Loading dots */
+        .loading-dots {
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 5px;
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #ff7a18;
+            border-radius: 50%;
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dotBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .form-hint {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        
+        .loading {
+            font-size: 18px;
+            text-align: center;
+        }
+        .spinner {
+            border: 4px solid #34495e;
+            border-top: 4px solid #e74c3c;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .connection-status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .connection-status.online {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .connection-status.offline {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        /* Estilos para cards das motos */
+        .moto-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .moto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .moto-image {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .moto-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .no-image {
+            font-size: 48px;
+            color: #ccc;
+        }
+        
+        .moto-info h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .moto-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        .status.disponivel {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.vendido {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .moto-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading overlay para transições suaves -->
+    <div id="adminLoadingOverlay" class="admin-loading-overlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="moto-animation">
+                    <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Roda traseira -->
+                        <circle cx="20" cy="45" r="12" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="20" cy="45" r="6" fill="#ff7a18"/>
+                        <!-- Roda dianteira -->
+                        <circle cx="75" cy="45" r="10" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="75" cy="45" r="5" fill="#ff7a18"/>
+                        <!-- Corpo -->
+                        <path d="M 20 45 L 30 30 L 45 25 L 60 28 L 70 35 L 75 45" fill="none" stroke="#ff7a18" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Guidão -->
+                        <path d="M 65 28 L 72 22 L 78 20" fill="none" stroke="#ff7a18" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Assento -->
+                        <ellipse cx="38" cy="23" rx="12" ry="4" fill="#ff7a18"/>
+                        <!-- Tanque -->
+                        <path d="M 48 25 Q 55 20 58 25" fill="#ff8c42" stroke="#ff7a18" stroke-width="2"/>
+                        <!-- Escape -->
+                        <path d="M 30 40 L 15 42" stroke="#ff7a18" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h3 id="adminLoadingTitle">🔧 MacDavis Admin</h3>
+            <div class="loading-text" id="adminLoadingText">Carregando<span class="loading-dots"><span></span><span></span><span></span></span></div>
+        </div>
+    </div>
+    <nav class="admin-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <h1>MacDavis Motos</h1>
+                <span class="admin-badge">Admin</span>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-secondary" onclick="goToClient()">
+                    🌐 Visualizar como Cliente
+                </button>
+                <button class="btn-danger" onclick="logout()">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </nav>
+    <main class="admin-content">
+        <div class="admin-header">
+            <h2>Gerenciamento de Motocicletas</h2>
+            <div class="header-actions">
+                <button class="btn-primary" onclick="showAddMotorcycleModal()">
+                    + Nova Motocicleta
+                </button>
+                <button class="btn-success" onclick="showSoldMotorcycles()">
+                    💰 Ver Vendidas
+                </button>
+                <button class="btn-secondary" onclick="refreshData()">
+                    🔄 Atualizar
+                </button>
+            </div>
+        </div>
+
+        <!-- Status de conexão -->
+        <div id="connectionStatus" class="connection-status"></div>
+
+        <!-- Estatísticas rápidas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalMotos">0</h3>
+                <p>Total de Motos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="disponiveisCount">0</h3>
+                <p>Disponíveis</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="vendidosCount">0</h3>
+                <p>Vendidos</p>
+            </div>
+            <div class="stat-card stat-appointments">
+                <h3 id="totalAgendamentos">0</h3>
+                <p>📅 Agendamentos</p>
+            </div>
+        </div>
+
+        <!-- Seção de Agendamentos -->
+        <div class="appointments-section">
+            <div class="section-header">
+                <h3>📅 Agendamentos de Clientes</h3>
+                <div class="header-actions">
+                    <select id="appointmentStatusFilter" class="filter-select" onchange="filterAppointments()" aria-label="Filtrar agendamentos por status">
+                        <option value="pendente">⏳ Pendentes</option>
+                        <option value="todos">Todos</option>
+                        <option value="realizado">✅ Realizados</option>
+                    </select>
+                    <button class="btn-secondary btn-small" onclick="refreshAppointments()">
+                        🔄 Atualizar
+                    </button>
+                </div>
+            </div>
+            <div id="appointmentsList" class="appointments-list">
+                <!-- Agendamentos serão inseridos aqui -->
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="admin-filters">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por marca, modelo..." class="search-input">
+            <select id="estiloFilter" class="filter-select" aria-label="Filtrar por estilo de motocicleta">
+                <option value="">Todos os Estilos</option>
+                <option value="scooter">🛵 Scooters</option>
+                <option value="street">🏍️ Streets</option>
+                <option value="trail">🏔️ Trail</option>
+                <option value="alta-cilindrada">🏁 Alta Cilindrada</option>
+                <option value="custom">🎸 Custom</option>
+            </select>
+            <select id="statusFilter" class="filter-select" aria-label="Filtrar por status de disponibilidade">
+                <option value="">Todos os Status</option>
+                <option value="disponivel" selected>Disponível</option>
+                <option value="vendido">Vendido</option>
+            </select>
+            <select id="marcaFilter" class="filter-select" aria-label="Filtrar por marca">
+                <option value="">Todas as Marcas</option>
+            </select>
+            <select id="cilindradaFilter" class="filter-select" aria-label="Filtrar por cilindrada">
+                <option value="">Todas as Cilindradas</option>
+                <option value="50-100">50-100cc</option>
+                <option value="110-190">110-190cc</option>
+                <option value="200-400">200-400cc</option>
+                <option value="500+">500cc+</option>
+            </select>
+        </div>
+
+        <!-- Lista de motocicletas -->
+        <div class="admin-grid" id="adminGrid">
+            <!-- Cards serão inseridos aqui via JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal para adicionar/editar motocicleta -->
+    <div id="motorcycleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nova Motocicleta</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="motorcycleForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marca">Marca:</label>
+                        <input type="text" id="marca" name="marca" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modelo">Modelo:</label>
+                        <input type="text" id="modelo" name="modelo" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ano">Ano:</label>
+                        <input type="number" id="ano" name="ano" min="1990" max="2030" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="cor">Cor:</label>
+                        <input type="text" id="cor" name="cor" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="placa">Placa:</label>
+                        <input type="text" id="placa" name="placa" placeholder="ABC-1234" maxlength="8">
+                        <small class="form-hint">Formato: ABC-1234 ou ABC1D23</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="quilometragem">Quilometragem:</label>
+                        <input type="number" id="quilometragem" name="quilometragem" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="renavam">RENAVAM:</label>
+                        <input type="text" id="renavam" name="renavam" placeholder="00000000000" maxlength="11">
+                        <small class="form-hint">Código de 11 dígitos</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="chassi">Chassi:</label>
+                        <input type="text" id="chassi" name="chassi" placeholder="17 dígitos" maxlength="17">
+                        <small class="form-hint">Código VIN do veículo</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Selecione...</option>
+                        <option value="street">Street</option>
+                        <option value="sport">Sport</option>
+                        <option value="trail">Trail</option>
+                        <option value="scooter">Scooter</option>
+                        <option value="touring">Touring</option>
+                        <option value="custom">Custom</option>
+                        <option value="naked">Naked</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cilindradas">Cilindradas (cc):</label>
+                        <input type="number" id="cilindradas" name="cilindradas" min="50" max="2000" placeholder="Ex: 250">
+                    </div>
+                    <div class="form-group">
+                        <label for="combustivel">Combustível:</label>
+                        <select id="combustivel" name="combustivel">
+                            <option value="">Selecione...</option>
+                            <option value="Gasolina">Gasolina</option>
+                            <option value="Etanol">Etanol</option>
+                            <option value="Flex">Flex</option>
+                            <option value="Elétrica">Elétrica</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="disponivel">Disponível</option>
+                        <option value="vendido">Vendido</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem">Caminho da Imagem Principal:</label>
+                    <input type="text" id="imagem" name="imagem" placeholder="Cole o caminho completo ou relativo">
+                    <small class="form-hint">
+                        💡 Dica: Cole o caminho completo (ex: C:\Users\...\Fotos motos\Bandit\foto.jpg) ou apenas o caminho relativo (ex: images/Bandit/foto.jpg)
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem2">Imagem Adicional 2 (Opcional):</label>
+                    <input type="text" id="imagem2" name="imagem2" placeholder="Cole o caminho da segunda imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem3">Imagem Adicional 3 (Opcional):</label>
+                    <input type="text" id="imagem3" name="imagem3" placeholder="Cole o caminho da terceira imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem4">Imagem Adicional 4 (Opcional):</label>
+                    <input type="text" id="imagem4" name="imagem4" placeholder="Cole o caminho da quarta imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentoPDF">📄 Documento CRLV (PDF):</label>
+                    <input type="text" id="documentoPDF" name="documentoPDF" placeholder="Cole o caminho do arquivo PDF do CRLV">
+                    <small class="form-hint">
+                        💡 Caminho do arquivo PDF (ex: C:\Users\...\Documentos\CRLV_ABC1234.pdf ou documents/CRLV_ABC1234.pdf)
+                    </small>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes da Motocicleta</h3>
+                <span class="close" onclick="closeViewModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="viewContent">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Venda -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Registrar Venda</h3>
+                <span class="close" onclick="closeSaleModal()">&times;</span>
+            </div>
+            <form id="saleForm" class="modal-form">
+                <input type="hidden" id="saleMotoId" name="motoId">
+                <div id="saleMotorcycleInfo">
+                    <!-- Informações da moto serão inseridas aqui -->
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">📋 Dados do Comprador</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="buyerName">Nome do Comprador:</label>
+                        <input type="text" id="buyerName" name="buyerName" placeholder="Digite o nome completo do comprador">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="buyerPhone">Telefone:</label>
+                        <input type="tel" id="buyerPhone" name="buyerPhone" placeholder="(00) 00000-0000">
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">🏍️ Documentação da Moto</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="saleRenavam">RENAVAM:</label>
+                        <input type="text" id="saleRenavam" name="renavam" placeholder="00000000000">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salePlaca">Placa:</label>
+                        <input type="text" id="salePlaca" name="placa" placeholder="ABC-1234" maxlength="8">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleChassi">Chassi:</label>
+                    <input type="text" id="saleChassi" name="chassi" placeholder="9BWZZZ377VT004251" maxlength="17">
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">💰 Dados da Venda</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="saleDate">Data da Venda:</label>
+                        <input type="date" id="saleDate" name="saleDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salePrice">Valor da Venda (R$):</label>
+                        <input type="text" id="salePrice" name="salePrice" placeholder="R$ 0,00">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Forma de Pagamento:</label>
+                    <select id="paymentMethod" name="paymentMethod">
+                        <option value="">Selecione...</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="pix">PIX</option>
+                        <option value="transferencia">Transferência</option>
+                        <option value="cartao">Cartão</option>
+                        <option value="financiamento">Financiamento</option>
+                        <option value="misto">Misto</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleNotes">Observações:</label>
+                    <textarea id="saleNotes" name="saleNotes" rows="3" placeholder="Ex: Garantia, parcelas, pendências, etc."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeSaleModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">✅ Confirmar Venda</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Motos Vendidas -->
+    <div id="soldMotorcyclesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Painel de Vendas - MacDavis Motos</h3>
+                <span class="close" onclick="closeSoldMotorcyclesModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="soldMotorcyclesContent">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Venda -->
+    <div id="editSoldMotoModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>✏️ Editar Dados da Venda</h3>
+                <span class="close" onclick="closeEditSoldMotoModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="editSoldMotoInfo" style="background: rgba(255, 102, 0, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff6600;">
+                    <!-- Info da moto será preenchida aqui -->
+                </div>
+                
+                <form id="editSoldMotoForm">
+                    <input type="hidden" id="editSoldMotoId">
+                    
+                    <h4 style="margin-top: 0; margin-bottom: 1rem; color: #ff6600;">👤 Dados do Comprador</h4>
+                    
+                    <div class="form-group">
+                        <label for="editBuyerName">Nome do Comprador: <span style="color: red;">*</span></label>
+                        <input type="text" id="editBuyerName" required placeholder="Nome completo">
+                    </div>
+                    
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">🏍️ Documentação da Moto</h4>
+                    
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="editSaleRenavam">RENAVAM:</label>
+                            <input type="text" id="editSaleRenavam" placeholder="00000000000">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSalePlaca">Placa:</label>
+                            <input type="text" id="editSalePlaca" placeholder="ABC-1234" maxlength="8">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editSaleChassi">Chassi:</label>
+                        <input type="text" id="editSaleChassi" placeholder="9BWZZZ377VT004251" maxlength="17">
+                    </div>
+                    
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">💰 Dados da Venda</h4>
+                    
+                    <div class="form-group">
+                        <label for="editSaleDate">Data da Venda: <span style="color: red;">*</span></label>
+                        <input type="date" id="editSaleDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editSaleNotes">Observações:</label>
+                        <textarea id="editSaleNotes" rows="3" placeholder="Informações adicionais sobre a venda..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-primary" style="flex: 1;">
+                            💾 Salvar Alterações
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="closeEditSoldMotoModal()" style="flex: 1;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="admin.js?v=crlv20251222"></script></script></script>
+    
+    <script>
+        // 🚀 FORÇA AUTO-REFRESH (INLINE)
+        console.log('%c🔥 SCRIPT INLINE EXECUTADO!', 'background: red; color: white; padding: 10px; font-size: 16px;');
+        
+        // Garantir que auto-refresh inicia mesmo se admin.js falhar
+        window.addEventListener('load', function() {
+            console.log('%c⚡ WINDOW LOAD - Verificando auto-refresh...', 'background: purple; color: white; padding: 8px;');
+            
+            setTimeout(function() {
+                if (typeof startAutoRefresh === 'function') {
+                    console.log('%c✅ startAutoRefresh encontrado! Tentando iniciar...', 'color: green; font-size: 14px; font-weight: bold;');
+                    try {
+                        startAutoRefresh();
+                    } catch(e) {
+                        console.error('❌ Erro ao chamar startAutoRefresh:', e);
+                    }
+                } else {
+                    console.error('%c❌ startAutoRefresh NÃO ENCONTRADO!', 'background: red; color: white; padding: 8px; font-size: 14px;');
+                    console.log('Funções disponíveis:', Object.keys(window).filter(k => k.includes('refresh')));
+                }
+            }, 2000);
+        });
+    </script>
+    
+    <script>
+        // 🚀 INICIALIZAÇÃO ANTI-CACHE
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 ADMIN PANEL CARREGADO - VERSION: 20251216152400');
+            
+            // Remover loading após carregamento completo
+            const loadingOverlay = document.getElementById('adminLoadingOverlay');
+            if (loadingOverlay) {
+                loadingOverlay.style.opacity = '0';
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                }, 300);
+            }
+            
+            // Verificar autenticação
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                console.log('❌ Usuário não autenticado, redirecionando...');
+                window.location.href = 'admin-login.html?redirect=admin';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            if (user.tipo !== 'admin') {
+                console.log('❌ Acesso negado - usuário não é admin');
+                alert('Acesso negado! Esta área é restrita a administradores.');
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            
+            console.log('✅ Admin autenticado:', user.nome);
+            
+            // O admin.js vai inicializar automaticamente via DOMContentLoaded
+            console.log('🎯 Admin panel carregado, aguardando inicialização do admin.js...');
+        });
+
+        // Detectar refresh manual (F5 ou Ctrl+F5)
+        window.addEventListener('beforeunload', function(e) {
+            // Verificar se é refresh manual (não é navegação normal)
+            if (performance.navigation.type === 1) {
+                showAdminLoading('MacDavis Motos - Acesso Administrativo');
+            }
+        });
+        
+        // Função para voltar ao catálogo (cliente - porta 3000)
+        function goToClient() {
+            showAdminLoading('MacDavis Motos');
+            setTimeout(() => {
+                window.open('http://localhost:3000', '_blank');
+                hideAdminLoading();
+            }, 600);
+        }
+        
+        // Função de logout
+        function logout() {
+            if (confirm('Deseja realmente sair do painel administrativo?')) {
+                showAdminLoading('MacDavis Motos - Acesso Administrativo');
+                localStorage.removeItem('userData');
+                setTimeout(() => {
+                    const timestamp = Date.now();
+                    window.location.href = `admin-login.html?v=${timestamp}&logout=true`;
+                }, 500);
+            }
+        }
+        
+        // Função para atualizar dados
+        function refreshData() {
+            console.log('🔄 Atualizando dados...');
+            if (typeof loadMotorcycles === 'function') {
+                loadMotorcycles();
+            }
+        }
+
+        // Sistema de Dropdown Customizado com Animação Cascata
+        document.addEventListener('DOMContentLoaded', function() {
+            // Converter todos os selects em dropdowns customizados
+            const selects = document.querySelectorAll('select.filter-select');
+            
+            selects.forEach(select => {
+                createCustomSelect(select);
+            });
+        });
+
+        function createCustomSelect(selectElement) {
+            // Criar container customizado
+            const customSelect = document.createElement('div');
+            customSelect.className = 'custom-select';
+            
+            // Criar trigger (botão principal)
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            trigger.textContent = selectElement.options[selectElement.selectedIndex].text;
+            
+            // Criar lista de opções
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'custom-select-options';
+            
+            // Criar cada opção
+            Array.from(selectElement.options).forEach((option, index) => {
+                const customOption = document.createElement('div');
+                customOption.className = 'custom-option';
+                customOption.textContent = option.text;
+                customOption.dataset.value = option.value;
+                
+                if (option.selected) {
+                    customOption.classList.add('selected');
+                }
+                
+                // Click na opção
+                customOption.addEventListener('click', () => {
+                    // Atualizar select original
+                    selectElement.selectedIndex = index;
+                    selectElement.dispatchEvent(new Event('change'));
+                    
+                    // Atualizar visual
+                    trigger.textContent = option.text;
+                    optionsContainer.querySelectorAll('.custom-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    customOption.classList.add('selected');
+                    
+                    // Fechar dropdown
+                    customSelect.classList.remove('open');
+                });
+                
+                optionsContainer.appendChild(customOption);
+            });
+            
+            // Toggle dropdown
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Fechar outros dropdowns
+                document.querySelectorAll('.custom-select.open').forEach(other => {
+                    if (other !== customSelect) {
+                        other.classList.remove('open');
+                    }
+                });
+                
+                // Toggle este dropdown
+                customSelect.classList.toggle('open');
+            });
+            
+            // Fechar ao clicar fora
+            document.addEventListener('click', () => {
+                customSelect.classList.remove('open');
+            });
+            
+            // Montar estrutura
+            customSelect.appendChild(trigger);
+            customSelect.appendChild(optionsContainer);
+            
+            // Substituir select original
+            selectElement.style.display = 'none';
+            selectElement.parentNode.insertBefore(customSelect, selectElement);
+        }
+    </script>
+    
+    <!-- Sistema de Transições -->
+    <script src="page-transitions.js"></script>
+</body>
+</html>

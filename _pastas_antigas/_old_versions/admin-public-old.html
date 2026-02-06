@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Admin - MacDavis Motos</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="CSS.css" />
+        <style>
+            .admin-container {
+                max-width: 1200px;
+                margin: 40px auto;
+                padding: 20px;
+            }
+            .admin-header {
+                background: linear-gradient(135deg, #1a1a1a, #333);
+                color: white;
+                padding: 30px;
+                border-radius: 12px;
+                margin-bottom: 30px;
+                text-align: center;
+            }
+            .admin-sections {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 20px;
+            }
+            .admin-section {
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                padding: 20px;
+            }
+            .admin-section h3 {
+                margin-top: 0;
+                color: #333;
+                border-bottom: 2px solid #ff7a18;
+                padding-bottom: 10px;
+            }
+            .stats-grid {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 15px;
+                margin-bottom: 20px;
+            }
+            .stat-card {
+                background: #f8f9fa;
+                padding: 15px;
+                border-radius: 8px;
+                text-align: center;
+            }
+            .stat-number {
+                font-size: 24px;
+                font-weight: bold;
+                color: #ff7a18;
+            }
+            .stat-label {
+                font-size: 12px;
+                color: #666;
+                margin-top: 5px;
+            }
+            .motorcycle-list {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .motorcycle-item {
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                padding: 10px;
+                border: 1px solid #eee;
+                border-radius: 8px;
+                margin-bottom: 10px;
+                background: #fafafa;
+            }
+            .motorcycle-thumb {
+                width: 60px;
+                height: 40px;
+                border-radius: 4px;
+                object-fit: cover;
+                background: #ddd;
+            }
+            .motorcycle-info {
+                flex: 1;
+            }
+            .motorcycle-info h4 {
+                margin: 0 0 5px 0;
+                font-size: 14px;
+                color: #333;
+            }
+            .motorcycle-info p {
+                margin: 0;
+                font-size: 12px;
+                color: #666;
+            }
+            .motorcycle-actions {
+                display: flex;
+                gap: 5px;
+            }
+            .btn-small {
+                padding: 5px 10px;
+                font-size: 12px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-weight: 500;
+            }
+            .btn-edit {
+                background: #007bff;
+                color: white;
+            }
+            .btn-delete {
+                background: #dc3545;
+                color: white;
+            }
+            .appointments-table {
+                max-height: 400px;
+                overflow-y: auto;
+            }
+            .appointments-table table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 14px;
+            }
+            .appointments-table th,
+            .appointments-table td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #eee;
+            }
+            .appointments-table th {
+                background: #f8f9fa;
+                font-weight: 600;
+                position: sticky;
+                top: 0;
+            }
+            .logout-section {
+                text-align: center;
+                margin-top: 30px;
+            }
+            .btn-logout {
+                background: #6c757d;
+                color: white;
+                padding: 10px 20px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+            .btn-logout:hover {
+                background: #545b62;
+            }
+            .error-message {
+                background: #f8d7da;
+                color: #721c24;
+                padding: 15px;
+                border-radius: 8px;
+                margin-bottom: 20px;
+                text-align: center;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="admin-container">
+            <div class="admin-header">
+                <h1>Painel Administrativo</h1>
+                <p>MacDavis Motos - Gestão do Sistema</p>
+                <div id="adminInfo" style="margin-top: 15px; font-size: 14px; opacity: 0.9;"></div>
+            </div>
+
+            <div id="accessDenied" class="error-message" style="display: none;">
+                <h3>Acesso Negado</h3>
+                <p>Você não possui permissões administrativas para acessar esta página.</p>
+                <button onclick="window.location.href='login.html'" class="btn-logout">Fazer login como admin</button>
+            </div>
+
+            <div id="adminContent" style="display: none;">
+                <div class="admin-sections">
+                    <div class="admin-section">
+                        <h3>📊 Estatísticas</h3>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalMotorcycles">0</div>
+                                <div class="stat-label">Motocicletas</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalAppointments">0</div>
+                                <div class="stat-label">Agendamentos</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="pendingAppointments">0</div>
+                                <div class="stat-label">Pendentes</div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-number" id="totalUsers">0</div>
+                                <div class="stat-label">Usuários únicos</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h3>🏍️ Motocicletas</h3>
+                        <div id="motorcyclesList" class="motorcycle-list">
+                            <p style="text-align: center; color: #666;">Carregando motocicletas...</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h3>📅 Agendamentos Recentes</h3>
+                        <div id="appointmentsTable" class="appointments-table">
+                            <p style="text-align: center; color: #666;">Carregando agendamentos...</p>
+                        </div>
+                    </div>
+
+                    <div class="admin-section">
+                        <h3>⚙️ Ações do Sistema</h3>
+                        <div style="display: flex; flex-direction: column; gap: 10px;">
+                            <button id="refreshData" class="btn-small" style="background: #28a745; color: white; padding: 10px;">
+                                🔄 Atualizar dados
+                            </button>
+                            <button id="exportData" class="btn-small" style="background: #17a2b8; color: white; padding: 10px;">
+                                💾 Exportar agendamentos (CSV)
+                            </button>
+                            <button id="clearAppointments" class="btn-small" style="background: #dc3545; color: white; padding: 10px;">
+                                🗑️ Limpar todos os agendamentos
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="logout-section">
+                    <button id="logoutAdmin" class="btn-logout">Sair do admin</button>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // Admin credentials (in production, this should be server-side)
+            const ADMIN_CREDENTIALS = {
+                'admin@macdavis.com': 'admin123',
+                'manager@macdavis.com': 'manager123'
+            };
+
+            // User management
+            function getLoggedUser() {
+                try {
+                    const s = localStorage.getItem('user_v1');
+                    return s ? JSON.parse(s) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function isAdmin() {
+                const user = getLoggedUser();
+                return user && ADMIN_CREDENTIALS.hasOwnProperty(user.email);
+            }
+
+            function logout() {
+                localStorage.removeItem('user_v1');
+                window.location.href = 'login.html';
+            }
+
+            // Data loading functions
+            let motorcycles = [];
+            let appointments = [];
+
+            async function loadMotorcycles() {
+                try {
+                    const res = await fetch('/api/motorcycles');
+                    if (res.ok) {
+                        motorcycles = await res.json();
+                        return motorcycles;
+                    }
+                } catch (e) {
+                    console.debug('Could not load motorcycles from API');
+                }
+                return [];
+            }
+
+            async function loadAppointments() {
+                try {
+                    const res = await fetch('/api/appointments');
+                    if (res.ok) {
+                        appointments = await res.json();
+                        return appointments;
+                    }
+                } catch (e) {
+                    console.debug('API not available, using localStorage');
+                }
+
+                // Fallback to localStorage
+                try {
+                    const raw = localStorage.getItem('simple_schedule_appointments_v1');
+                    appointments = raw ? JSON.parse(raw) : [];
+                    return appointments;
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            function updateStats() {
+                const totalMotorcycles = motorcycles.length;
+                const totalAppointments = appointments.length;
+                const now = new Date();
+                const pendingAppointments = appointments.filter(apt => 
+                    new Date(apt.date + 'T' + apt.time) > now
+                ).length;
+                const uniqueUsers = new Set(appointments.map(apt => apt.email || apt.name)).size;
+
+                document.getElementById('totalMotorcycles').textContent = totalMotorcycles;
+                document.getElementById('totalAppointments').textContent = totalAppointments;
+                document.getElementById('pendingAppointments').textContent = pendingAppointments;
+                document.getElementById('totalUsers').textContent = uniqueUsers;
+            }
+
+            function renderMotorcycles() {
+                const container = document.getElementById('motorcyclesList');
+                
+                if (motorcycles.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Nenhuma motocicleta encontrada.</p>';
+                    return;
+                }
+
+                container.innerHTML = motorcycles.map(moto => {
+                    const imageUrl = moto.thumb || moto.image || '/images/placeholder.jpg';
+                    return `
+                        <div class="motorcycle-item">
+                            <img src="${imageUrl}" alt="${moto.name}" class="motorcycle-thumb" 
+                                 onerror="this.src='/images/placeholder.jpg'">
+                            <div class="motorcycle-info">
+                                <h4>${moto.name} (${moto.year})</h4>
+                                <p>${moto.desc || ''}</p>
+                                <p style="font-size: 11px; color: #999;">ID: ${moto.id}</p>
+                            </div>
+                            <div class="motorcycle-actions">
+                                <button class="btn-small btn-edit" onclick="editMotorcycle('${moto.id}')">Editar</button>
+                                <button class="btn-small btn-delete" onclick="deleteMotorcycle('${moto.id}')">Excluir</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function renderAppointments() {
+                const container = document.getElementById('appointmentsTable');
+                
+                if (appointments.length === 0) {
+                    container.innerHTML = '<p style="text-align: center; color: #666;">Nenhum agendamento encontrado.</p>';
+                    return;
+                }
+
+                const sortedAppointments = appointments
+                    .sort((a, b) => new Date(b.date + 'T' + b.time) - new Date(a.date + 'T' + a.time))
+                    .slice(0, 20); // Show last 20
+
+                const getMotorcycleName = (id) => {
+                    const moto = motorcycles.find(m => m.id === id);
+                    return moto ? `${moto.name} (${moto.year})` : id;
+                };
+
+                container.innerHTML = `
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Motocicleta</th>
+                                <th>Data/Hora</th>
+                                <th>Status</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${sortedAppointments.map(apt => {
+                                const isPending = new Date(apt.date + 'T' + apt.time) > new Date();
+                                const status = isPending ? 'Pendente' : 'Realizado';
+                                const statusColor = isPending ? '#856404' : '#155724';
+                                
+                                return `
+                                    <tr>
+                                        <td>
+                                            <strong>${apt.name}</strong><br>
+                                            <small style="color: #666;">${apt.phone || 'N/A'}</small>
+                                        </td>
+                                        <td>${getMotorcycleName(apt.motorcycle || apt.service)}</td>
+                                        <td>
+                                            ${apt.date}<br>
+                                            <small>${apt.time}</small>
+                                        </td>
+                                        <td style="color: ${statusColor}; font-weight: 500;">${status}</td>
+                                        <td>
+                                            <button class="btn-small btn-delete" onclick="deleteAppointment('${apt.id}')">
+                                                Excluir
+                                            </button>
+                                        </td>
+                                    </tr>
+                                `;
+                            }).join('')}
+                        </tbody>
+                    </table>
+                `;
+            }
+
+            // Action functions
+            async function refreshAllData() {
+                document.getElementById('refreshData').textContent = '🔄 Atualizando...';
+                try {
+                    await Promise.all([loadMotorcycles(), loadAppointments()]);
+                    updateStats();
+                    renderMotorcycles();
+                    renderAppointments();
+                } catch (e) {
+                    console.error('Error refreshing data:', e);
+                } finally {
+                    document.getElementById('refreshData').textContent = '🔄 Atualizar dados';
+                }
+            }
+
+            function exportAppointments() {
+                if (appointments.length === 0) {
+                    alert('Nenhum agendamento para exportar.');
+                    return;
+                }
+
+                const header = ['id', 'name', 'email', 'phone', 'motorcycle', 'date', 'time', 'notes'];
+                const rows = appointments.map(apt => 
+                    header.map(h => '"' + (apt[h] || '') + '"').join(',')
+                );
+                const csv = header.join(',') + '\n' + rows.join('\n');
+                
+                const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `agendamentos_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+
+            async function clearAllAppointments() {
+                if (!confirm('Tem certeza que deseja excluir TODOS os agendamentos? Esta ação não pode ser desfeita.')) {
+                    return;
+                }
+
+                try {
+                    const res = await fetch('/api/appointments', { method: 'DELETE' });
+                    if (res.ok) {
+                        await refreshAllData();
+                        alert('Todos os agendamentos foram excluídos.');
+                        return;
+                    }
+                } catch (e) {
+                    console.debug('API not available, clearing localStorage');
+                }
+
+                // Fallback to localStorage
+                localStorage.removeItem('simple_schedule_appointments_v1');
+                appointments = [];
+                updateStats();
+                renderAppointments();
+                alert('Todos os agendamentos foram excluídos.');
+            }
+
+            async function deleteAppointment(id) {
+                if (!confirm('Excluir este agendamento?')) return;
+
+                try {
+                    const res = await fetch(`/api/appointments/${id}`, { method: 'DELETE' });
+                    if (res.ok) {
+                        await refreshAllData();
+                        return;
+                    }
+                } catch (e) {
+                    console.debug('API not available, removing from localStorage');
+                }
+
+                // Fallback to localStorage
+                const filtered = appointments.filter(apt => apt.id !== id);
+                localStorage.setItem('simple_schedule_appointments_v1', JSON.stringify(filtered));
+                appointments = filtered;
+                updateStats();
+                renderAppointments();
+            }
+
+            function editMotorcycle(id) {
+                alert(`Funcionalidade de edição para ${id} será implementada em breve.`);
+            }
+
+            function deleteMotorcycle(id) {
+                alert(`Funcionalidade de exclusão para ${id} será implementada em breve.`);
+            }
+
+            // Initialize admin panel
+            async function initAdmin() {
+                const user = getLoggedUser();
+                
+                if (!user) {
+                    window.location.href = 'login.html?return=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
+                if (!isAdmin()) {
+                    document.getElementById('accessDenied').style.display = 'block';
+                    return;
+                }
+
+                document.getElementById('adminContent').style.display = 'block';
+                document.getElementById('adminInfo').textContent = `Logado como: ${user.name} (${user.email})`;
+
+                await refreshAllData();
+            }
+
+            // Event listeners
+            document.getElementById('refreshData').addEventListener('click', refreshAllData);
+            document.getElementById('exportData').addEventListener('click', exportAppointments);
+            document.getElementById('clearAppointments').addEventListener('click', clearAllAppointments);
+            document.getElementById('logoutAdmin').addEventListener('click', logout);
+
+            // Initialize
+            document.addEventListener('DOMContentLoaded', initAdmin);
+        </script>
+    </body>
+</html>

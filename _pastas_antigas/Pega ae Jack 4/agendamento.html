@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Agendar Visita - MacDavis Motos [CLEAN VERSION]</title>
+    <link rel="stylesheet" href="CSS.css?v=1731000000000" />
+    <link rel="stylesheet" href="page-transitions.css" />
+    <style>
+        /* Força recarregamento visual */
+        body::before {
+            content: "VERSÃO LIMPA - 17:20";
+            position: fixed;
+            top: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            padding: 2px 5px;
+            font-size: 10px;
+            z-index: 9999;
+            border-radius: 3px;
+        }
+        
+        /* Responsividade para o layout */
+        @media (max-width: 1200px) {
+            main.container {
+                flex-direction: column !important;
+                align-items: center !important;
+            }
+            
+            .moto-preview-card {
+                width: 100% !important;
+                max-width: 500px !important;
+            }
+            
+            .agendamento-card {
+                width: 100% !important;
+                max-width: 540px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ...existing code... -->
+    
+    <!-- Header -->
+    <header class="top">
+        <h1>MacDavis Motos — Agendamento [CLEAN]</h1>
+        <p class="subtitle">Agende sua visita para conhecer a motocicleta escolhida</p>
+        
+        <!-- Navegação -->
+        <nav style="position: absolute; top: 20px; right: 20px; display: flex; gap: 15px;">
+            <button onclick="goBack()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                ← Voltar ao Catálogo
+            </button>
+            <button onclick="logout()" style="background: var(--accent); color: #000; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Sair
+            </button>
+        </nav>
+    </header>
+
+    <main class="container" style="display:flex;justify-content:center;align-items:flex-start;gap:48px;margin-top:64px;min-height:60vh;padding:0 20px;">
+        <!-- Card de visualização da moto -->
+        <section class="moto-preview-card" id="motoPreviewCard" style="width: 400px; min-width:340px; background: #1b2532; border-radius: 24px; box-shadow: 0 8px 40px rgba(44,62,80,0.15); padding: 32px; display:none;">
+            <h3 style="color: #fff; text-align: center; margin-bottom: 24px; font-size:1.6em; font-weight:600;">Motocicleta Selecionada</h3>
+            <div style="width:100%;height:280px;background:#0f1419;border-radius:16px;overflow:hidden;margin-bottom:20px;display:flex;align-items:center;justify-content:center;">
+                <img id="motoPreviewImage" src="" alt="Moto" style="width:100%;height:100%;object-fit:cover;object-position:center;" />
+            </div>
+            <div style="color:#fff;text-align:center;">
+                <h4 id="motoPreviewName" style="font-size:1.4em;margin-bottom:12px;color:#e67e22;font-weight:600;">-</h4>
+                <div style="display:flex;justify-content:space-around;margin-top:16px;font-size:0.95em;color:rgba(255,255,255,0.8);">
+                    <div><strong>Ano:</strong> <span id="motoPreviewYear">-</span></div>
+                    <div><strong>Cor:</strong> <span id="motoPreviewColor">-</span></div>
+                    <div><strong>KM:</strong> <span id="motoPreviewKm">-</span></div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Card de agendamento -->
+        <section class="agendamento-card" style="width: 540px; min-width:340px; background: #263445; border-radius: 24px; box-shadow: 0 8px 40px rgba(44,62,80,0.15); padding: 56px 44px;">
+            <h2 style="color: #fff; text-align: center; margin-bottom: 32px; font-size:2.2em; font-weight:700; letter-spacing:1px;">Agendar Visita</h2>
+            <form id="appointmentForm" class="appointment-form">
+                <div class="form-group" style="margin-bottom:24px;">
+                    <label for="serviceSelect" style="color:#fff;font-weight:500;">Motocicleta Selecionada:</label>
+                    <select id="serviceSelect" name="service" required style="width:100%;padding:16px;border-radius:10px;font-size:1.15em;">
+                        <option value="">Carregando motocicletas...</option>
+                    </select>
+                </div>
+                <div class="form-row" style="display:flex;gap:24px;margin-bottom:24px;">
+                    <div class="form-group" style="flex:1;">
+                        <label for="appointmentDate" style="color:#fff;font-weight:500;">Data da Visita:</label>
+                        <input type="date" id="appointmentDate" name="date" required style="width:100%;padding:16px;border-radius:10px;font-size:1.15em;" />
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="appointmentTime" style="color:#fff;font-weight:500;">Horário:</label>
+                        <select id="appointmentTime" name="time" required style="width:100%;padding:16px;border-radius:10px;font-size:1.15em;">
+                            <option value="">Selecione um horário</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group" style="margin-bottom:24px;">
+                    <label for="notes" style="color:#fff;font-weight:500;">Observações (opcional):</label>
+                    <textarea id="notes" name="notes" rows="2" placeholder="Informações adicionais..." style="width:100%;padding:16px;border-radius:10px;font-size:1.15em;"></textarea>
+                </div>
+                <div class="form-actions" style="text-align:center;margin-top:32px;">
+                    <button type="submit" class="submit-btn-enhanced" style="background:#e67e22;color:#fff;padding:18px 48px;border-radius:12px;font-size:1.3em;cursor:pointer;font-weight:600;box-shadow:0 2px 12px rgba(230,126,34,0.15);transition:background 0.2s;">
+                        <span>📅</span> Confirmar Agendamento
+                    </button>
+                </div>
+            </form>
+        </section>
+        <!-- Card de status do pedido -->
+        <section class="status-card" id="statusCard" style="width: 540px; min-width:340px; background: #1b2532; border-radius: 24px; box-shadow: 0 8px 40px rgba(44,62,80,0.15); padding: 56px 44px; display:none;flex-direction:column;align-items:center;justify-content:center;">
+            <h2 style="color: #fff; text-align: center; margin-bottom: 32px; font-size:2.2em; font-weight:700; letter-spacing:1px;">Status do Pedido</h2>
+            <div id="statusInfo" style="color:#e67e22;font-size:1.2em;text-align:center;margin-bottom:24px;"></div>
+            <button onclick="goBack()" style="background:#e67e22;color:#fff;padding:16px 38px;border-radius:10px;font-size:1.15em;cursor:pointer;font-weight:600;box-shadow:0 2px 12px rgba(230,126,34,0.15);margin-top:16px;">Voltar ao Catálogo</button>
+        </section>
+    </main>
+
+    <!-- Remover o card fixo "Agendar Serviço" abaixo -->
+    <!--
+    <div style="position:fixed;bottom:0;left:0;width:100%;background:#263445;padding:32px 0;z-index:10;">
+        <div style="max-width:420px;margin:0 auto;">
+            <h2 style="color:#e67e22;margin-bottom:12px;">Agendar Serviço</h2>
+            <div style="color:#fff;margin-bottom:8px;">🔄 Carregando dados do usuário...</div>
+            <select style="width:100%;margin-bottom:8px;"><option>Carregando motocicletas...</option></select>
+            <input type="date" style="width:100%;margin-bottom:8px;" />
+            <select style="width:100%;margin-bottom:8px;"><option>Selecione um horário</option></select>
+            <textarea rows="2" style="width:100%;margin-bottom:8px;" placeholder="Alguma informação adicional sobre sua visita..."></textarea>
+            <button style="width:100%;background:#e67e22;color:#fff;padding:8px 0;border-radius:6px;font-size:1em;">📅 Confirmar Agendamento</button>
+        </div>
+    </div>
+    -->
+
+        <!-- Lista de agendamentos do usuário -->
+        <section class="appointments-section">
+            <!-- ...removido para foco no agendamento individual... -->
+        </section>
+    </main>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Processando agendamento...</div>
+        </div>
+    </div>
+
+    <!-- JavaScript com timestamp único -->
+    <script>
+        console.log('🚀 AGENDAMENTO CLEAN VERSION - 17:20');
+        console.log('🔄 Timestamp:', new Date().toISOString());
+        
+        // Variáveis globais
+        let motorcycles = [];
+        let userData = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Verificar login
+            const userDataStr = localStorage.getItem('userData');
+            if (userDataStr) {
+                try {
+                    userData = JSON.parse(userDataStr);
+                } catch (e) {
+                    userData = { nome: 'Usuário Teste', email: 'teste@macdavis.com' };
+                }
+            } else {
+                userData = { nome: 'Usuário Teste', email: 'teste@macdavis.com' };
+            }
+
+            // Carregar motos
+            try {
+                const timestamp = Date.now();
+                const response = await fetch(`/api/motorcycles?v=${timestamp}`, {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-cache', 'Pragma': 'no-cache' }
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    motorcycles = Array.isArray(data) ? data : [];
+                }
+            } catch (error) {
+                const stored = localStorage.getItem('motorcycles');
+                if (stored) {
+                    try { motorcycles = JSON.parse(stored); } catch (e) { motorcycles = []; }
+                }
+            }
+            if (!motorcycles || motorcycles.length === 0) {
+                motorcycles = [
+                    { id: 'moto-fallback-1', name: 'CB 250 TWISTER', year: '2022/22', color: 'Vermelha', displacement: 250 },
+                    { id: 'moto-fallback-2', name: 'CBX 250 TWISTER', year: '2006/07', color: 'Amarela', displacement: 250 },
+                    { id: 'moto-fallback-3', name: 'HONDA CG 160', year: '2020/21', color: 'Preta', displacement: 160 }
+                ];
+            }
+
+            // Preencher select de motos
+            const serviceSelect = document.getElementById('serviceSelect');
+            serviceSelect.innerHTML = '<option value="">Selecione uma motocicleta</option>';
+            motorcycles.forEach(moto => {
+                const option = document.createElement('option');
+                option.value = moto.id;
+                option.textContent = `${moto.name} - ${moto.year} (${moto.color})`;
+                serviceSelect.appendChild(option);
+            });
+
+            // Pré-selecionar moto vinda do catálogo
+            const selectedMotoId = localStorage.getItem('selectedMotoId');
+            if (selectedMotoId) {
+                setTimeout(() => {
+                    serviceSelect.value = selectedMotoId;
+                    updateMotoPreview(selectedMotoId);
+                    console.log('🎯 Moto pré-selecionada:', selectedMotoId);
+                }, 100);
+            }
+            
+            // Atualizar preview quando mudar a seleção
+            serviceSelect.addEventListener('change', (e) => {
+                updateMotoPreview(e.target.value);
+            });
+            
+            // Função para atualizar o preview da moto
+            function updateMotoPreview(motoId) {
+                const moto = motorcycles.find(m => m.id === motoId);
+                const previewCard = document.getElementById('motoPreviewCard');
+                
+                if (!moto) {
+                    previewCard.style.display = 'none';
+                    return;
+                }
+                
+                // Atualizar imagem
+                const imgElement = document.getElementById('motoPreviewImage');
+                imgElement.src = moto.image || moto.thumb || 'images/placeholder.jpg';
+                
+                // Atualizar informações
+                document.getElementById('motoPreviewName').textContent = 
+                    (moto.marca ? moto.marca + ' ' : '') + (moto.modelo || moto.name || moto.nome || 'Moto');
+                document.getElementById('motoPreviewYear').textContent = moto.ano || moto.year || 'N/A';
+                document.getElementById('motoPreviewColor').textContent = moto.cor || moto.color || 'N/A';
+                
+                // Formatar KM
+                const km = moto.mileage_display || moto.quilometragem || moto.mileage || moto.km || 0;
+                const kmFormatted = typeof km === 'string' ? km : km.toLocaleString('pt-BR');
+                document.getElementById('motoPreviewKm').textContent = kmFormatted + ' km';
+                
+                // Mostrar card com animação
+                previewCard.style.display = 'block';
+                previewCard.animate([
+                    { transform: 'scale(0.9)', opacity: 0 },
+                    { transform: 'scale(1)', opacity: 1 }
+                ], {
+                    duration: 400,
+                    easing: 'ease-out'
+                });
+            }
+
+            // Data mínima hoje
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('appointmentDate');
+            if (dateInput) dateInput.min = today;
+
+            // Formulário de agendamento
+            const form = document.getElementById('appointmentForm');
+            const statusCard = document.getElementById('statusCard');
+            const statusInfo = document.getElementById('statusInfo');
+            form.onsubmit = async function(e) {
+                e.preventDefault();
+                const motoId = serviceSelect.value;
+                const date = dateInput.value;
+                const time = document.getElementById('appointmentTime').value;
+                const notes = document.getElementById('notes').value;
+                
+                // Pegar dados do usuário logado
+                let name = 'Cliente';
+                let phone = '';
+                try {
+                    const userData = localStorage.getItem('userData');
+                    if (userData) {
+                        const user = JSON.parse(userData);
+                        name = user.nome || user.name || 'Cliente';
+                        phone = user.telefone || user.phone || '';
+                    }
+                } catch (e) {
+                    console.warn('Erro ao ler dados do usuário:', e);
+                }
+                
+                if (!motoId || !date || !time) {
+                    statusInfo.textContent = 'Preencha todos os campos obrigatórios.';
+                    statusInfo.style.color = '#e74c3c';
+                    statusCard.style.display = 'flex';
+                    animateStatusCard();
+                    return;
+                }
+                
+                // Criar objeto de agendamento
+                const appointment = {
+                    id: Date.now() + '-' + Math.random().toString(36).substr(2, 9),
+                    name,
+                    phone,
+                    motorcycle: motoId,
+                    date,
+                    time,
+                    notes
+                };
+                
+                try {
+                    // Salvar na API
+                    const response = await fetch('/api/appointments', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(appointment)
+                    });
+                    
+                    if (!response.ok) {
+                        throw new Error('Erro ao salvar agendamento');
+                    }
+                    
+                    console.log('✅ Agendamento salvo na API');
+                } catch (error) {
+                    console.error('❌ Erro ao salvar na API:', error);
+                }
+                
+                // Buscar dados da moto selecionada
+                const moto = motorcycles.find(m => m.id === motoId);
+                const motoName = moto ? ((moto.marca ? moto.marca + ' ' : '') + (moto.modelo || moto.name || moto.nome || 'Moto')) : '';
+                const motoImage = moto ? (moto.image || moto.thumb || 'images/placeholder.jpg') : '';
+                
+                statusInfo.innerHTML = `
+                    <div style='color:#27ae60;font-size:1.3em;margin-bottom:20px;font-weight:600;'>✅ Agendamento realizado com sucesso!</div>
+                    ${motoImage ? `<div style='width:100%;max-width:300px;height:200px;background:#0f1419;border-radius:12px;overflow:hidden;margin:20px auto;'>
+                        <img src='${motoImage}' alt='${motoName}' style='width:100%;height:100%;object-fit:cover;object-position:center;' />
+                    </div>` : ''}
+                    <div style='margin-bottom:8px;font-size:1.1em;'>Motocicleta: <b style='color:#e67e22;'>${motoName}</b></div>
+                    <div style='font-size:1.05em;'>Data: <b style='color:#e67e22;'>${date}</b> &nbsp;•&nbsp; Horário: <b style='color:#e67e22;'>${time}</b></div>
+                    ${notes ? `<div style='margin-top:12px;padding:12px;background:rgba(230,126,34,0.1);border-radius:8px;border-left:3px solid #e67e22;'>📝 ${notes}</div>` : ''}
+                `;
+                statusInfo.style.color = '#fff';
+                statusCard.style.display = 'flex';
+                animateStatusCard();
+                form.reset();
+            };
+            // Animação básica para o card de status
+            function animateStatusCard() {
+                statusCard.animate([
+                    { transform: 'scale(0.8)', opacity: 0 },
+                    { transform: 'scale(1.05)', opacity: 1 },
+                    { transform: 'scale(1)', opacity: 1 }
+                ], {
+                    duration: 420,
+                    easing: 'ease-out'
+                });
+            }
+        });
+
+        function logout() { window.location.href = 'login.html'; }
+        function goBack() { window.location.href = 'catalog.html'; }
+    </script>
+    
+    <!-- Sistema de Transições -->
+    <script src="page-transitions.js"></script>
+</body>
+</html>

@@ -1,0 +1,303 @@
+n<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔍 Debug Admin Panel - MacDavis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .debug-section {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .test-btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            transition: transform 0.2s;
+        }
+        
+        .test-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        
+        .success { color: #2ecc71; }
+        .error { color: #e74c3c; }
+        .warning { color: #f39c12; }
+        .info { color: #3498db; }
+        
+        #console-output {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            height: 300px;
+            overflow-y: auto;
+            border: 1px solid #333;
+        }
+        
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        
+        .status-online { background: #2ecc71; }
+        .status-offline { background: #e74c3c; }
+        .status-pending { background: #f39c12; }
+        
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 8px;
+            background: white;
+        }
+        
+        .grid-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .grid-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🔍 Debug do Painel Administrativo</h1>
+            <p>Monitor em tempo real para diagnosticar problemas nos botões</p>
+        </header>
+
+        <div class="debug-section">
+            <h2>📊 Status dos Serviços</h2>
+            <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+                <div>
+                    <span id="server-status" class="status-indicator status-pending"></span>
+                    <span>Servidor Node.js</span>
+                </div>
+                <div>
+                    <span id="api-status" class="status-indicator status-pending"></span>
+                    <span>API Motorcycles</span>
+                </div>
+                <div>
+                    <span id="admin-status" class="status-indicator status-pending"></span>
+                    <span>Painel Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🧪 Testes Rápidos</h2>
+            <button class="test-btn" onclick="testServer()">🔧 Testar Servidor</button>
+            <button class="test-btn" onclick="testAPI()">📡 Testar API</button>
+            <button class="test-btn" onclick="testAdminLoad()">📋 Carregar Admin</button>
+            <button class="test-btn" onclick="testButtons()">🔘 Testar Botões</button>
+            <button class="test-btn" onclick="clearConsole()">🧹 Limpar Console</button>
+        </div>
+
+        <div class="grid-container">
+            <div class="debug-section">
+                <h2>🖥️ Console de Debug</h2>
+                <div id="console-output"></div>
+            </div>
+            
+            <div class="debug-section">
+                <h2>📈 Estatísticas</h2>
+                <div id="stats">
+                    <p>🏍️ <strong>Motocicletas:</strong> <span id="moto-count">Carregando...</span></p>
+                    <p>🔘 <strong>Botões:</strong> <span id="button-count">Verificando...</span></p>
+                    <p>⚠️ <strong>Erros:</strong> <span id="error-count">0</span></p>
+                    <p>⏱️ <strong>Último teste:</strong> <span id="last-test">Nunca</span></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="debug-section">
+            <h2>🎯 Painel Administrativo</h2>
+            <p>Frame do admin.html para teste visual:</p>
+            <iframe id="admin-frame" src="/admin.html" onload="onAdminFrameLoad()"></iframe>
+        </div>
+
+        <div class="debug-section">
+            <h2>🔗 Links Úteis</h2>
+            <a href="/admin.html" target="_blank" style="color: #3498db; margin-right: 20px;">🔧 Admin Full</a>
+            <a href="/catalog.html" target="_blank" style="color: #3498db; margin-right: 20px;">🏍️ Catálogo</a>
+            <a href="/test-admin.html" target="_blank" style="color: #3498db;">🧪 Teste Simples</a>
+        </div>
+    </div>
+
+    <script>
+        let errorCount = 0;
+        
+        function log(message, type = 'info') {
+            const console = document.getElementById('console-output');
+            const timestamp = new Date().toLocaleTimeString();
+            const colors = {
+                'info': '#3498db',
+                'success': '#2ecc71',
+                'error': '#e74c3c',
+                'warning': '#f39c12'
+            };
+            
+            const div = document.createElement('div');
+            div.innerHTML = `<span style="color: #666;">${timestamp}</span> <span style="color: ${colors[type]};">[${type.toUpperCase()}]</span> ${message}`;
+            console.appendChild(div);
+            console.scrollTop = console.scrollHeight;
+            
+            if (type === 'error') {
+                errorCount++;
+                document.getElementById('error-count').textContent = errorCount;
+            }
+            
+            document.getElementById('last-test').textContent = timestamp;
+        }
+
+        async function testServer() {
+            log('🔧 Testando servidor...', 'info');
+            
+            try {
+                const response = await fetch('/');
+                if (response.ok) {
+                    log('✅ Servidor respondendo normalmente', 'success');
+                    document.getElementById('server-status').className = 'status-indicator status-online';
+                    return true;
+                } else {
+                    throw new Error('Servidor retornou erro');
+                }
+            } catch (error) {
+                log('❌ Servidor não está respondendo: ' + error.message, 'error');
+                document.getElementById('server-status').className = 'status-indicator status-offline';
+                return false;
+            }
+        }
+
+        async function testAPI() {
+            log('📡 Testando API de motocicletas...', 'info');
+            
+            try {
+                const response = await fetch('/api/motorcycles');
+                const data = await response.json();
+                
+                if (Array.isArray(data)) {
+                    log(`✅ API funcionando! ${data.length} motocicletas encontradas`, 'success');
+                    document.getElementById('api-status').className = 'status-indicator status-online';
+                    document.getElementById('moto-count').textContent = data.length;
+                    
+                    if (data.length > 0) {
+                        log(`📋 Primeira moto: ${data[0].name || data[0].nome || 'Sem nome'}`, 'info');
+                    }
+                    
+                    return data;
+                } else {
+                    throw new Error('API retornou dados inválidos');
+                }
+            } catch (error) {
+                log('❌ API com problema: ' + error.message, 'error');
+                document.getElementById('api-status').className = 'status-indicator status-offline';
+                document.getElementById('moto-count').textContent = 'Erro';
+                return null;
+            }
+        }
+
+        function testAdminLoad() {
+            log('📋 Verificando carregamento do admin...', 'info');
+            
+            const frame = document.getElementById('admin-frame');
+            if (frame) {
+                frame.src = frame.src; // Forçar reload
+                log('🔄 Recarregando frame do admin...', 'info');
+            }
+        }
+
+        function testButtons() {
+            log('🔘 Testando botões no frame...', 'info');
+            
+            try {
+                const frame = document.getElementById('admin-frame');
+                const frameDoc = frame.contentDocument || frame.contentWindow.document;
+                
+                if (frameDoc) {
+                    const buttons = frameDoc.querySelectorAll('button');
+                    log(`📊 Encontrados ${buttons.length} botões no admin`, 'info');
+                    document.getElementById('button-count').textContent = buttons.length;
+                    
+                    const editButtons = frameDoc.querySelectorAll('button[onclick*="editarMoto"]');
+                    log(`✏️ Botões de editar: ${editButtons.length}`, 'info');
+                    
+                    if (editButtons.length > 0) {
+                        log('🎯 Tentando clicar no primeiro botão de editar...', 'info');
+                        editButtons[0].click();
+                        log('✅ Clique executado!', 'success');
+                    }
+                } else {
+                    log('❌ Não foi possível acessar o conteúdo do frame', 'error');
+                }
+            } catch (error) {
+                log('❌ Erro ao testar botões: ' + error.message, 'error');
+            }
+        }
+
+        function clearConsole() {
+            document.getElementById('console-output').innerHTML = '';
+            errorCount = 0;
+            document.getElementById('error-count').textContent = '0';
+            log('🧹 Console limpo', 'info');
+        }
+
+        function onAdminFrameLoad() {
+            log('🎯 Frame do admin carregado', 'success');
+            document.getElementById('admin-status').className = 'status-indicator status-online';
+            
+            setTimeout(() => {
+                testButtons();
+            }, 2000);
+        }
+
+        // Auto-testes iniciais
+        window.addEventListener('load', function() {
+            log('🚀 Debug monitor iniciado', 'info');
+            
+            setTimeout(async () => {
+                await testServer();
+                await testAPI();
+            }, 1000);
+        });
+        
+        // Atualização periódica
+        setInterval(async () => {
+            await testAPI();
+        }, 10000);
+    </script>
+</body>
+</html>

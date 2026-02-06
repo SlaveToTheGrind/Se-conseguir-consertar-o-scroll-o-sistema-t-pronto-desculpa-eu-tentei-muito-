@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🛍️ Catálogo MacDavis - Nova Versão</title>
+    
+    <!-- ANTI-CACHE HEADERS -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    
+    <!-- 🎨 CSS TEMA ESCURO MODERNO -->
+    <link rel="stylesheet" href="catalog-styles-dark-modern.css?v=20251230000000">
+    <link rel="stylesheet" href="CSS.css?v=20251230000000">
+    <link rel="stylesheet" href="page-transitions.css?v=20251230000000">
+    
+    <style>
+    /* Painel lateral fixo para detalhes da moto */
+    .side-panel {
+    position: fixed;
+    top: 400px;
+    left: 0;
+    width: 360px;
+    min-width: 320px;
+    max-width: 400px;
+    height: auto;
+    max-height: 600px;
+    background: rgba(44,62,80,0.97);
+    color: #fff;
+    box-shadow: 2px 0 16px rgba(44,62,80,0.10);
+    z-index: 1001;
+    display: flex;
+    flex-direction: column;
+    border-top-right-radius: 14px;
+    border-bottom-right-radius: 14px;
+    padding: 20px 16px 16px 16px;
+    margin-top: 24px;
+    transform: translateX(-100%);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    pointer-events: none;
+    }
+    
+    .side-panel.show {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: all;
+    }
+    
+    .close-panel-btn:hover {
+        background: rgba(192,57,43,1) !important;
+        transform: rotate(90deg);
+    }
+    
+    .panel-content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+    .panel-image {
+    width: 100%;
+    height: 240px;
+    background: #1a1a1a;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    margin-bottom: 12px;
+    position: relative;
+    }
+    .panel-info h2 {
+        font-size: 1.5em;
+        margin-bottom: 12px;
+        font-weight: 600;
+    }
+    .panel-details {
+        width: 100%;
+        margin-bottom: 16px;
+    }
+    .panel-details .detail-item {
+        margin-bottom: 10px;
+        font-size: 1.05em;
+    }
+    .panel-details .label {
+        font-weight: 500;
+        margin-right: 6px;
+    }
+    .panel-details .value {
+        font-weight: 400;
+    }
+    .schedule-btn {
+        background: #e67e22;
+        color: #fff;
+        border: none;
+        padding: 12px 20px;
+        border-radius: 6px;
+        font-size: 1.1em;
+        cursor: pointer;
+        margin-top: 12px;
+        transition: background 0.2s;
+        font-weight: 600;
+    }
+    .schedule-btn:hover {
+        background: #e74c3c;
+    }
+    
+    /* Estilos para galeria no painel lateral */
+    .panel-image .gallery-nav {
+        font-size: 1.2rem;
+    }
+    
+    .panel-image .gallery-counter {
+        font-size: 0.85rem;
+        padding: 0.3rem 0.6rem;
+    }
+    
+    @media (max-width: 900px) {
+        .side-panel {
+            position: static;
+            width: 100%;
+            height: auto;
+            border-radius: 0;
+            box-shadow: none;
+            padding: 12px 8px;
+        }
+    }
+        /* Estilos adicionais para nova versão */
+        .reload-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            z-index: 1000;
+            transition: all 0.3s;
+        }
+        
+        .reload-btn:hover {
+            transform: scale(1.1) rotate(180deg);
+        }
+        
+        .cache-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            font-size: 11px;
+            z-index: 1000;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        
+        .loading-overlay.hidden {
+            display: none;
+        }
+        
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+        
+        .loading-spinner {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Moto animada no centro */
+        .moto-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 80px;
+            height: 50px;
+            animation: motoRide 2s ease-in-out infinite;
+            filter: drop-shadow(0 4px 12px rgba(255, 122, 24, 0.8));
+            z-index: 10;
+        }
+        
+        .moto-animation svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        @keyframes motoRide {
+            0%, 100% {
+                transform: translate(-50%, -50%) rotate(-5deg);
+            }
+            25% {
+                transform: translate(-50%, -55%) rotate(0deg) scale(1.1);
+            }
+            50% {
+                transform: translate(-50%, -50%) rotate(5deg);
+            }
+            75% {
+                transform: translate(-50%, -45%) rotate(0deg) scale(0.9);
+            }
+        }
+        
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        
+        .spinner-ring:nth-child(2) {
+            border-top-color: #ff7a18;
+            border-bottom-color: #ff7a18;
+            animation-delay: 0s;
+            opacity: 0.8;
+        }
+        
+        .spinner-ring:nth-child(3) {
+            border-right-color: #e74c3c;
+            border-left-color: #e74c3c;
+            animation-delay: 0.2s;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            opacity: 0.6;
+        }
+        
+        .spinner-ring:nth-child(4) {
+            border-top-color: #3498db;
+            border-bottom-color: #3498db;
+            animation-delay: 0.4s;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            opacity: 0.4;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Loading dots animados */
+        .loading-dots {
+            display: inline-flex;
+            gap: 8px;
+            margin-left: 5px;
+        }
+        
+        .loading-dots span {
+            width: 8px;
+            height: 8px;
+            background: #ff7a18;
+            border-radius: 50%;
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+        
+        .loading-dots span:nth-child(1) {
+            animation-delay: 0s;
+        }
+        
+        .loading-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .loading-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes dotBounce {
+            0%, 80%, 100% {
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+        
+        /* Barra de progresso */
+        .loading-progress {
+            width: 300px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            margin: 25px auto 0;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #ff7a18, #e74c3c, #3498db);
+            background-size: 200% 100%;
+            border-radius: 10px;
+            animation: progressFlow 2s linear infinite;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        @keyframes progressFlow {
+            0% {
+                background-position: 0% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+        
+        /* Ripple effect */
+        .loading-ripple {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+        }
+        
+        .ripple-circle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 2px solid rgba(255, 122, 24, 0.4);
+            border-radius: 50%;
+            animation: ripple 2s ease-out infinite;
+        }
+        
+        .ripple-circle:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        
+        .ripple-circle:nth-child(3) {
+            animation-delay: 1s;
+        }
+        
+        @keyframes ripple {
+            0% {
+                transform: scale(0.8);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        .error-display {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cache Info -->
+    <div class="cache-info" id="cacheInfo">
+        Nova Versão - <span id="loadTime"></span>
+    </div>
+    
+    <!-- Reload Button -->
+    <button class="reload-btn" onclick="forceReload()" title="Forçar Atualização">🔄</button>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay hidden" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="moto-animation">
+                    <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Roda traseira -->
+                        <circle cx="20" cy="45" r="12" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="20" cy="45" r="6" fill="#ff7a18"/>
+                        <!-- Roda dianteira -->
+                        <circle cx="75" cy="45" r="10" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="75" cy="45" r="5" fill="#ff7a18"/>
+                        <!-- Corpo -->
+                        <path d="M 20 45 L 30 30 L 45 25 L 60 28 L 70 35 L 75 45" fill="none" stroke="#ff7a18" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Guidão -->
+                        <path d="M 65 28 L 72 22 L 78 20" fill="none" stroke="#ff7a18" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Assento -->
+                        <ellipse cx="38" cy="23" rx="12" ry="4" fill="#ff7a18"/>
+                        <!-- Tanque -->
+                        <path d="M 48 25 Q 55 20 58 25" fill="#ff8c42" stroke="#ff7a18" stroke-width="2"/>
+                        <!-- Escape -->
+                        <path d="M 30 40 L 15 42" stroke="#ff7a18" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-ripple">
+                <div class="ripple-circle"></div>
+                <div class="ripple-circle"></div>
+                <div class="ripple-circle"></div>
+            </div>
+            <h3>🏍️ Carregando Catálogo MacDavis</h3>
+            <p id="loadingMessage">Conectando com servidor<span class="loading-dots"><span></span><span></span><span></span></span></p>
+            <div class="loading-progress">
+                <div class="progress-bar" id="progressBar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Elementos decorativos animados -->
+    <div class="decorative-elements">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+        <div class="floating-shape shape-5"></div>
+    </div>
+    
+    <!-- Header impressionante -->
+    <header class="hero-header">
+        <div class="header-content">
+            <h1 class="main-title">MacDavis Motos</h1>
+            <p class="hero-subtitle">Catálogo Renovado - Anti-Cache System</p>
+            <div class="header-stats">
+                <div class="stat-item">
+                    <span class="stat-number" id="moto-count">0</span>
+                    <span class="stat-label">Motocicletas</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Confiável</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-number" id="api-status">ON</span>
+                    <span class="stat-label">API Status</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- User info -->
+        <div class="user-info">
+            <span>👤 <span id="userName">Visitante</span></span>
+            <button onclick="logout()" class="logout-btn">Sair</button>
+        </div>
+    </header>
+
+    <!-- Filtros e busca -->
+    <section class="filters-section">
+        <div class="container">
+            <div class="filters-controls">
+                <div class="filter-group">
+                        <h3>🏍️ Filtrar por Estilo</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" data-filter="all">Todos</button>
+                            <button class="filter-btn" data-filter="scooter">🛵 Scooters</button>
+                            <button class="filter-btn" data-filter="street">🏍️ Streets</button>
+                            <button class="filter-btn" data-filter="trail">🏔️ Trail</button>
+                            <button class="filter-btn" data-filter="alta-cilindrada">🏁 Alta Cilindrada</button>
+                            <button class="filter-btn" data-filter="custom">🎸 Custom</button>
+                        </div>
+                    </div>
+                    
+                    <div class="filter-group">
+                        <h3>🔧 Filtrar por Cilindrada</h3>
+                        <div class="filter-buttons">
+                            <button class="filter-btn-cil active" data-filter="all">Todas</button>
+                            <button class="filter-btn-cil" data-filter="50-100">50-100cc</button>
+                            <button class="filter-btn-cil" data-filter="110-190">110-190cc</button>
+                            <button class="filter-btn-cil" data-filter="200-400">200-400cc</button>
+                            <button class="filter-btn-cil" data-filter="500+">500cc+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-group">
+                        <h3>🔍 Buscar</h3>
+                        <input type="text" id="searchInput" placeholder="Digite modelo, ano, cor..." />
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <!-- Galeria de motocicletas -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="gallery-grid" id="galleryGrid">
+                <!-- Motocicletas serão carregadas aqui via JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Painel lateral de detalhes da moto -->
+    <div class="side-panel" id="sidePanel">
+        <button class="close-panel-btn" onclick="clearSidePanel()">&times;</button>
+        <div class="panel-content">
+            <div class="panel-image" id="panelImageContainer">
+                <img id="panelImage" src="" alt="Motocicleta" />
+                <button class="gallery-nav prev" id="panelPrevBtn" onclick="navigateGallery(-1)">&#10094;</button>
+                <button class="gallery-nav next" id="panelNextBtn" onclick="navigateGallery(1)">&#10095;</button>
+                <div class="gallery-counter" id="panelCounter">1 / 1</div>
+            </div>
+            <div class="panel-info">
+                <h2 id="panelTitle">Selecione uma motocicleta</h2>
+                <div class="panel-details">
+                    <div class="detail-item"><span class="label">Ano:</span> <span id="panelYear" class="value"></span></div>
+                    <div class="detail-item"><span class="label">Cor:</span> <span id="panelColor" class="value"></span></div>
+                    <div class="detail-item"><span class="label">Quilometragem:</span> <span id="panelMileage" class="value"></span></div>
+                    <div class="detail-item"><span class="label">Cilindrada:</span> <span id="panelDisplacement" class="value"></span></div>
+                </div>
+                <button id="panelScheduleBtn" class="schedule-btn">📅 Agendar Visita</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema anti-cache ultra agressivo
+        const VERSION = Date.now() + '-' + Math.random();
+        let motorcycles = [];
+        let filteredMotorcycles = [];
+        let currentFilter = 'all';
+        let currentEstiloFilter = 'all';
+        let currentCilindradaFilter = 'all';
+
+        // Função para formatar números com pontos de milhar
+        function formatarNumero(numero) {
+            if (!numero && numero !== 0) return '0';
+            // Remover pontos existentes e converter para número
+            const num = typeof numero === 'string' ? parseInt(numero.replace(/\./g, '')) : numero;
+            // Formatar com pontos de milhar
+            return num.toLocaleString('pt-BR');
+        }
+
+        // Atualizar info de cache
+        document.getElementById('loadTime').textContent = new Date().toLocaleTimeString('pt-BR');
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🚀 Nova versão do catálogo iniciada');
+            
+            // Mostrar loading overlay
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.remove('hidden');
+            
+            // Sequência de mensagens de loading
+            const loadingMessages = [
+                'Conectando com servidor',
+                'Carregando motocicletas',
+                'Processando dados',
+                'Preparando vitrine',
+                'Quase pronto'
+            ];
+            
+            let messageIndex = 0;
+            const progressBar = document.getElementById('progressBar');
+            const loadingMessage = document.getElementById('loadingMessage');
+            
+            const messageInterval = setInterval(() => {
+                if (messageIndex < loadingMessages.length) {
+                    loadingMessage.innerHTML = `${loadingMessages[messageIndex]}<span class="loading-dots"><span></span><span></span><span></span></span>`;
+                    progressBar.style.width = `${((messageIndex + 1) / loadingMessages.length) * 100}%`;
+                    messageIndex++;
+                }
+            }, 700);
+            
+            // Verificar login
+            checkUserLogin();
+            
+            // Carregar motocicletas
+            await loadMotorcycles();
+            
+            // Configurar interface
+            setupFilters();
+            setupSearch();
+            
+            // Renderizar catálogo
+            renderCatalog();
+            
+            // Completar loading
+            clearInterval(messageInterval);
+            progressBar.style.width = '100%';
+            setTimeout(() => {
+                loadingOverlay.classList.add('hidden');
+            }, 300);
+        });
+
+        // Funções de loading
+        function showCatalogLoading(message = 'Carregando') {
+            const overlay = document.getElementById('loadingOverlay');
+            const text = overlay?.querySelector('.loading-text');
+            if (overlay && text) {
+                text.innerHTML = `${message}<span class="loading-dots"><span></span><span></span><span></span></span>`;
+                overlay.classList.add('show');
+            }
+        }
+
+        function hideCatalogLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.remove('show');
+            }
+        }
+
+        // Detectar refresh manual (F5 ou Ctrl+F5)
+        let isManualRefresh = false;
+        window.addEventListener('beforeunload', function(e) {
+            // Verificar se é refresh manual (não é navegação normal)
+            if (performance.navigation.type === 1) {
+                isManualRefresh = true;
+                showCatalogLoading('MacDavis Motos');
+            }
+        });
+
+        // Verificar login do usuário
+        function checkUserLogin() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                showCatalogLoading('MacDavis Motos');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 400);
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            document.getElementById('userName').textContent = user.nome || 'Visitante';
+        }
+
+        // Logout
+        function logout() {
+            showCatalogLoading('MacDavis Motos');
+            localStorage.removeItem('userData');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 500);
+        }
+
+        // Carregar motocicletas com sistema anti-cache
+        async function loadMotorcycles() {
+            console.log('📡 Carregando motocicletas...');
+            
+            try {
+                // URL com múltiplos cache-busters
+                const apiUrl = `/api/motorcycles?v=${VERSION}&cb=${Date.now()}&r=${Math.random()}`;
+                
+                console.log('🔗 URL:', apiUrl);
+                
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                console.log('📊 Status:', response.status);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                console.log('✅ Dados recebidos:', data.length, 'motocicletas');
+
+                motorcycles = Array.isArray(data) ? data : [];
+                filteredMotorcycles = [...motorcycles];
+                
+                // Atualizar contador
+                document.getElementById('moto-count').textContent = motorcycles.length;
+                document.getElementById('api-status').textContent = 'OK';
+                
+                // Salvar backup local
+                localStorage.setItem('motorcycles_backup', JSON.stringify(motorcycles));
+                
+            } catch (error) {
+                console.error('❌ Erro:', error);
+                document.getElementById('api-status').textContent = 'ERR';
+                
+                // Tentar backup local
+                const backup = localStorage.getItem('motorcycles_backup');
+                if (backup) {
+                    console.log('📦 Usando backup local...');
+                    motorcycles = JSON.parse(backup);
+                    filteredMotorcycles = [...motorcycles];
+                    document.getElementById('moto-count').textContent = motorcycles.length + ' (local)';
+                } else {
+                    // Dados de emergência
+                    console.log('🆘 Usando dados de emergência...');
+                    motorcycles = [
+                        {
+                            id: 'emergency-1',
+                            name: 'CB 250 TWISTER',
+                            year: '2022/22',
+                            color: 'Vermelha',
+                            displacement: 250,
+                            mileage_display: '5.600'
+                        }
+                    ];
+                    filteredMotorcycles = [...motorcycles];
+                    document.getElementById('moto-count').textContent = motorcycles.length + ' (emergência)';
+                }
+            }
+        }
+
+        // Configurar filtros
+        function setupFilters() {
+            // Filtros de estilo
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentEstiloFilter = btn.dataset.filter;
+                    applyAllFilters();
+                });
+            });
+            
+            // Filtros de cilindrada
+            const filterBtnsCil = document.querySelectorAll('.filter-btn-cil');
+            filterBtnsCil.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterBtnsCil.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentCilindradaFilter = btn.dataset.filter;
+                    applyAllFilters();
+                });
+            });
+        }
+
+        // Aplicar todos os filtros combinados
+        function applyAllFilters() {
+            let filtered = [...motorcycles];
+            
+            // Filtrar por estilo
+            if (currentEstiloFilter && currentEstiloFilter !== 'all') {
+                filtered = filtered.filter(moto => {
+                    const tipo = (moto.type || moto.tipo || '').toLowerCase();
+                    const categoria = (moto.categoria || '').toLowerCase();
+                    const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                    
+                    if (currentEstiloFilter === 'scooter') {
+                        return tipo === 'scooter' || categoria === 'scooter';
+                    } else if (currentEstiloFilter === 'custom') {
+                        return tipo === 'custom' || categoria === 'custom';
+                    } else if (currentEstiloFilter === 'trail') {
+                        return tipo === 'trail' || categoria === 'trail';
+                    } else if (currentEstiloFilter === 'alta-cilindrada') {
+                        return cilindrada >= 500;
+                    } else if (currentEstiloFilter === 'street') {
+                        return cilindrada < 500 && tipo !== 'scooter' && categoria !== 'scooter' && tipo !== 'custom' && categoria !== 'custom' && tipo !== 'trail' && categoria !== 'trail';
+                    }
+                    return true;
+                });
+            }
+            
+            // Filtrar por cilindrada
+            if (currentCilindradaFilter && currentCilindradaFilter !== 'all') {
+                if (currentCilindradaFilter.includes('-')) {
+                    const [min, max] = currentCilindradaFilter.split('-').map(n => parseInt(n));
+                    filtered = filtered.filter(moto => {
+                        const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                        return cilindrada >= min && cilindrada <= max;
+                    });
+                } else if (currentCilindradaFilter.includes('+')) {
+                    const min = parseInt(currentCilindradaFilter.replace('+', ''));
+                    filtered = filtered.filter(moto => {
+                        const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                        return cilindrada >= min;
+                    });
+                }
+            }
+            
+            filteredMotorcycles = filtered;
+            renderCatalog();
+        }
+
+        // Aplicar filtro (mantido para compatibilidade)
+        function applyFilter(filter) {
+            currentFilter = filter;
+            currentCilindradaFilter = filter;
+            applyAllFilters();
+        }
+
+        // Configurar busca
+        function setupSearch() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', (e) => {
+                const term = e.target.value.toLowerCase().trim();
+                
+                if (term === '') {
+                    applyAllFilters();
+                } else {
+                    // Aplicar busca sobre os filtros atuais
+                    let baseFiltered = [...motorcycles];
+                    
+                    // Aplicar filtros de estilo e cilindrada primeiro
+                    if (currentEstiloFilter && currentEstiloFilter !== 'all') {
+                        baseFiltered = baseFiltered.filter(moto => {
+                            const tipo = (moto.type || moto.tipo || '').toLowerCase();
+                            const categoria = (moto.categoria || '').toLowerCase();
+                            const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                            
+                            if (currentEstiloFilter === 'scooter') {
+                                return tipo === 'scooter' || categoria === 'scooter';
+                            } else if (currentEstiloFilter === 'custom') {
+                                return tipo === 'custom' || categoria === 'custom';
+                            } else if (currentEstiloFilter === 'trail') {
+                                return tipo === 'trail' || categoria === 'trail';
+                            } else if (currentEstiloFilter === 'alta-cilindrada') {
+                                return cilindrada >= 500;
+                            } else if (currentEstiloFilter === 'street') {
+                                return cilindrada < 500 && tipo !== 'scooter' && categoria !== 'scooter' && tipo !== 'custom' && categoria !== 'custom' && tipo !== 'trail' && categoria !== 'trail';
+                            }
+                            return true;
+                        });
+                    }
+                    
+                    if (currentCilindradaFilter && currentCilindradaFilter !== 'all') {
+                        if (currentCilindradaFilter.includes('-')) {
+                            const [min, max] = currentCilindradaFilter.split('-').map(n => parseInt(n));
+                            baseFiltered = baseFiltered.filter(moto => {
+                                const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                                return cilindrada >= min && cilindrada <= max;
+                            });
+                        } else if (currentCilindradaFilter.includes('+')) {
+                            const min = parseInt(currentCilindradaFilter.replace('+', ''));
+                            baseFiltered = baseFiltered.filter(moto => {
+                                const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                                return cilindrada >= min;
+                            });
+                        }
+                    }
+                    
+                    // Então aplicar a busca por texto
+                    filteredMotorcycles = baseFiltered.filter(moto => {
+                        const searchableText = [
+                            moto.name || '',
+                            moto.marca || '',
+                            moto.modelo || '',
+                            moto.color || moto.cor || '',
+                            moto.year || moto.ano || '',
+                            moto.desc || ''
+                        ].join(' ').toLowerCase();
+                        
+                        return searchableText.includes(term);
+                    });
+                    renderCatalog();
+                }
+            });
+        }
+
+        // Renderizar catálogo
+        function renderCatalog() {
+            const grid = document.getElementById('galleryGrid');
+            
+            console.log('🎨 Renderizando catálogo...', {
+                totalMotorcycles: motorcycles.length,
+                filteredMotorcycles: filteredMotorcycles.length,
+                currentFilter: currentFilter
+            });
+            
+            if (filteredMotorcycles.length === 0) {
+                grid.innerHTML = `
+                    <div class="error-display">
+                        <h3>🔍 Nenhuma motocicleta encontrada</h3>
+                        <p>Tente ajustar os filtros ou termo de busca</p>
+                        <button onclick="forceReload()" class="btn">🔄 Recarregar</button>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Ordenar motos seguindo a lógica do admin
+            const motosSorted = [...filteredMotorcycles].sort((a, b) => {
+                // Função para determinar categoria
+                const getCategoria = (moto) => {
+                    const tipo = (moto.type || moto.tipo || '').toLowerCase();
+                    const categoria = (moto.categoria || '').toLowerCase();
+                    const cilindrada = parseInt(moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || 0);
+                    
+                    if (tipo === 'scooter' || categoria === 'scooter') return 1;
+                    if (tipo === 'custom' || categoria === 'custom') return 4;
+                    if (cilindrada >= 500) return 3;
+                    return 2;
+                };
+                
+                const catA = getCategoria(a);
+                const catB = getCategoria(b);
+                
+                if (catA !== catB) return catA - catB;
+                
+                const cilA = parseInt(a.displacement || a.cilindradas || a.engine_cc || a.cc || 0);
+                const cilB = parseInt(b.displacement || b.cilindradas || b.engine_cc || b.cc || 0);
+                if (cilA !== cilB) return cilA - cilB;
+                
+                const anoA = parseInt(a.year || a.ano || 0);
+                const anoB = parseInt(b.year || b.ano || 0);
+                return anoA - anoB;
+            });
+            
+            grid.innerHTML = motosSorted.map((moto, index) => {
+                const nome = moto.marca ? `${moto.marca} ${moto.modelo || moto.name || moto.nome}` : (moto.name || moto.nome || 'Sem nome');
+                const ano = moto.ano || moto.year || 'N/A';
+                const cor = moto.cor || moto.color || 'N/A';
+                const kmRaw = moto.mileage_display || moto.quilometragem || moto.mileage || 0;
+                const km = formatarNumero(kmRaw);
+                const cilindrada = moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || '0';
+                
+                return `
+                    <div class="moto-card" data-moto-id="${moto.id}" style="animation-delay: ${index * 0.1}s">
+                        <div class="moto-image">
+                            ${moto.image ? 
+                                `<img src="${moto.image}?v=${VERSION}" alt="${nome}" loading="lazy" />` :
+                                `<div class="no-image">🏍️ Sem Imagem</div>`
+                            }
+                            <div class="moto-badge">${cilindrada}cc</div>
+                        </div>
+                        
+                        <div class="moto-info">
+                            <h3 class="moto-title">${nome}</h3>
+                            
+                            <div class="moto-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Ano:</span>
+                                    <span class="detail-value">${ano}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Cor:</span>
+                                    <span class="detail-value">${cor}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">KM:</span>
+                                    <span class="detail-value">${km}</span> km
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Cilindrada:</span>
+                                    <span class="detail-value">${cilindrada}</span>cc
+                                </div>
+                            </div>
+                            
+                            <button class="view-btn" onclick="openMotoPanel('${moto.id}')">
+                                <span>👁️</span>
+                                Ver Detalhes
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+            
+            console.log('✅ Catálogo renderizado:', filteredMotorcycles.length, 'motos');
+        }
+
+        // Configurar modal
+        // Preencher painel lateral com dados da moto
+        let currentMoto = null;
+        let currentImageIndex = 0;
+        
+        function openMotoPanel(motoId) {
+            const moto = motorcycles.find(m => m.id === motoId);
+            if (!moto) {
+                alert('Motocicleta não encontrada.');
+                return;
+            }
+            
+            currentMoto = moto;
+            currentImageIndex = 0;
+            
+            // Atualizar imagem e controles da galeria
+            updateGalleryDisplay();
+            
+            const title = (moto.marca ? moto.marca + ' ' : '') + (moto.modelo || moto.name || moto.nome || 'Motocicleta');
+            document.getElementById('panelTitle').textContent = title;
+            document.getElementById('panelYear').textContent = moto.ano || moto.year || 'N/A';
+            document.getElementById('panelColor').textContent = moto.cor || moto.color || 'N/A';
+            const kmValue = moto.mileage_display || moto.quilometragem || moto.mileage || moto.km || 0;
+            document.getElementById('panelMileage').textContent = formatarNumero(kmValue) + ' km';
+            document.getElementById('panelDisplacement').textContent = (moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || '0') + 'cc';
+            const scheduleBtn = document.getElementById('panelScheduleBtn');
+            scheduleBtn.style.display = 'inline-block';
+            scheduleBtn.onclick = () => scheduleVisit(motoId);
+            
+            // Mostrar o painel com animação
+            const sidePanel = document.getElementById('sidePanel');
+            sidePanel.classList.add('show');
+        }
+        
+        // Atualizar exibição da galeria
+        function updateGalleryDisplay() {
+            if (!currentMoto) return;
+            
+            // Construir array de imagens (usar images se existir, senão usar apenas a image principal)
+            const images = currentMoto.images && currentMoto.images.length > 0 
+                ? currentMoto.images 
+                : (currentMoto.image ? [currentMoto.image] : []);
+            
+            // Atualizar imagem atual
+            const panelImage = document.getElementById('panelImage');
+            if (images.length > 0) {
+                panelImage.src = images[currentImageIndex] + '?v=' + VERSION;
+                panelImage.style.display = 'block';
+            } else {
+                panelImage.src = '';
+                panelImage.style.display = 'none';
+            }
+            
+            // Mostrar/ocultar controles de navegação
+            const prevBtn = document.getElementById('panelPrevBtn');
+            const nextBtn = document.getElementById('panelNextBtn');
+            const counter = document.getElementById('panelCounter');
+            
+            if (images.length > 1) {
+                prevBtn.style.display = 'flex';
+                nextBtn.style.display = 'flex';
+                counter.style.display = 'block';
+                counter.textContent = `${currentImageIndex + 1} / ${images.length}`;
+                
+                // Habilitar/desabilitar botões conforme necessário
+                prevBtn.disabled = currentImageIndex === 0;
+                nextBtn.disabled = currentImageIndex === images.length - 1;
+            } else {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                counter.style.display = 'none';
+            }
+        }
+        
+        // Navegar pela galeria
+        function navigateGallery(direction) {
+            if (!currentMoto) return;
+            
+            const images = currentMoto.images && currentMoto.images.length > 0 
+                ? currentMoto.images 
+                : (currentMoto.image ? [currentMoto.image] : []);
+            
+            currentImageIndex += direction;
+            
+            // Garantir que o índice está dentro dos limites
+            if (currentImageIndex < 0) currentImageIndex = 0;
+            if (currentImageIndex >= images.length) currentImageIndex = images.length - 1;
+            
+            updateGalleryDisplay();
+        }
+
+        // Limpar painel lateral
+        function clearSidePanel() {
+            currentMoto = null;
+            currentImageIndex = 0;
+            
+            // Esconder o painel com animação
+            const sidePanel = document.getElementById('sidePanel');
+            sidePanel.classList.remove('show');
+            
+            // Limpar conteúdo após a animação
+            setTimeout(() => {
+                document.getElementById('panelImage').src = '';
+                document.getElementById('panelTitle').textContent = 'Selecione uma motocicleta';
+                document.getElementById('panelYear').textContent = '';
+                document.getElementById('panelColor').textContent = '';
+                document.getElementById('panelMileage').textContent = '';
+                document.getElementById('panelDisplacement').textContent = '';
+                document.getElementById('panelScheduleBtn').style.display = 'none';
+                document.getElementById('panelPrevBtn').style.display = 'none';
+                document.getElementById('panelNextBtn').style.display = 'none';
+                document.getElementById('panelCounter').style.display = 'none';
+            }, 400);
+        }
+
+        // Agendar visita
+        function scheduleVisit(motoId) {
+            localStorage.setItem('selectedMotoId', motoId);
+            showCatalogLoading('MacDavis Motos');
+            setTimeout(() => {
+                window.location.href = 'agendamento.html';
+            }, 400);
+        }
+
+        // Esconder loading (mantido para compatibilidade)
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Forçar reload
+        function forceReload() {
+            console.log('🔄 Forçando reload...');
+            
+            // Limpar cache
+            localStorage.removeItem('motorcycles_backup');
+            
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                    location.reload(true);
+                });
+            } else {
+                location.reload(true);
+            }
+        }
+
+        // Auto-refresh a cada 5 minutos
+        setInterval(() => {
+            console.log('⏰ Auto-refresh executado');
+            loadMotorcycles().then(() => {
+                applyFilter(currentFilter);
+            });
+        }, 300000);
+    </script>
+    
+    <!-- Sistema de Transições -->
+    <script src="page-transitions.js"></script>
+</body>
+</html>

@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Login - MacDavis Motos</title>
+    <link rel="stylesheet" href="CSS.css" />
+    <link rel="stylesheet" href="page-transitions.css" />
+</head>
+<body>
+    <!-- Container de login -->
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <h1>MacDavis Motos</h1>
+                <p>Sistema de Catálogo e Agendamento</p>
+            </div>
+            
+            <!-- Login do Cliente -->
+            <div id="cliente-tab" class="tab-content active">
+                <form id="clienteForm" class="login-form">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo:</label>
+                        <input type="text" id="nome" name="nome" required placeholder="Seu nome completo" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required placeholder="seu@email.com" />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="tel" id="telefone" name="telefone" required placeholder="(00) 00000-0000" />
+                    </div>
+                    
+                    <button type="submit" class="login-btn client-btn">
+                        <span>🏍️</span>
+                        Entrar no Catálogo
+                    </button>
+                </form>
+                
+                <div class="login-info">
+                    <p>💡 <strong>Bem-vindo!</strong> Navegue pelo catálogo, veja detalhes das motos e agende visitas.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner">
+                <div class="moto-animation">
+                    <svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Roda traseira -->
+                        <circle cx="20" cy="45" r="12" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="20" cy="45" r="6" fill="#ff7a18"/>
+                        <!-- Roda dianteira -->
+                        <circle cx="75" cy="45" r="10" fill="none" stroke="#ff7a18" stroke-width="3"/>
+                        <circle cx="75" cy="45" r="5" fill="#ff7a18"/>
+                        <!-- Corpo -->
+                        <path d="M 20 45 L 30 30 L 45 25 L 60 28 L 70 35 L 75 45" fill="none" stroke="#ff7a18" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                        <!-- Guidão -->
+                        <path d="M 65 28 L 72 22 L 78 20" fill="none" stroke="#ff7a18" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Assento -->
+                        <ellipse cx="38" cy="23" rx="12" ry="4" fill="#ff7a18"/>
+                        <!-- Tanque -->
+                        <path d="M 48 25 Q 55 20 58 25" fill="#ff8c42" stroke="#ff7a18" stroke-width="2"/>
+                        <!-- Escape -->
+                        <path d="M 30 40 L 15 42" stroke="#ff7a18" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <div class="loading-text">MacDavis Motos<span class="loading-dots"><span></span><span></span><span></span></span></div>
+        </div>
+    </div>
+
+    <script>
+        // Detectar refresh manual (F5 ou Ctrl+F5)
+        window.addEventListener('beforeunload', function(e) {
+            if (performance.navigation.type === 1) {
+                const overlay = document.getElementById('loadingOverlay');
+                if (overlay) overlay.classList.add('show');
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Verificar se já está logado
+            const userData = localStorage.getItem('userData');
+            if (userData) {
+                const user = JSON.parse(userData);
+                window.location.href = 'catalog.html';
+                return;
+            }
+            
+            // Handler do formulário do cliente
+            document.getElementById('clienteForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                const userData = {
+                    tipo: 'cliente',
+                    nome: formData.get('nome'),
+                    email: formData.get('email'),
+                    telefone: formData.get('telefone'),
+                    loginTime: new Date().toISOString()
+                };
+                console.log('[LOGIN] Dados do cliente:', userData);
+                processLogin(userData, 'catalog.html');
+            });
+            
+            function processLogin(userData, redirectTo) {
+                // Atualizar mensagem do loading
+                const loadingText = document.querySelector('#loadingOverlay .loading-text');
+                if (loadingText) {
+                    const isAdmin = redirectTo.includes('admin');
+                    loadingText.innerHTML = isAdmin 
+                        ? 'MacDavis Motos - Acesso Administrativo<span class="loading-dots"><span></span><span></span><span></span></span>'
+                        : 'MacDavis Motos<span class="loading-dots"><span></span><span></span><span></span></span>';
+                }
+                
+                // Mostrar loading
+                document.getElementById('loadingOverlay').classList.add('show');
+                
+                // Log do início do login
+                console.log('[LOGIN] Iniciando processLogin:', userData, redirectTo);
+                
+                // Simular processamento
+                setTimeout(() => {
+                    // Salvar dados do usuário
+                    try {
+                        localStorage.setItem('userData', JSON.stringify(userData));
+                        console.log('[LOGIN] userData salvo no localStorage:', localStorage.getItem('userData'));
+                    } catch (err) {
+                        console.error('[LOGIN] Erro ao salvar userData:', err);
+                    }
+                    // 🚀 ANTI-CACHE: Adicionar timestamp e forçar reload
+                    const timestamp = Date.now();
+                    const antiCacheUrl = `${redirectTo}?v=${timestamp}&nocache=${Math.random()}`;
+                    console.log('[LOGIN] Redirecionando para:', antiCacheUrl);
+                    // Limpar cache da sessão
+                    if ('sessionStorage' in window) {
+                        sessionStorage.clear();
+                        console.log('[LOGIN] sessionStorage limpo');
+                    }
+                    // Redirecionar com anti-cache
+                    window.location.replace(antiCacheUrl);
+                }, 1500);
+            }
+            
+            // Máscara para telefone
+            document.getElementById('telefone').addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 11) {
+                    value = value.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+                } else if (value.length >= 7) {
+                    value = value.replace(/(\d{2})(\d{4})(\d{0,4})/, '($1) $2-$3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
+    
+    <!-- Sistema de Transições -->
+    <script src="page-transitions.js"></script>
+</body>
+</html>

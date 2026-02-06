@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MacDavis Motos</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #1a1a1a;
+            display: none; /* Oculta tudo para evitar flash */
+        }
+    </style>
+    <script>
+        // Redirecionamento instantâneo - sem delay, sem loading
+        (function() {
+            const userData = localStorage.getItem('userData');
+            const destino = userData ? 'catalog.html' : 'login.html';
+            window.location.replace(destino);
+        })();
+    </script>
+</head>
+<body>
+    <!-- Redirecionando... -->
+</body>
+</html>
+            50% { opacity: 0.7; transform: scale(1.05); }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .motos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .moto-card {
+            background: rgba(255,255,255,0.1);
+            border-radius: 15px;
+            overflow: hidden;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: slideIn 0.6s ease forwards;
+        }
+
+        .moto-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+        }
+
+        .moto-card:nth-child(1) { animation-delay: 0.1s; }
+        .moto-card:nth-child(2) { animation-delay: 0.2s; }
+        .moto-card:nth-child(3) { animation-delay: 0.3s; }
+        .moto-card:nth-child(4) { animation-delay: 0.4s; }
+        .moto-card:nth-child(5) { animation-delay: 0.5s; }
+        .moto-card:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes slideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .moto-image {
+            height: 200px;
+            background: linear-gradient(45deg, #34495e, #2c3e50);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .moto-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s;
+        }
+
+        .moto-card:hover .moto-image img {
+            transform: scale(1.1);
+        }
+
+        .no-image {
+            font-size: 3em;
+            opacity: 0.5;
+        }
+
+        .moto-badge {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .moto-info {
+            padding: 20px;
+        }
+
+        .moto-title {
+            font-size: 1.4em;
+            margin-bottom: 15px;
+            color: #f39c12;
+        }
+
+        .moto-details {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .detail-label {
+            font-weight: bold;
+            color: #bdc3c7;
+        }
+
+        .detail-value {
+            color: white;
+        }
+
+        .actions {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .btn {
+            background: linear-gradient(45deg, #3498db, #2980b9);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin: 10px;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(52, 152, 219, 0.4);
+        }
+
+        .logs {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+        }
+
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🏍️ MacDavis Motos</h1>
+        <p>Vitrine Renovada - Anti-Cache System</p>
+        <div id="timestamp" class="timestamp"></div>
+    </div>
+
+    <div class="status-bar">
+        <div id="status" class="loading">🔄 Verificando autenticação...</div>
+    </div>
+
+    <div class="container">
+        <div id="motosGrid" class="motos-grid">
+            <!-- Motocicletas serão carregadas aqui -->
+        </div>
+
+        <div class="actions">
+            <a href="catalog.html" class="btn" target="_blank">🛍️ Catálogo Completo</a>
+            <a href="agendamento.html" class="btn" target="_blank">📅 Agendamentos</a>
+            <button class="btn" onclick="recarregarVitrine()">🔄 Atualizar</button>
+        </div>
+
+        <div class="logs" id="logs"></div>
+    </div>
+
+    <script>
+        // Redirecionar imediatamente para login ou catálogo
+        (function() {
+            const userData = localStorage.getItem('userData');
+            
+            if (userData) {
+                // Usuário logado - vai para catálogo
+                window.location.replace('catalog.html');
+            } else {
+                // Não logado - vai para login
+                window.location.replace('login.html');
+            }
+        })();
+    </script>
+                    console.log('✅ Usuário já logado:', user.nome || user.name);
+                    
+                    // Redirecionar para catálogo
+                    updateStatus('👤 Redirecionando para catálogo...', 'success');
+                    console.log('👤 Redirecionando cliente para catálogo...');
+                    setTimeout(() => {
+                        window.location.href = 'catalog.html';
+                    }, 1500);
+                    return;
+                } catch (e) {
+                    console.log('❌ Dados de usuário inválidos, limpando...');
+                    localStorage.removeItem('userData');
+                }
+            }
+            
+            // Usuário não logado - redirecionar para login
+            updateStatus('🔐 Redirecionando para login...', 'loading');
+            console.log('🔐 Usuário não logado, redirecionando para login...');
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000); // Pequeno delay para mostrar que está carregando
+        });
+        
+        // Sistema anti-cache ultra agressivo
+        const CACHE_BUSTER = Date.now() + '-' + Math.random();
+        let motorcycles = [];
+        let logCount = 0;
+
+        // Atualizar timestamp
+        document.getElementById('timestamp').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
+
+        function log(message, type = 'info') {
+            const logs = document.getElementById('logs');
+            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            const colors = {
+                info: '#3498db',
+                success: '#27ae60',
+                error: '#e74c3c',
+                warning: '#f39c12'
+            };
+            
+            logCount++;
+            logs.innerHTML += `<div style="color: ${colors[type]}; margin: 2px 0;">
+                [${timestamp}] ${logCount}: ${message}
+            </div>`;
+            logs.scrollTop = logs.scrollHeight;
+        }
+
+        function updateStatus(message, type = 'loading') {
+            const status = document.getElementById('status');
+            status.className = type;
+            status.innerHTML = message;
+        }
+
+        async function carregarMotocicletas() {
+            log('🚀 Iniciando carregamento da vitrine...', 'info');
+            updateStatus('🔄 Conectando com API...', 'loading');
+
+            try {
+                // URL com múltiplos cache-busters
+                const apiUrl = `/api/motorcycles?cb=${CACHE_BUSTER}&t=${Date.now()}&r=${Math.random()}`;
+                
+                log(`📡 Fazendo requisição: ${apiUrl}`, 'info');
+
+                const response = await fetch(apiUrl, {
+                    method: 'GET',
+                    cache: 'no-store',
+                    headers: {
+                        'Cache-Control': 'no-cache, no-store, must-revalidate, max-age=0',
+                        'Pragma': 'no-cache',
+                        'Expires': '0',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+
+                log(`📊 Resposta da API: ${response.status} ${response.statusText}`, 'info');
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                log(`✅ Dados recebidos: ${data.length} motocicletas`, 'success');
+
+                motorcycles = data || [];
+                
+                if (motorcycles.length === 0) {
+                    throw new Error('Nenhuma motocicleta encontrada na resposta');
+                }
+
+                updateStatus(`✅ ${motorcycles.length} motocicletas carregadas`, 'success');
+                renderMotocicletas();
+
+            } catch (error) {
+                log(`❌ Erro no carregamento: ${error.message}`, 'error');
+                updateStatus(`❌ Falha no carregamento: ${error.message}`, 'error');
+                
+                // Fallback para dados de emergência
+                motorcycles = [
+                    {
+                        id: 'emergency-1',
+                        name: 'CB 250 TWISTER',
+                        marca: 'HONDA',
+                        modelo: 'CB 250 TWISTER', 
+                        year: '2022/22',
+                        color: 'Vermelha',
+                        displacement: 250,
+                        mileage_display: '5.600'
+                    },
+                    {
+                        id: 'emergency-2', 
+                        name: 'CG 160',
+                        marca: 'HONDA',
+                        modelo: 'CG 160',
+                        year: '2021/22',
+                        color: 'Preta',
+                        displacement: 160,
+                        mileage_display: '12.000'
+                    }
+                ];
+                
+                log('🔄 Usando dados de emergência...', 'warning');
+                updateStatus('⚠️ Usando dados de emergência', 'warning');
+                renderMotocicletas();
+            }
+        }
+
+        function renderMotocicletas() {
+            log(`🎨 Renderizando ${motorcycles.length} motocicletas...`, 'info');
+            
+            const grid = document.getElementById('motosGrid');
+            
+            if (motorcycles.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column: 1 / -1; text-align: center; padding: 60px;">
+                        <h3>❌ Nenhuma motocicleta encontrada</h3>
+                        <p>Verifique a conexão com o servidor</p>
+                        <button class="btn" onclick="recarregarVitrine()">🔄 Tentar Novamente</button>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = motorcycles.map((moto, index) => {
+                const nome = moto.marca ? `${moto.marca} ${moto.modelo}` : moto.name;
+                const ano = moto.ano || moto.year || 'N/A';
+                const cor = moto.cor || moto.color || 'N/A';
+                const km = moto.mileage_display || moto.quilometragem || '0';
+                const cilindrada = moto.displacement || moto.cilindrada || '0';
+
+                return `
+                    <div class="moto-card" style="animation-delay: ${index * 0.1}s">
+                        <div class="moto-image">
+                            ${moto.image ? 
+                                `<img src="${moto.image}?cb=${CACHE_BUSTER}" alt="${nome}" />` :
+                                `<div class="no-image">🏍️</div>`
+                            }
+                            <div class="moto-badge">${cilindrada}cc</div>
+                        </div>
+                        
+                        <div class="moto-info">
+                            <h3 class="moto-title">${nome}</h3>
+                            
+                            <div class="moto-details">
+                                <div class="detail-row">
+                                    <span class="detail-label">Ano:</span>
+                                    <span class="detail-value">${ano}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">Cor:</span>
+                                    <span class="detail-value">${cor}</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">KM:</span>
+                                    <span class="detail-value">${km} km</span>
+                                </div>
+                                <div class="detail-row">
+                                    <span class="detail-label">ID:</span>
+                                    <span class="detail-value">${moto.id}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            log(`✅ Vitrine renderizada com ${motorcycles.length} motos`, 'success');
+        }
+
+        function recarregarVitrine() {
+            log('🔄 Recarregamento manual iniciado...', 'warning');
+            location.reload(true);
+        }
+
+        // Inicialização automática
+        window.addEventListener('load', () => {
+            log('📱 Sistema carregado, iniciando vitrine...', 'info');
+            setTimeout(carregarMotocicletas, 500);
+        });
+
+        // Auto-refresh a cada 2 minutos
+        setInterval(() => {
+            log('⏰ Auto-refresh executado', 'info');
+            carregarMotocicletas();
+        }, 120000);
+
+        // Prevenção de cache adicional
+        window.addEventListener('beforeunload', () => {
+            // Limpar qualquer cache local
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    names.forEach(name => caches.delete(name));
+                });
+            }
+        });
+    </script>
+</body>
+</html>
