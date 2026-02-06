@@ -5,6 +5,8 @@
   const sels = ['#appointmentsList', '.content-area', 'main'];
   let _saved = [];
 
+  const overlaySelectors = ['.modal-overlay', '.mobile-overlay', '.modal-dialog-overlay', '.smart-loading-overlay', '.mobile-overlay.active'];
+
   function apply(){
     try{
       _saved = [];
@@ -17,6 +19,38 @@
           }catch(e){}
         });
       }
+      // Overlay safety: disable fullscreen overlays that are present but don't host a dialog
+      try{
+        overlaySelectors.forEach(sel => {
+          document.querySelectorAll(sel).forEach(ov => {
+            if(!ov || ov.nodeType!==1) return;
+            // if overlay contains a visible modal/dialog, skip
+            const hasDialog = ov.querySelector('.modal-dialog, .modal, .modal-content, .dialog');
+            const rect = ov.getBoundingClientRect();
+            const coversViewport = rect.width > 20 && rect.height > 20; // likely covers area
+            if(!hasDialog && coversViewport){
+              _saved.push({ el: ov, style: ov.getAttribute('style') || '' });
+              try{ ov.style.setProperty('pointer-events','none','important'); ov.style.visibility='hidden'; }catch(e){}
+            }
+          });
+        });
+      }catch(e){}
+
+      // Unlock body fixed positioning if left locked accidentally
+      try{
+        const bodyPos = document.body && document.body.style && document.body.style.position;
+        if(bodyPos === 'fixed'){
+          // if menu not open, revert the lock
+          const menuOpen = !!document.querySelector('.mobile-menu-toggle.active, .admin-nav.open, .admin-nav.open *');
+          if(!menuOpen){
+            _saved.push({ el: document.body, style: document.body.getAttribute('style') || '' });
+            document.body.style.position = '';
+            document.body.style.top = '';
+            document.body.style.left = '';
+            document.body.style.right = '';
+          }
+        }
+      }catch(e){}
       console.log('ScrollFix: applied to', _saved.length, 'elements');
       return _saved.length;
     }catch(e){ console.warn('ScrollFix.apply failed', e); return 0; }
