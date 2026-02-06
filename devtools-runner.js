@@ -14,16 +14,17 @@
 */
 (function(){
   if (window.DevToolsRunner) return console.log('DevToolsRunner already installed');
-  const runner = { report: null, _savedStyles: [], _disabledEls: [] };
+  const runner = { report: null, _savedStyles: [], _disabledEls: [], lastStatus: null };
 
   function loadIfMissing(name, src){
     return new Promise((res)=>{
-      if (window[name]) return res({ ok:true, reason:'already' });
+      if (window[name]){ runner.lastStatus = { ok:true, action:'loadIfMissing', name, reason:'already' }; return res({ ok:true, reason:'already' }); }
       try{
         const s = document.createElement('script'); s.src = src; s.async = false; s.setAttribute('data-devtools-runner', '1');
-        s.onload = ()=>res({ ok:true }); s.onerror = ()=>res({ ok:false, reason:'loadfail' });
+        s.onload = ()=>{ runner.lastStatus = { ok:true, action:'loadIfMissing', name }; res({ ok:true }); };
+        s.onerror = ()=>{ runner.lastStatus = { ok:false, action:'loadIfMissing', name, reason:'loadfail' }; res({ ok:false, reason:'loadfail' }); };
         document.head.appendChild(s);
-      }catch(e){ res({ ok:false, reason:String(e) }); }
+      }catch(e){ runner.lastStatus = { ok:false, action:'loadIfMissing', name, error: String(e) }; res({ ok:false, reason:String(e) }); }
     });
   }
 
@@ -92,6 +93,7 @@
     });
 
     runner.report = report;
+    runner.lastStatus = { ok:true, action:'runAll', when: report.when };
     console.log('DevToolsRunner: report ready — call DevToolsRunner.exportReport() to download or inspect DevToolsRunner.report');
     return report;
   };
@@ -102,6 +104,7 @@
       const blob = new Blob([data], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a'); a.href = url; a.download = (filename||('devtools-report-'+(new Date().toISOString().replace(/[:.]/g,'-'))+'.json')); document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); },1500);
+      runner.lastStatus = { ok:true, action:'exportReport', filename: filename || null };
       return true;
     }catch(e){ console.warn('exportReport failed', e); return false; }
   };
@@ -117,6 +120,7 @@
         runner._disabledEls.push({ el: el, style: el.getAttribute('style') || '' });
         el.style.pointerEvents = 'none'; el.style.visibility = 'hidden';
       }
+      runner.lastStatus = { ok:true, action:'disableCenterOverlays', disabled: runner._disabledEls.length };
       console.log('DevToolsRunner: disabled', runner._disabledEls.length, 'elements — test scroll now. Call DevToolsRunner.revertDisableOverlays() to restore.');
       return runner._disabledEls.length;
     }catch(e){ console.warn('disableCenterOverlays failed', e); return 0; }
@@ -125,7 +129,8 @@
   runner.revertDisableOverlays = function(){
     try{
       for (const rec of runner._disabledEls){ try{ if (rec.el){ if (rec.style) rec.el.setAttribute('style', rec.style); else rec.el.removeAttribute('style'); } }catch(e){} }
-      const n = runner._disabledEls.length; runner._disabledEls = []; console.log('DevToolsRunner: restored', n, 'elements'); return n;
+      const n = runner._disabledEls.length; runner._disabledEls = []; runner.lastStatus = { ok:true, action:'revertDisableOverlays', restored: n };
+      console.log('DevToolsRunner: restored', n, 'elements'); return n;
     }catch(e){ console.warn('revertDisableOverlays failed', e); return 0; }
   };
 
@@ -138,6 +143,7 @@
         const els = document.querySelectorAll(s);
         for (const el of els){ runner._savedStyles.push({ el: el, style: el.getAttribute('style') || '' }); el.style.touchAction = 'pan-y'; el.style.webkitOverflowScrolling = 'touch'; }
       }
+      runner.lastStatus = { ok:true, action:'applyTouchFix', affected: runner._savedStyles.length };
       console.log('DevToolsRunner: applied touch-action pan-y to', runner._savedStyles.length, 'elements. Call DevToolsRunner.revertTouchFix() to restore.');
       return runner._savedStyles.length;
     }catch(e){ console.warn('applyTouchFix failed', e); return 0; }
@@ -146,9 +152,13 @@
   runner.revertTouchFix = function(){
     try{
       for (const rec of runner._savedStyles){ try{ if (rec.el){ if (rec.style) rec.el.setAttribute('style', rec.style); else rec.el.removeAttribute('style'); } }catch(e){} }
-      const n = runner._savedStyles.length; runner._savedStyles = []; console.log('DevToolsRunner: reverted touch-fix on', n, 'elements'); return n;
+      const n = runner._savedStyles.length; runner._savedStyles = []; runner.lastStatus = { ok:true, action:'revertTouchFix', restored: n };
+      console.log('DevToolsRunner: reverted touch-fix on', n, 'elements'); return n;
     }catch(e){ console.warn('revertTouchFix failed', e); return 0; }
   };
+
+  // provide standardized status accessor (keeps backward-compatible return values)
+  runner.getStatus = function(){ return runner.lastStatus || { ok:true, note:'no-status' }; };
 
   window.DevToolsRunner = runner;
   console.log('DevToolsRunner installed. Use DevToolsRunner.runAll() then DevToolsRunner.exportReport(). Quick fixes: DevToolsRunner.disableCenterOverlays(), DevToolsRunner.revertDisableOverlays(), DevToolsRunner.applyTouchFix(), DevToolsRunner.revertTouchFix()');

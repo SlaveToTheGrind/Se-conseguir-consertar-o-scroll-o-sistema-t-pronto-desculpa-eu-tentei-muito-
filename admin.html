@@ -40,7 +40,8 @@
         /* Overrides to ensure filters and custom-selects receive pointer events and sit above overlays */
         .admin-filters, .filter-controls-wrapper, .filter-pill-group, .filter-pill-button {
             pointer-events: auto !important;
-            z-index: 9999 !important;
+            /* Lowered so hamburger/menu overlays can appear above filter controls */
+            z-index: 200 !important;
         }
         .custom-select, .custom-select-trigger, .custom-select-options, .custom-option {
             pointer-events: auto !important;
@@ -118,6 +119,14 @@
     <meta name="expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
 
     <!-- CSS para loading e outros estilos -->
+    <style>
+        /* Page-scoped override to restore mobile pan & overscroll for Admin pages */
+        /* Reversible quick fix — prefers to be replaced by a scoped rule in mobile-extreme.css */
+        html, body {
+            touch-action: pan-y !important;
+            overscroll-behavior-y: auto !important;
+        }
+    </style>
     <style>
         /* ESCONDE TODAS AS LINHAS DECORATIVAS */
         svg:not(.spinner svg):not(.moto-animation svg):not([class*="moto"]):not([id*="loading"]) {
@@ -1630,6 +1639,7 @@
     <script src="admin.js?v=20260116toast8"></script>
     <script src="contract-functions-macdavis.js?v=20260116toast8"></script>
     <script src="admin-users.js?v=20260116toast8"></script>
+    <script src="scroll-emergency-fix.js"></script>
     
     <script>
         // � FUNÇÃO PARA LIMPAR CACHE E RECARREGAR

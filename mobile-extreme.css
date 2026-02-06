@@ -71,7 +71,11 @@
         position: fixed;
         top: 1rem;
         left: 1rem;
-        z-index: 9999;
+        /* Ensure the hamburger button always appears above other UI (max z-index) */
+        z-index: 2147483647 !important;
+        /* Create its own stacking context on GPU to avoid being trapped by other contexts */
+        transform: translateZ(0);
+        will-change: transform;
         background: #ff6600;
         border: none;
         width: 50px;
@@ -113,7 +117,8 @@
         -webkit-backdrop-filter: blur(20px);
         backdrop-filter: blur(20px);
         transition: left 0.3s ease;
-        z-index: 9998;
+        /* Raised above filter controls */
+        z-index: 100150;
         padding: 80px 1rem 1rem;
         overflow-y: auto;
     }
@@ -148,11 +153,14 @@
         width: 100vw;
         height: 100vh;
         background: rgba(0, 0, 0, 0.7);
-        z-index: 9997;
+        /* Ensure overlay sits above filter controls */
+        z-index: 100140;
+        pointer-events: none;
     }
 
     .mobile-overlay.active {
         display: block;
+        pointer-events: auto;
     }
 
     /* ===== BOTTOM NAVIGATION CATALOG ===== */
@@ -433,7 +441,13 @@
         scroll-behavior: smooth;
     }
 
-    body {
+    /* Limit overscroll containment to UI overlays/sidebars so document-level
+       vertical panning is not globally inhibited on pages that need native scroll. */
+    .admin-nav,
+    .mobile-overlay,
+    .modal,
+    .modal-body,
+    .smart-loading-overlay {
         overscroll-behavior-y: contain;
     }
 

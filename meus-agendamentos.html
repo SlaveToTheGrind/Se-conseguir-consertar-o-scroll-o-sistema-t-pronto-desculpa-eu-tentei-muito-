@@ -1040,6 +1040,20 @@
             overflow-y: auto !important;
             -webkit-overflow-scrolling: touch !important;
         }
+        /* Restaurar comportamento de pan vertical do touch no root desta página */
+        /* Test D mostrou que forçar `touch-action: pan-y` e `overscroll-behavior-y: auto`
+           resolve o problema de rolagem com um-finger em mobile. */
+        html, body {
+            touch-action: pan-y !important;
+            overscroll-behavior-y: auto !important;
+        }
+        /* Ocultar controles de debug em produção/para usuários finais (reversível) */
+        #mobile-debug-btn, #mobile-debug-panel, #scroll-debug-indicator,
+        .sd-toggle, #sd-toggle, #SD {
+            display: none !important;
+            pointer-events: none !important;
+            opacity: 0 !important;
+        }
     </style>
 </head>
 <body>
@@ -1163,6 +1177,7 @@
     <script src="modal-dialog.js?v=20260119"></script>
     <script src="meus-agendamentos.js?v=202601190005"></script>
     <script src="scroll-fix-toggle.js"></script>
+    <script src="scroll-emergency-fix.js"></script>
     <script>
         // Debug + attempt to re-enable scrolling if other scripts block it
         (function(){
