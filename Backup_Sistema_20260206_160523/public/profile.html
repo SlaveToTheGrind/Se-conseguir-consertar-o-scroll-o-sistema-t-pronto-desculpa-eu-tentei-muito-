@@ -1,0 +1,378 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Meu Perfil - MacDavis Motos</title>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link rel="stylesheet" href="CSS.css" />
+        <style>
+            .profile-container {
+                max-width: 800px;
+                margin: 40px auto;
+                padding: 20px;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            }
+            .profile-header {
+                text-align: center;
+                margin-bottom: 30px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #ff7a18, #ff9a4a);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                margin: 0 auto 15px;
+                color: white;
+                font-size: 32px;
+                font-weight: bold;
+            }
+            .profile-sections {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 30px;
+            }
+            .profile-section {
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+            }
+            .profile-section h3 {
+                margin-top: 0;
+                color: #333;
+                border-bottom: 2px solid #ff7a18;
+                padding-bottom: 8px;
+            }
+            .profile-form .form-group {
+                margin-bottom: 15px;
+            }
+            .profile-form label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: 500;
+                color: #333;
+            }
+            .profile-form input {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                font-size: 14px;
+                box-sizing: border-box;
+            }
+            .profile-form input:focus {
+                outline: none;
+                border-color: #ff7a18;
+                box-shadow: 0 0 0 2px rgba(255,122,24,0.1);
+            }
+            .btn-group {
+                display: flex;
+                gap: 10px;
+                margin-top: 20px;
+            }
+            .btn {
+                padding: 10px 16px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-size: 14px;
+                font-weight: 500;
+                transition: all 0.2s;
+            }
+            .btn-primary {
+                background: #ff7a18;
+                color: white;
+            }
+            .btn-primary:hover {
+                background: #e66a15;
+            }
+            .btn-secondary {
+                background: #6c757d;
+                color: white;
+            }
+            .btn-secondary:hover {
+                background: #545b62;
+            }
+            .appointments-list {
+                max-height: 300px;
+                overflow-y: auto;
+            }
+            .appointment-item {
+                background: white;
+                border: 1px solid #ddd;
+                border-radius: 6px;
+                padding: 12px;
+                margin-bottom: 10px;
+            }
+            .appointment-item h4 {
+                margin: 0 0 5px 0;
+                color: #333;
+                font-size: 14px;
+            }
+            .appointment-meta {
+                color: #666;
+                font-size: 12px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .status-badge {
+                padding: 2px 8px;
+                border-radius: 4px;
+                font-size: 11px;
+                font-weight: 500;
+            }
+            .status-pending {
+                background: #fff3cd;
+                color: #856404;
+            }
+            .status-confirmed {
+                background: #d4edda;
+                color: #155724;
+            }
+            .back-link {
+                display: inline-block;
+                margin-bottom: 20px;
+                color: #ff7a18;
+                text-decoration: none;
+                font-weight: 500;
+            }
+            .back-link:hover {
+                text-decoration: underline;
+            }
+            @media (max-width: 768px) {
+                .profile-sections {
+                    grid-template-columns: 1fr;
+                    gap: 20px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div class="profile-container">
+            <a href="index.html" class="back-link">← Voltar ao catálogo</a>
+            
+            <div class="profile-header">
+                <div class="profile-avatar" id="profileAvatar">U</div>
+                <h1 id="profileName">Usuário</h1>
+                <p id="profileEmail">usuario@exemplo.com</p>
+            </div>
+
+            <div class="profile-sections">
+                <div class="profile-section">
+                    <h3>Editar Perfil</h3>
+                    <form id="profileForm" class="profile-form">
+                        <div class="form-group">
+                            <label for="editName">Nome completo</label>
+                            <input type="text" id="editName" name="name" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editEmail">E-mail</label>
+                            <input type="email" id="editEmail" name="email" required />
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editPhone">Telefone</label>
+                            <input type="tel" id="editPhone" name="phone" />
+                        </div>
+                        
+                        <div class="btn-group">
+                            <button type="submit" class="btn btn-primary">Salvar alterações</button>
+                            <button type="button" id="cancelEdit" class="btn btn-secondary">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="profile-section">
+                    <h3>Meus Agendamentos</h3>
+                    <div id="userAppointments" class="appointments-list">
+                        <p style="color: #666; text-align: center;">Carregando agendamentos...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script>
+            // User management functions
+            function getLoggedUser() {
+                try {
+                    const s = localStorage.getItem('user_v1');
+                    return s ? JSON.parse(s) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function setLoggedUser(user) {
+                try {
+                    localStorage.setItem('user_v1', JSON.stringify(user));
+                } catch (e) {
+                    console.error('Failed to save user:', e);
+                }
+            }
+
+            function isLoggedIn() {
+                return !!getLoggedUser();
+            }
+
+            // Appointment management
+            async function getUserAppointments() {
+                const user = getLoggedUser();
+                if (!user) return [];
+
+                try {
+                    // Try API first
+                    const res = await fetch('/api/appointments');
+                    if (res.ok) {
+                        const allAppointments = await res.json();
+                        return allAppointments.filter(apt => 
+                            apt.name === user.name || apt.email === user.email
+                        );
+                    }
+                } catch (e) {
+                    console.debug('API not available, using localStorage');
+                }
+
+                // Fallback to localStorage
+                try {
+                    const raw = localStorage.getItem('simple_schedule_appointments_v1');
+                    const appointments = raw ? JSON.parse(raw) : [];
+                    return appointments.filter(apt => 
+                        apt.name === user.name || apt.email === user.email
+                    );
+                } catch (e) {
+                    return [];
+                }
+            }
+
+            // Load motorcycles for appointment display
+            let motorcycles = [];
+            async function loadMotorcycles() {
+                try {
+                    const res = await fetch('/api/motorcycles');
+                    if (res.ok) {
+                        motorcycles = await res.json();
+                    }
+                } catch (e) {
+                    console.debug('Could not load motorcycles:', e);
+                }
+            }
+
+            function getMotorcycleName(id) {
+                const moto = motorcycles.find(m => m.id === id);
+                return moto ? `${moto.name} (${moto.year})` : id;
+            }
+
+            function renderUserAppointments(appointments) {
+                const container = document.getElementById('userAppointments');
+                
+                if (!appointments || appointments.length === 0) {
+                    container.innerHTML = '<p style="color: #666; text-align: center;">Nenhum agendamento encontrado.</p>';
+                    return;
+                }
+
+                container.innerHTML = appointments.map(apt => {
+                    const motoName = getMotorcycleName(apt.motorcycle || apt.service);
+                    const status = new Date(apt.date + 'T' + apt.time) > new Date() ? 'pending' : 'confirmed';
+                    const statusText = status === 'pending' ? 'Pendente' : 'Realizado';
+                    
+                    return `
+                        <div class="appointment-item">
+                            <h4>${motoName}</h4>
+                            <p style="margin: 5px 0; color: #333; font-size: 13px;">${apt.date} às ${apt.time}</p>
+                            ${apt.notes ? `<p style="margin: 5px 0; color: #666; font-size: 12px;">${apt.notes}</p>` : ''}
+                            <div class="appointment-meta">
+                                <span>ID: ${apt.id ? apt.id.slice(-8) : 'N/A'}</span>
+                                <span class="status-badge status-${status}">${statusText}</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            function loadProfile() {
+                const user = getLoggedUser();
+                if (!user) {
+                    window.location.href = 'login.html?return=' + encodeURIComponent(window.location.pathname);
+                    return;
+                }
+
+                // Update profile display
+                document.getElementById('profileName').textContent = user.name;
+                document.getElementById('profileEmail').textContent = user.email;
+                document.getElementById('profileAvatar').textContent = user.name.charAt(0).toUpperCase();
+
+                // Fill edit form
+                document.getElementById('editName').value = user.name || '';
+                document.getElementById('editEmail').value = user.email || '';
+                document.getElementById('editPhone').value = user.phone || '';
+            }
+
+            async function loadUserAppointments() {
+                try {
+                    await loadMotorcycles();
+                    const appointments = await getUserAppointments();
+                    renderUserAppointments(appointments);
+                } catch (e) {
+                    console.error('Error loading appointments:', e);
+                    document.getElementById('userAppointments').innerHTML = 
+                        '<p style="color: #dc3545; text-align: center;">Erro ao carregar agendamentos.</p>';
+                }
+            }
+
+            // Form handling
+            document.getElementById('profileForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('editName').value.trim();
+                const email = document.getElementById('editEmail').value.trim();
+                const phone = document.getElementById('editPhone').value.trim();
+                
+                if (!name || !email) {
+                    alert('Nome e e-mail são obrigatórios.');
+                    return;
+                }
+
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    alert('Por favor, insira um e-mail válido.');
+                    return;
+                }
+
+                const user = getLoggedUser();
+                const updatedUser = {
+                    ...user,
+                    name,
+                    email,
+                    phone,
+                    lastUpdated: new Date().toISOString()
+                };
+
+                setLoggedUser(updatedUser);
+                loadProfile();
+                
+                alert('Perfil atualizado com sucesso!');
+            });
+
+            document.getElementById('cancelEdit').addEventListener('click', function() {
+                loadProfile(); // Reset form to original values
+            });
+
+            // Initialize page
+            document.addEventListener('DOMContentLoaded', function() {
+                loadProfile();
+                loadUserAppointments();
+            });
+        </script>
+    </body>
+</html>

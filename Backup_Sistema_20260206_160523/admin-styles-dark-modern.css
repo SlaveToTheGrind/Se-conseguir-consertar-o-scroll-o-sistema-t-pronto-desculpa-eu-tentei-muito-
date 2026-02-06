@@ -1,0 +1,4300 @@
+/* MacDavis Motos - Admin Panel Tema Escuro RGB */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+:root {
+    /* Cores Base - Tema Claro */
+    --bg-primary: #f5f5f5;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #fafafa;
+    --bg-quaternary: #e8e8e8;
+    --bg-glass: rgba(255, 255, 255, 0.8);
+    --bg-glass-hover: rgba(255, 255, 255, 0.95);
+    --bg-glass-strong: rgba(255, 255, 255, 1);
+    
+    /* Laranja Evolução */
+    --orange-50: #fff7ed;
+    --orange-100: #ffedd5;
+    --orange-200: #fed7aa;
+    --orange-300: #fdba74;
+    --orange-400: #fb923c;
+    --orange-500: #ff6600;
+    --orange-600: #ea580c;
+    --orange-700: #c2410c;
+    --orange-800: #9a3412;
+    --orange-900: #7c2d12;
+    --orange-glow: rgba(255, 102, 0, 0.4);
+    
+    /* Gradientes Focados - Apenas Preto e Laranja */
+    --gradient-primary: linear-gradient(135deg, #ff6600 0%, #ffffff 30%, #ff6600 60%, #ffffff 100%);
+    --gradient-secondary: linear-gradient(45deg, #ff8533 0%, #f0f0f0 30%, #ff8533 60%, #f0f0f0 100%);
+    --gradient-accent: linear-gradient(90deg, #ff6600, #ffffff, #ff6600);
+    --gradient-card: radial-gradient(circle at top left, rgba(255, 102, 0, 0.05), rgba(255, 255, 255, 0.8), transparent);
+    --gradient-nav: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    
+    /* RGB Animado */
+    --rgb-shadow: 0 0 30px rgba(255, 102, 0, 0.2);
+    --rgb-border: linear-gradient(45deg, #ff6600, #ff0066, #6600ff, #0066ff);
+    --rgb-glow: drop-shadow(0 0 10px rgba(255, 102, 0, 0.4));
+    
+    /* Texto */
+    --text-primary: #1a1a1a;
+    --text-secondary: #4a4a4a;
+    --text-muted: #888888;
+    --text-disabled: #cccccc;
+    --text-success: #00cc66;
+    --text-warning: #ff8800;
+    --text-error: #ff3333;
+    
+    /* Status Colors */
+    --status-success: #00cc66;
+    --status-warning: #ff8800;
+    --status-error: #ff3333;
+    --status-info: #0077ff;
+    
+    /* Bordas e Efeitos */
+    --border-primary: rgba(0, 0, 0, 0.1);
+    --border-accent: rgba(255, 102, 0, 0.3);
+    --border-glass: rgba(0, 0, 0, 0.08);
+    
+    /* Sombras */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.12);
+    --shadow-lg: 0 16px 48px rgba(0, 0, 0, 0.15);
+    --shadow-glow: 0 0 24px rgba(255, 102, 0, 0.2);
+    --shadow-rgb: 0 8px 32px rgba(255, 102, 0, 0.15);
+    
+    /* Bordas */
+    --radius-xs: 4px;
+    --radius-sm: 8px;
+    --radius-md: 12px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    --radius-2xl: 24px;
+    
+    /* Transições */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
+}
+
+/* Reset Global */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    width: 100%;
+}
+
+/* FORÇA ESCONDER QUALQUER ELEMENTO DECORATIVO */
+body::before,
+body::after,
+body > *::before:not(.btn-primary):not(.btn-secondary):not(.stat-card):not(.custom-select-trigger),
+body > *::after:not(.btn-primary):not(.btn-secondary):not(.stat-card):not(.custom-select-trigger) {
+    display: none !important;
+}
+
+/* Removidos: body::before e body::after com gradientes animados */
+
+/* Formas Flutuantes Animadas */
+/* Removido: floating-shapes e animações de background */
+
+/* Navegação Admin */
+.admin-nav {
+    background: var(--bg-glass);
+    -webkit-backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border-primary);
+    padding: 1rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+}
+
+.nav-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.8rem;
+    font-weight: 800;
+    background: var(--gradient-accent);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease-in-out infinite alternate;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 100% 50%; }
+}
+
+.admin-badge {
+    background: #000000;
+    color: #ff6600;
+    padding: 0.4rem 0.8rem;
+    border-radius: var(--radius-xl);
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-left: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border: 1px solid #ff6600;
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
+    transition: all var(--transition-normal);
+}
+
+.admin-badge:hover {
+    background: #ff6600;
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4);
+    transform: translateY(-1px);
+}
+
+.nav-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Botões Base */
+.btn-primary,
+.btn-secondary,
+.btn-danger,
+.btn-success {
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--radius-md);
+    border: none;
+    font-weight: 600;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-primary {
+    background: #ff6600;
+    color: #000000;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    border: 1px solid #cc5200;
+}
+
+.btn-primary::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: #ff8533;
+    transition: left var(--transition-normal);
+    z-index: -1;
+}
+
+.btn-primary:hover::before {
+    left: 0;
+}
+
+.btn-primary:hover {
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+}
+
+.btn-secondary {
+    background: #ff6600;
+    color: #000000;
+    border: 1px solid #cc5200;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    font-weight: 600;
+}
+
+.btn-secondary:hover {
+    background: #ff8533;
+    color: #000000;
+    border-color: #ff6600;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+}
+
+.btn-danger {
+    background: #ff4444;
+    color: #000000;
+    border: 1px solid #cc0000;
+}
+
+.btn-danger:hover {
+    background: #ff6666;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(255, 68, 68, 0.3);
+}
+
+.btn-success {
+    background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+    color: #ffffff;
+    border: 1px solid #388e3c;
+    font-weight: 600;
+}
+
+.btn-success:hover {
+    background: linear-gradient(135deg, #66bb6a 0%, #4caf50 100%);
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+}
+
+.btn-success {
+    background: #00ff88;
+    color: #000000;
+    border: 1px solid #00cc66;
+}
+
+.btn-success:hover {
+    background: #33ffaa;
+    color: #000000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 255, 136, 0.3);
+}
+
+/* Conteúdo Admin Principal */
+.admin-content {
+    max-width: 1600px;
+    margin: 0 auto;
+    padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.admin-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-xl);
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-md);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Removido: .admin-header::before com animação de gradiente rotativo */
+
+.header-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.admin-header h2 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 2rem;
+    font-weight: 700;
+    background: var(--gradient-accent);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradientShift 3s ease-in-out infinite alternate;
+    margin: 0;
+}
+
+.user-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.1) 0%, rgba(255, 102, 0, 0.05) 100%);
+    border: 1px solid rgba(255, 102, 0, 0.3);
+    border-radius: var(--radius-lg);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--orange-600);
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.1);
+    transition: all 0.3s ease;
+    width: fit-content;
+}
+
+.user-badge:hover {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.15) 0%, rgba(255, 102, 0, 0.08) 100%);
+    border-color: rgba(255, 102, 0, 0.5);
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.user-icon {
+    font-size: 1.1rem;
+    filter: grayscale(0);
+}
+
+.user-name {
+    letter-spacing: 0.3px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+/* Status de Conexão */
+.connection-status {
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    border-radius: var(--radius-md);
+    font-weight: 600;
+    text-align: center;
+    -webkit-backdrop-filter: blur(10px);    backdrop-filter: blur(10px);
+    border: 1px solid;
+}
+
+.connection-status.connected {
+    background: rgba(0, 255, 136, 0.1);
+    border-color: var(--status-success);
+    color: var(--status-success);
+}
+
+.connection-status.disconnected {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: var(--status-error);
+    color: var(--status-error);
+}
+
+/* Grid de Estatísticas */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    position: relative; /* garantir empilhamento controlável */
+    z-index: 5; /* ficar acima de filtros quando necessário */
+    will-change: opacity, transform;
+}
+
+.stat-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    text-align: center;
+    -webkit-backdrop-filter: blur(20px);    backdrop-filter: blur(20px);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--gradient-card);
+    opacity: 0;
+    transition: opacity var(--transition-normal);
+    z-index: -1;
+}
+
+.stat-card:hover::before {
+    opacity: 1;
+}
+
+.stat-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-glow);
+}
+
+.stat-card h3 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: 'Poppins', sans-serif;
+    color: var(--orange-500);
+    margin-bottom: 0.5rem;
+    filter: var(--rgb-glow);
+    position: relative;
+    z-index: 1;
+}
+
+.stat-card p {
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 0.9rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Garantir visibilidade do contador de agendamentos */
+#totalAgendamentos {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: relative !important;
+    z-index: 10 !important;
+    color: var(--orange-500) !important;
+    font-size: 2.5rem !important;
+    font-weight: 800 !important;
+}
+
+/* System Status Panel */
+.system-status-panel {
+    background: var(--orange-primary);
+    border: 2px solid var(--orange-primary);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(255, 102, 0, 0.3);
+}
+
+.system-status-panel h3 {
+    color: #000;
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    font-family: 'Poppins', sans-serif;
+    text-align: center;
+}
+
+.status-indicators {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+
+.status-indicator:hover {
+    background: rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.3);
+    transform: translateX(5px);
+}
+
+.status-icon {
+    font-size: 2rem;
+    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.3));
+}
+
+.status-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.status-label {
+    color: rgba(0, 0, 0, 0.7);
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.status-value {
+    color: #000;
+    font-size: 1.1rem;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Filtros Admin */
+.admin-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+/* Fixed container used when filters are portaled to top during scroll
+   This keeps the original `.admin-filters` structure but moves it into
+   a fixed container while inserting a placeholder to preserve layout. */
+
+/* Filtros do admin: sticky puro */
+.admin-filters {
+    position: static;
+    background: transparent;
+    border-radius: 10px;
+    padding: 12px 16px;
+    margin: 12px 0;
+    box-shadow: none;
+}
+
+/* === ÁREA DE FILTROS FIXA NO TOPO === */
+
+
+/* Container específico dos selects */
+#soldMotorcyclesModal div[style*="display: flex"][style*="gap: 12px"],
+#soldMotorcyclesModal div[style*="display: flex"][style*="align-items: center"][style*="gap: 12px"] {
+    position: relative !important;
+    z-index: 1001 !important;
+}
+
+/* === DROPDOWNS === */
+.search-input,
+.filter-select,
+select.filter-select,
+#soldMarcaFilter,
+#monthFilter {
+    background: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1.2rem 1.5rem !important;
+    color: #1a1a1a !important;
+    font-size: 1.1rem !important;
+    font-weight: 600 !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    min-width: 220px !important;
+    cursor: pointer !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+    position: relative !important;
+    z-index: 10000 !important;
+}
+
+/* QUANDO DROPDOWN ESTÁ ABERTO - ESCAPAR DO CONTAINER */
+#soldMarcaFilter:focus,
+#monthFilter:focus {
+    z-index: 10001 !important;
+    max-height: 400px !important;
+    overflow-y: auto !important;
+}
+
+.search-input:hover,
+.filter-select:hover,
+#soldMarcaFilter:hover,
+#monthFilter:hover {
+    border-color: #ff6600 !important;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2),
+                0 4px 12px rgba(255, 102, 0, 0.3) !important;
+    transform: translateY(-2px) !important;
+}
+
+.search-input:focus,
+.filter-select:focus {
+    outline: none !important;
+    border-color: #ff6600 !important;
+    background: white !important;
+    box-shadow: 0 0 0 4px rgba(255, 102, 0, 0.25),
+                0 6px 16px rgba(255, 102, 0, 0.4) !important;
+}
+
+.search-input::placeholder {
+    color: #999;
+    font-weight: 500;
+}
+
+/* Estilo para select com seta customizada */
+select.filter-select {
+    background-color: white;
+    padding-right: 2.5rem;
+}
+
+/* Garantir que todas as options sejam visíveis */
+select.filter-select option {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    height: auto !important;
+    min-height: 30px !important;
+    padding: 8px 12px !important;
+    background: white !important;
+    color: #1a1a1a !important;
+    font-size: 0.95rem !important;
+    font-weight: 500 !important;
+}
+
+select.filter-select option:hover {
+    background: #ff6600 !important;
+    color: white !important;
+}
+
+/* DROPDOWN CUSTOMIZADO - Começa aqui */
+
+/* Container do dropdown customizado */
+.custom-select {
+    position: relative;
+    display: inline-block;
+    min-width: 200px;
+}
+
+/* Botão principal do dropdown */
+.custom-select-trigger {
+    background: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    padding: 1rem 2.5rem 1rem 1.25rem;
+    color: #1a1a1a;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    user-select: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.custom-select-trigger::after {
+    content: '';
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #ff6600;
+    transition: transform 0.3s ease;
+}
+
+.custom-select.open .custom-select-trigger::after {
+    transform: translateY(-50%) rotate(180deg);
+}
+
+.custom-select-trigger:hover {
+    border-color: #ff6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2),
+                0 4px 12px rgba(255, 102, 0, 0.3);
+    transform: translateY(-2px);
+}
+
+/* Lista de opções */
+.custom-select-options {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    left: 0;
+    right: 0;
+    background: white;
+    border: 2px solid #ff6600;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(255, 102, 0, 0.25),
+                0 16px 48px rgba(0, 0, 0, 0.15);
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000;
+}
+
+.custom-select.open .custom-select-options {
+    max-height: 400px;
+    overflow-y: auto;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Cada opção individual */
+.custom-option {
+    padding: 0.9rem 1.25rem;
+    color: #1a1a1a;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    opacity: 0;
+    transform: translateX(-10px);
+    border-radius: 8px;
+    margin: 4px 8px;
+}
+
+/* Animação cascata - cada opção aparece com delay */
+.custom-select.open .custom-option {
+    animation: slideInCascade 0.3s ease-out forwards;
+}
+
+.custom-select.open .custom-option:nth-child(1) { animation-delay: 0.05s; }
+.custom-select.open .custom-option:nth-child(2) { animation-delay: 0.1s; }
+.custom-select.open .custom-option:nth-child(3) { animation-delay: 0.15s; }
+.custom-select.open .custom-option:nth-child(4) { animation-delay: 0.2s; }
+.custom-select.open .custom-option:nth-child(5) { animation-delay: 0.25s; }
+.custom-select.open .custom-option:nth-child(6) { animation-delay: 0.3s; }
+.custom-select.open .custom-option:nth-child(7) { animation-delay: 0.35s; }
+.custom-select.open .custom-option:nth-child(8) { animation-delay: 0.4s; }
+.custom-select.open .custom-option:nth-child(9) { animation-delay: 0.45s; }
+.custom-select.open .custom-option:nth-child(10) { animation-delay: 0.5s; }
+
+@keyframes slideInCascade {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.custom-option:hover {
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    color: white;
+    transform: translateX(4px);
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+}
+
+.custom-option.selected {
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    color: white;
+    font-weight: 700;
+}
+
+/* Scrollbar customizada */
+.custom-select-options::-webkit-scrollbar {
+    width: 8px;
+}
+
+.custom-select-options::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 10px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb {
+    background: #ff6600;
+    border-radius: 10px;
+}
+
+.custom-select-options::-webkit-scrollbar-thumb:hover {
+    background: #ff8533;
+}
+
+/* Seção de Agendamentos */
+.appointments-section {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(20px);
+    position: relative;
+    z-index: 1;
+}
+
+.appointments-section .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--border-glass);
+    flex-wrap: wrap;
+    gap: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+.appointments-section .section-header .header-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    position: relative;
+    z-index: 3;
+}
+
+.appointments-section .section-header h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.appointments-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    min-height: 200px;
+    overflow: visible;
+}
+
+.appointment-card {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: all var(--transition-normal);
+    width: calc(33.333% - 0.75rem);
+    min-width: 320px;
+    flex-shrink: 0;
+}
+
+.appointment-card:hover {
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-md);
+    transform: translateY(-2px);
+}
+
+.appointment-card.realizado {
+    opacity: 0.7;
+    background: rgba(76, 175, 80, 0.05);
+    border-color: rgba(76, 175, 80, 0.2);
+}
+
+.appointment-card.realizado:hover {
+    opacity: 0.85;
+}
+
+.appointment-card.cancelado {
+    opacity: 0.6;
+    background: rgba(244, 67, 54, 0.05);
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.appointment-card.cancelado:hover {
+    opacity: 0.75;
+}
+
+.cancel-info {
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.cancel-reason {
+    font-size: 0.85rem;
+    color: #f44336;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+
+.cancel-date {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.appointment-icon {
+    width: 45px;
+    height: 45px;
+    background: linear-gradient(135deg, var(--orange-500), var(--orange-600));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3);
+    flex-shrink: 0;
+}
+
+/* Mobile tweaks for appointment cards: stack and fit within viewport */
+@media (max-width: 900px) {
+    .appointments-list {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        align-items: stretch;
+    }
+
+    .appointment-card {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: 1 1 auto !important;
+        box-sizing: border-box !important;
+        padding: 0.85rem !important;
+    }
+
+    /* Ensure internal elements wrap nicely on small widths */
+    .appointment-card .appointment-meta,
+    .appointment-card .appointment-details {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+}
+
+.appointment-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.appointment-info .client-name {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    font-family: 'Poppins', sans-serif;
+}
+
+.appointment-info .moto-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--orange-600);
+}
+
+.appointment-info .contact-info {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.appointment-datetime {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.appointment-date,
+.appointment-time {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    background: rgba(255, 102, 0, 0.1);
+    border: 1px solid rgba(255, 102, 0, 0.2);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.8rem;
+}
+
+.appointment-notes {
+    margin-top: 0.25rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid var(--border-glass);
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-style: italic;
+}
+
+.appointment-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+.btn-complete {
+    padding: 0.5rem 0.85rem;
+    background: linear-gradient(135deg, #4caf50, #66bb6a);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+    flex: 1;
+}
+
+.btn-complete:hover {
+    background: linear-gradient(135deg, #388e3c, #4caf50);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+}
+
+.btn-cancel {
+    padding: 0.5rem 0.85rem;
+    background: linear-gradient(135deg, #ff9800, #ffa726);
+    color: white;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    white-space: nowrap;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.3);
+    flex: 1;
+}
+
+.btn-cancel:hover {
+    background: linear-gradient(135deg, #f57c00, #ff9800);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.status-label.canceled {
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    padding: 0.5rem 0.85rem;
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.8rem;
+    flex: 1;
+    text-align: center;
+}
+
+.btn-delete-appointment {
+    padding: 0.5rem 0.85rem;
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    flex: 1;
+}
+
+.btn-delete-appointment:hover {
+    background: #f44336;
+    color: white;
+    border-color: #f44336;
+    transform: translateY(-2px);
+}
+
+.status-label.completed {
+    padding: 0.5rem 0.85rem;
+    background: rgba(76, 175, 80, 0.15);
+    color: #4caf50;
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    border-radius: var(--radius-sm);
+    font-weight: 700;
+    font-size: 0.8rem;
+    text-align: center;
+    white-space: nowrap;
+    width: 100%;
+}
+
+.no-appointments {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
+}
+
+/* Admin Users Section */
+.admin-users-section {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    -webkit-backdrop-filter: blur(20px);
+     backdrop-filter: blur(20px);
+}
+
+.admin-users-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.admin-user-card {
+    background: rgba(216, 77, 7, 0.03);
+    border: 1px solid rgba(255, 102, 0, 0.886);
+    border-radius: var(--radius-md);
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-user-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #ff6600, #ff8533);
+}
+
+.admin-user-card:hover {
+    background: rgba(255, 102, 0, 0.05);
+    border-color: var(--orange-primary);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 102, 0, 0.15);
+}
+
+.admin-user-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.admin-user-icon {
+    font-size: 2.5rem;
+    filter: drop-shadow(0 2px 8px rgba(255, 102, 0, 0.3));
+}
+
+.admin-user-info h4 {
+    color: var(--orange-primary);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 0 0 0.25rem 0;
+}
+
+.admin-user-username {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.admin-user-details {
+    margin: 1rem 0;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.admin-user-detail {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.admin-user-detail:last-child {
+    border-bottom: none;
+}
+
+.admin-user-detail-label {
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+
+.admin-user-detail-value {
+    color: var(--text-primary);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.admin-user-actions {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.btn-edit-admin, .btn-delete-admin {
+    flex: 1;
+    padding: 0.65rem;
+    border: none;
+    border-radius: var(--radius-sm);
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.btn-edit-admin {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+}
+
+.btn-edit-admin:hover {
+    background: linear-gradient(135deg, #2980b9, #21618c);
+    transform: translateY(-2px);
+}
+
+.btn-delete-admin {
+    background: rgba(231, 76, 60, 0.1);
+    color: #e74c3c;
+    border: 1px solid rgba(231, 76, 60, 0.3);
+}
+
+.btn-delete-admin:hover {
+    background: #e74c3c;
+    color: white;
+    border-color: #e74c3c;
+    transform: translateY(-2px);
+}
+
+.no-admin-users {
+    text-align: center;
+    padding: 3rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+
+.no-appointments::before {
+    content: '📭';
+    display: block;
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+/* Estilos do acordeão de meses */
+.month-group {
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.month-header {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.15), rgba(255, 102, 0, 0.05));
+    border: 1px solid rgba(255, 102, 0, 0.3);
+    border-radius: var(--radius-md);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    transition: all var(--transition-normal);
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+.month-header:hover {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.25), rgba(255, 102, 0, 0.1));
+    border-color: var(--orange-500);
+    transform: translateX(4px);
+}
+
+.month-header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.accordion-icon {
+    font-size: 0.875rem;
+    color: var(--orange-500);
+    transition: transform var(--transition-normal);
+    width: 16px;
+    display: inline-block;
+}
+
+.month-header h4 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.month-count {
+    background: var(--orange-500);
+    color: white;
+    padding: 0.35rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.month-appointments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    padding: 1rem 0;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+}
+
+.month-appointments.collapsed {
+    max-height: 0;
+    padding: 0;
+    opacity: 0;
+    margin: 0;
+}
+
+.month-appointments.expanded {
+    max-height: 5000px;
+    opacity: 1;
+    padding: 1rem 0;
+}
+
+/* Grid Admin */
+.admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+/* Cards Admin */
+.admin-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem 1.5rem 0.5rem;
+    -webkit-backdrop-filter: blur(20px);    backdrop-filter: blur(20px);
+    transition: all var(--transition-normal);
+    position: relative;
+    overflow: hidden;
+}
+
+.admin-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient-card);
+    transition: left var(--transition-normal);
+    z-index: -1;
+}
+
+.admin-card:hover::before {
+    left: 0;
+}
+
+.admin-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.admin-card h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.admin-card-content {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.admin-card-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.btn-small {
+    padding: 0.5rem 1rem;
+    font-size: 0.85rem;
+    border-radius: var(--radius-sm);
+}
+
+/* Moto Card Específico */
+.moto-card {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    -webkit-backdrop-filter: blur(20px);    backdrop-filter: blur(20px);
+    transition: all var(--transition-normal);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.moto-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-accent);
+    box-shadow: var(--shadow-lg), var(--shadow-glow);
+}
+
+.moto-image {
+    width: 100%;
+    height: 280px;
+    object-fit: cover;
+    object-position: center;
+    border-bottom: 1px solid var(--border-glass);
+    background: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.moto-info {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    flex: 1;
+}
+
+.moto-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 1rem;
+}
+
+.moto-title {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+    line-height: 1.3;
+}
+
+.moto-details {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+}
+
+.moto-details span {
+    padding: 0.25rem 0.75rem;
+    background: rgba(255, 119, 0, 0.1);
+    border: 1px solid rgba(255, 119, 0, 0.2);
+    border-radius: var(--radius-sm);
+}
+
+.moto-specs {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.km-badge,
+.type-badge,
+.category-badge,
+.placa-badge,
+.doc-badge {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.95rem;
+    font-weight: 600;
+    border: 1px solid;
+}
+
+.km-badge {
+    background: rgba(76, 175, 80, 0.1);
+    border-color: rgba(76, 175, 80, 0.3);
+    color: #4caf50;
+}
+
+.type-badge {
+    background: rgba(255, 152, 0, 0.1);
+    border-color: rgba(255, 152, 0, 0.3);
+    color: #ff9800;
+    text-transform: capitalize;
+}
+
+.category-badge {
+    background: rgba(33, 150, 243, 0.1);
+    border-color: rgba(33, 150, 243, 0.3);
+    color: #2196f3;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+}
+
+.placa-badge {
+    background: rgba(156, 39, 176, 0.1);
+    border-color: rgba(156, 39, 176, 0.3);
+    color: #9c27b0;
+    text-transform: uppercase;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.doc-badge {
+    background: rgba(33, 150, 243, 0.1);
+    border-color: rgba(33, 150, 243, 0.3);
+    color: #2196f3;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+}
+
+.moto-description {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+    flex: 1;
+}
+
+.moto-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-glass);
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 0.4rem 0.9rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: 1px solid;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+.status-badge.vendido {
+    background: rgba(244, 67, 54, 0.15);
+    border-color: rgba(244, 67, 54, 0.4);
+    color: #d32f2f;
+}
+
+.status-badge.disponivel {
+    background: rgba(76, 175, 80, 0.15);
+    border-color: rgba(76, 175, 80, 0.4);
+    color: #388e3c;
+}
+
+/* Moto Card Vendida */
+.moto-card.vendido {
+    opacity: 0.75;
+    border-color: rgba(244, 67, 54, 0.3);
+}
+
+.moto-card.vendido .moto-image {
+    filter: grayscale(50%);
+    opacity: 0.8;
+}
+
+.moto-card.vendido:hover {
+    transform: translateY(-2px);
+    opacity: 0.85;
+}
+
+/* Modais */
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.8);
+    -webkit-backdrop-filter: blur(5px);
+    backdrop-filter: blur(5px);
+    display: none;
+    align-items: flex-start;
+    justify-content: center;
+    z-index: 999999;
+    padding: 0;
+    overflow-y: auto;
+}
+
+
+
+.modal.active {
+    display: flex;
+}
+
+.modal-content {
+    background: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: var(--radius-xl);
+    max-width: 1000px;
+    width: 95%;
+    max-height: 92vh;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+    position: relative;
+    z-index: 1000000;
+    margin: 1rem auto;
+}
+
+/* Modal de Backups em tela cheia */
+#backupsModal {
+    padding: 0 !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#backupsModal .modal-content {
+    max-width: 100vw !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    border: none !important;
+    padding: 0 !important;
+}
+
+#backupsModal .modal-body {
+    padding: 0 !important;
+}
+
+#backupsModal .modal-header {
+    margin: 0 !important;
+}
+
+.modal-header {
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 100%);
+    padding: 1.5rem;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+}
+
+.modal-header h3 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 255, 255, 0.2);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all var(--transition-normal);
+}
+
+.close:hover {
+    background: rgba(255, 255, 255, 0.3);
+    color: #ffffff;
+    transform: rotate(90deg);
+}
+
+.modal-form {
+        padding: 2.5rem;
+}
+
+@media (max-width: 600px) {
+    .modal-form {
+        padding: 1rem !important;
+        max-height: 90vh !important;
+    }
+    .modal-content {
+        max-width: 100vw !important;
+        width: 100vw !important;
+        min-width: 0 !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+    }
+    max-height: 72vh;
+    overflow-y: auto;
+}
+
+.modal-body {
+    padding: 2.5rem;
+    max-height: 75vh;
+    overflow-y: auto;
+    background: transparent;
+}
+
+/* Grid do modal Ver */
+.view-modal-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+}
+
+.view-image img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+}
+
+.view-details {
+    color: #333;
+}
+
+.view-details h2 {
+    margin: 0 0 1rem 0;
+    color: #222;
+}
+
+.view-details strong {
+    color: #666;
+    font-weight: 600;
+}
+
+/* Grid de detalhes em 2 colunas */
+.details-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.8rem;
+    font-size: 0.95rem;
+}
+
+.details-grid > div {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    color: #333;
+}
+
+.details-grid > div:nth-last-child(-n+2) {
+    border-bottom: none;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    color: #000000 !important;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    background: rgba(255, 255, 255, 0.95) !important;
+    border: 1px solid rgba(255, 102, 0, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 1rem;
+    color: #1a1a1a !important;
+    font-size: 0.95rem;
+    transition: all var(--transition-normal);
+    -webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+/* Sobrescrever autocomplete do navegador */
+.form-group input:-webkit-autofill,
+.form-group input:-webkit-autofill:hover,
+.form-group input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px rgba(255, 255, 255, 0.95) inset !important;
+    -webkit-text-fill-color: #1a1a1a !important;
+    border: 1px solid rgba(255, 102, 0, 0.2) !important;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #ff6600 !important;
+    background: #ffffff !important;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #888888;
+    opacity: 0.7;
+}
+
+.modal-actions {
+    padding: 2rem;
+    border-top: 1px solid var(--border-primary);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+}
+
+/* Responsividade */
+/* Tablets */
+@media (max-width: 1024px) {
+    .admin-grid {
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    }
+    
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .moto-title {
+        font-size: 1.2rem;
+    }
+    
+    .moto-details {
+        font-size: 0.95rem;
+    }
+}
+
+/* Smartphones */
+@media (max-width: 768px) {
+    .admin-content {
+        padding: 1rem;
+    }
+    
+    .admin-header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+        padding: 1.5rem;
+    }
+    
+    .header-title-group {
+        align-items: center;
+        width: 100%;
+    }
+    
+    .admin-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .user-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Seção de agendamentos - botões acessíveis no mobile */
+    .appointments-section .section-header {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+    
+    .appointments-section .section-header .header-actions {
+        width: 100%;
+        flex-direction: column;
+        gap: 0.75rem;
+        position: relative !important;
+        z-index: 11 !important;
+    }
+    
+    .appointments-section .section-header .header-actions input,
+    .appointments-section .section-header .header-actions select,
+    .appointments-section .section-header .header-actions button {
+        width: 100% !important;
+        min-width: unset !important;
+        padding: 0.75rem 1rem !important;
+        font-size: 0.9rem !important;
+        position: relative !important;
+        z-index: 12 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        cursor: pointer !important;
+        -webkit-tap-highlight-color: rgba(255, 102, 0, 0.3) !important;
+    }
+    
+    /* Botão Backups garantindo acessibilidade */
+    .appointments-section .header-actions .btn-secondary,
+    #backupsButton {
+        background: rgba(255, 102, 0, 0.15) !important;
+        border: 2px solid rgba(255, 102, 0, 0.4) !important;
+        color: #ff6600 !important;
+        font-weight: 700 !important;
+        min-height: 48px !important;
+        display: block !important;
+        text-align: center !important;
+        position: relative !important;
+        z-index: 99999 !important;
+        pointer-events: auto !important;
+        touch-action: manipulation !important;
+        -webkit-user-select: none !important;
+        user-select: none !important;
+    }
+    
+    .appointments-section .header-actions .btn-secondary:active,
+    #backupsButton:active {
+        background: rgba(255, 102, 0, 0.3) !important;
+        transform: scale(0.98) !important;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .system-status-panel {
+        padding: 1rem;
+    }
+    
+    .status-indicators {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .status-indicator {
+        padding: 0.75rem;
+    }
+    
+    /* 📱 FILTROS MOBILE - 3 FILEIRAS HORIZONTAIS (ESTILO, CILINDRADA, STATUS) */
+    @media (max-width: 1400px) {
+        .admin-filters {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 20px !important;
+            padding: 15px !important;
+            background: rgba(255, 102, 0, 0.05) !important;
+            border-radius: 12px !important;
+            margin: 15px !important;
+        }
+        
+        /* Busca em primeira linha */
+        .admin-filters .search-input {
+            order: -1 !important;
+            margin-bottom: 8px !important;
+        }
+        
+        /* Esconder selects nativos */
+        .admin-filters select,
+        .admin-filters .filter-select {
+            display: none !important;
+        }
+        
+        /* Cada fileira de filtro */
+        .filter-pill-group {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 10px !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        .filter-pill-group::before {
+            content: attr(data-label) !important;
+            font-size: 0.7rem !important;
+            font-weight: 800 !important;
+            color: #ff6600 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            white-space: nowrap !important;
+            min-width: 75px !important;
+            margin-right: 8px !important;
+        }
+        
+        .filter-pill-button {
+            padding: 8px 14px !important;
+            border-radius: 18px !important;
+            border: 2px solid rgba(255, 102, 0, 0.4) !important;
+            background: white !important;
+            color: #1a1a1a !important;
+            font-weight: 600 !important;
+            font-size: 0.75rem !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            white-space: nowrap !important;
+        }
+        
+        .filter-pill-button:hover {
+            border-color: #ff6600 !important;
+            background: rgba(255, 102, 0, 0.15) !important;
+            transform: translateY(-2px) !important;
+        }
+        
+        .filter-pill-button.active {
+            border-color: #ff6600 !important;
+            background: #ff6600 !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4) !important;
+            font-weight: 700 !important;
+        }
+    }
+    
+    /* 📱 FILTROS MOBILE - Layout 2 colunas organizado */
+    /* No modal de vendas, TUDO static para permitir scroll natural */
+    #soldMotorcyclesModal .admin-filters {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        flex-wrap: wrap;
+        background: transparent;
+        border-radius: 10px;
+        padding: 12px 16px;
+        box-shadow: none;
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        transform: none !important;
+        isolation: auto;
+        transition: opacity 220ms ease, transform 220ms ease; /* fade/slide suave */
+        opacity: 1; /* estado padrão visível */
+        z-index: 2; /* manter abaixo das estatísticas quando necessário */
+        will-change: opacity, transform;
+    }
+
+    /* estado utilitário para esconder suavemente os filtros sem bloquear interações do fundo */
+    #soldMotorcyclesModal .admin-filters.faded {
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none; /* evita captura de cliques quando invisível */
+    }
+
+    /* Estado global para filtros (quando não estiverem dentro do modal) */
+    .admin-filters.faded {
+        opacity: 0;
+        transform: translateY(-6px);
+        pointer-events: none;
+        transition: opacity 220ms ease, transform 220ms ease;
+        will-change: opacity, transform;
+    }
+    
+    #soldMotorcyclesModal .admin-filters > * {
+        width: auto;
+        min-width: 0;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Barra de busca ocupa 2 colunas (linha inteira) */
+    .admin-filters .search-input {
+        grid-column: 1 / -1 !important;
+    }
+
+    /* Selects - estilo consistente MOBILE */
+    .admin-filters select,
+    .admin-filters .filter-select {
+        height: 48px !important;
+        font-size: 0.95rem !important;
+        padding: 12px 16px !important;
+        border-radius: 8px !important;
+        border: 2px solid rgba(255, 102, 0, 0.3) !important;
+        background: white !important;
+        color: #1a1a1a !important;
+        font-weight: 600 !important;
+        z-index: 1 !important; /* Padrão baixo */
+    }
+
+    .admin-filters select:focus,
+    .admin-filters .filter-select:focus {
+        border-color: #ff6600 !important;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2) !important;
+        outline: none !important;
+        z-index: 100 !important; /* Apenas quando aberto fica na frente MOBILE */
+    }
+    
+    /* 📱 DROPDOWNS CUSTOMIZADOS - Ajustes para mobile */
+    .custom-select {
+        min-width: 100%;
+        width: 100%;
+    }
+    
+    .custom-select-trigger {
+        padding: 0.75rem 2rem 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .custom-select-options {
+        max-height: 300px;
+        max-width: calc(100vw - 2rem);
+        left: 0;
+        right: 0;
+    }
+    
+    .custom-option {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .admin-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    /* 📱 TODOS OS MODALS - Remover padding e margins no mobile */
+    .modal {
+        padding: 0 !important;
+        margin: 0 !important;
+    }
+    
+    .modal-content {
+        width: 100% !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        max-height: 100vh !important;
+        overflow-y: auto !important;
+    }
+
+    /* 📱 MODAL DE VENDA - Botões no final natural do scroll */
+    #saleModal .modal-content {
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    #saleModal .modal-form {
+        flex: 1 !important;
+        overflow-y: auto !important;
+    }
+
+    #saleForm .modal-actions {
+        position: relative !important;
+        background: white !important;
+        padding: 20px 15px !important;
+        margin-top: 20px !important;
+        border-top: 2px solid rgba(255, 102, 0, 0.2) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+    }
+
+    #saleForm .modal-actions button {
+        width: 100% !important;
+        flex: none !important;
+        min-height: 50px !important;
+        font-size: 1.05rem !important;
+        padding: 14px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(255, 102, 0, 0.3) !important;
+    }
+
+    /* 📱 MENU MOBILE - Consolidar botões no drawer */
+    @media (max-width: 1400px) {
+        /* Esconder botões do header em mobile (estão no menu agora) */
+        .header-actions .btn-success,
+        .header-actions .btn-info,
+        .header-actions .btn-secondary:not(.btn-small),
+        .header-actions .btn-admin-users {
+            display: none !important;
+        }
+        
+        /* Menu nav mobile - layout vertical com scroll */
+        .admin-nav {
+            position: fixed !important;
+            top: 0 !important;
+            left: -300px !important;
+            width: 280px !important;
+            height: 100vh !important;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%) !important;
+            border-right: 3px solid #ff6600 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            z-index: 9999 !important;
+            transition: left 0.3s ease !important;
+            overflow-y: auto !important;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.5) !important;
+        }
+
+        /* Overlay escuro customizado para menu mobile */
+        .mobile-overlay {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 100vw !important;
+            height: 100vh !important;
+            background: rgba(10,10,20,0.75) !important;
+            z-index: 9998 !important;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+        .mobile-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .admin-nav.open {
+            left: 0 !important;
+        }
+        
+        .nav-content {
+            display: flex !important;
+            flex-direction: column !important;
+            height: 100% !important;
+            padding: 20px 15px !important;
+        }
+        
+        .nav-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            margin-top: 20px !important;
+            flex: 1 !important;
+            overflow-y: auto !important;
+        }
+        
+        .nav-actions button {
+            width: 100% !important;
+            padding: 12px 15px !important;
+            font-size: 0.95rem !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            text-align: left !important;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .nav-actions button:hover {
+            transform: translateX(4px) !important;
+            box-shadow: 0 4px 12px rgba(255, 102, 0, 0.3) !important;
+        }
+    }
+
+    /* FORÇAR OCULTAÇÃO DE SELECTS NATIVOS NO MOBILE (GARANTIA) */
+    @media (max-width: 1400px) {
+        .admin-filters select,
+        .admin-filters .filter-select,
+        .admin-filters .custom-select,
+        .admin-filters .custom-select-trigger,
+        .admin-filters .custom-select-options {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            width: 0 !important;
+            pointer-events: none !important;
+        }
+
+        /* Garantir que os grupos de pills fiquem em fileiras horizontais e ocupem 100% */
+        .admin-filters .filter-pill-group {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            width: 100% !important;
+            justify-content: flex-start !important;
+            gap: 10px !important;
+        }
+
+        /* Forçar direção e comportamento dos botões para ficarem em uma linha
+           - cada grupo fica em uma fileira horizontal
+           - os botões são inline-flex e encolhem quando necessário
+        */
+        .admin-filters .filter-pill-group {
+            flex-direction: row !important;
+            align-items: center !important;
+        }
+
+        .admin-filters .filter-pill-button {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex: 0 1 auto !important;
+            max-width: none !important;
+            box-sizing: border-box !important;
+            margin-right: 6px !important;
+        }
+
+        /* Em telas muito estreitas, permitir 2 por linha e reduzir paddings */
+        @media (max-width: 420px) {
+            .admin-filters .filter-pill-button {
+                max-width: 48% !important;
+                padding: 6px 10px !important;
+                font-size: 0.72rem !important;
+            }
+            .admin-filters .filter-pill-group::before {
+                min-width: 64px !important;
+                font-size: 0.65rem !important;
+            }
+        }
+
+        /* Forçar os labels para uma linha separada acima dos botões */
+        .admin-filters .filter-pill-group::before {
+            display: block !important;
+            width: 100% !important;
+            flex-basis: 100% !important;
+            min-width: 76px !important;
+            margin-right: 0 !important;
+            margin-bottom: 8px !important;
+        }
+    }
+
+    #saleForm .btn-primary {
+        background: linear-gradient(135deg, #ff6600, #ff8533) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4) !important;
+        order: 1 !important;
+    }
+
+    #saleForm .btn-accent {
+        background: linear-gradient(135deg, #6600ff, #8833ff) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(102, 0, 255, 0.4) !important;
+        order: 2 !important;
+    }
+
+    #saleForm .btn-warning {
+        background: linear-gradient(135deg, #ff9800, #f57c00) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4) !important;
+        order: 3 !important;
+    }
+
+    #saleForm .btn-primary:active {
+        background: linear-gradient(135deg, #cc5200, #ff6600) !important;
+        transform: scale(0.98) !important;
+    }
+
+    #saleForm .btn-accent:active {
+        background: linear-gradient(135deg, #5200cc, #6600ff) !important;
+        transform: scale(0.98) !important;
+    }
+
+    #saleForm .btn-warning:active {
+        background: linear-gradient(135deg, #e68900, #cc6600) !important;
+        transform: scale(0.98) !important;
+    }
+    
+    /* 📱 CARDS SIMPLIFICADOS PARA MOBILE - Esconder detalhes extensos */
+    .moto-card {
+        padding: 0.6rem 0.8rem 0.4rem;
+    }
+    
+    .moto-card .moto-image {
+        height: 140px;
+        object-fit: cover;
+    }
+    
+    .moto-card .moto-info {
+        padding: 0.8rem;
+    }
+    
+    /* Esconder elementos detalhados - ficam só no modal "Ver" */
+    .moto-card .doc-badge,
+    .moto-card .placa-badge,
+    .moto-card .moto-description,
+    .moto-card .moto-specs {
+        display: none !important;
+    }
+    
+    /* Simplificar detalhes - mostrar só o essencial */
+    .moto-card .moto-details {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.4rem;
+        font-size: 0.85rem;
+    }
+    
+    .moto-card .moto-details span {
+        background: rgba(255, 102, 0, 0.08);
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        font-size: 0.8rem;
+    }
+    
+    /* Header do card mais compacto */
+    .moto-card .moto-header {
+        margin-bottom: 0.6rem;
+    }
+    
+    .moto-card .moto-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.3rem;
+    }
+    
+    /* Botões mais compactos */
+    .moto-card .moto-actions {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 0.6rem;
+    }
+    
+    .moto-card .moto-actions button {
+        font-size: 0.85rem;
+        padding: 0.6rem 0.8rem;
+        white-space: nowrap;
+    }
+    
+    /* Botão "Ver" com destaque visual */
+    .moto-card .view-btn {
+        background: var(--gradient-nav);
+        font-weight: 600;
+    }
+    
+    /* Botão "Marcar como Vendida" ocupa largura total */
+    .moto-card .sell-btn {
+        grid-column: 1 / -1;
+        font-weight: 600;
+    }
+    
+    /* Botão "Excluir" ocupa largura total */
+    .moto-card .delete-btn {
+        grid-column: 1 / -1;
+    }
+    
+    /* 📱 MODAL VER - Layout otimizado para mobile */
+    .view-modal-grid {
+        grid-template-columns: 1fr !important;
+        gap: 1.5rem;
+    }
+    
+    .view-image img {
+        max-height: 250px;
+    }
+    
+    .view-details h2 {
+        font-size: 1.3rem;
+    }
+    
+    /* Lista de detalhes em coluna única no mobile */
+    .details-grid {
+        grid-template-columns: 1fr !important;
+        gap: 0.5rem !important;
+        font-size: 0.9rem !important;
+    }
+    
+    .details-grid > div {
+        padding: 0.4rem 0 !important;
+        border-bottom: 1px solid rgba(255, 102, 0, 0.1) !important;
+    }
+    
+    .details-grid strong {
+        font-size: 0.85rem;
+        color: #ff6600;
+    }
+    
+    /* Modal body com padding reduzido */
+    #viewModal .modal-body {
+        padding: 1.5rem !important;
+        max-height: 80vh !important;
+    }
+    
+    /* Remover qualquer elemento branco na parte inferior */
+    #viewModal .modal-content {
+        padding-bottom: 0 !important;
+        overflow: hidden;
+    }
+    
+    #viewModal .view-details > div:last-child {
+        margin-bottom: 0 !important;
+        padding-bottom: 0 !important;
+    }
+    
+    /* Botões de documentos mais compactos */
+    #viewModal button {
+        font-size: 0.85rem !important;
+        padding: 0.7rem 1rem !important;
+    }
+    
+    /* 📱 MODAL DE EDIÇÃO - Fullscreen no mobile */
+    #editModal {
+        padding: 0 !important;
+        align-items: stretch !important;
+    }
+    
+    #editModal .modal-content {
+        max-width: 100vw !important;
+        width: 100vw !important;
+        max-height: 100vh !important;
+        height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+    }
+    
+    #editModal .modal-body {
+        padding: 1.5rem 1rem !important;
+        max-height: calc(100vh - 140px) !important;
+        overflow-y: auto !important;
+    }
+    
+    #editModal .modal-header {
+        padding: 1rem 1.5rem !important;
+    }
+    
+    #editModal .modal-header h3 {
+        font-size: 1.3rem !important;
+    }
+    
+    #editModal .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    #editModal .modal-actions {
+        padding: 1rem 1.5rem !important;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    #editModal .modal-actions button {
+        width: 100% !important;
+        padding: 0.9rem !important;
+    }
+
+    
+    /* Modal de venda responsivo em mobile */
+    #saleModal .modal-content {
+        max-width: 100%;
+        width: 100%;
+        max-height: 100vh;
+        margin: 0;
+        border-radius: 0;
+    }
+    
+    #saleModal .modal-form {
+        padding: 1.5rem;
+        max-height: calc(100vh - 80px);
+    }
+    
+    #saleForm h4 {
+        font-size: 1rem;
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    #saleForm .modal-actions {
+        flex-direction: column;
+    }
+    
+    #saleForm .modal-actions button {
+        width: 100%;
+    }
+    
+    /* Modal fullscreen em mobile */
+    #soldMotorcyclesModal .modal-content {
+        max-width: 100vw;
+        max-height: 100vh;
+        width: 100vw;
+        height: 100vh;
+        margin: 0;
+        border-radius: 0;
+        background: #0f0f0f !important;
+        z-index: 1 !important;
+    }
+    
+    #soldMotorcyclesModal .modal-header h3 {
+        font-size: 1.3rem;
+    }
+    
+    #soldMotorcyclesModal .modal-body {
+        padding: 1rem;
+    }
+    
+    /* 📱 FILTROS DE NAVEGAÇÃO - Melhorados para mobile */
+    #soldMotorcyclesModal [style*="Filtros e Navegação"] {
+        padding: 0.75rem !important;
+        margin: 0 0.5rem 1rem 0.5rem !important;
+        border-radius: 10px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="Filtros e Navegação"] h3 {
+        font-size: 0.9rem !important;
+        margin-bottom: 0.5rem !important;
+    }
+    
+    #soldMotorcyclesModal [style*="Filtros e Navegação"] p {
+        font-size: 0.65rem !important;
+    }
+    
+    /* Container dos selects de filtro */
+    #soldMotorcyclesModal [style*="display: flex"][style*="gap: 12px"] {
+        flex-direction: column !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Selects de filtro mais compactos */
+    #soldMotorcyclesModal .filter-select,
+    #soldMotorcyclesModal select[id*="Filter"] {
+        min-width: 100% !important;
+        width: 100% !important;
+        font-size: 0.85rem !important;
+        padding: 0.6rem !important;
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        touch-action: manipulation !important;
+        cursor: pointer !important;
+        position: relative !important;
+        z-index: 10 !important;
+    }
+    
+    /* DESABILITAR custom-select no mobile */
+    @media (max-width: 768px) {
+        #soldMotorcyclesModal .custom-select {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+        
+        #soldMotorcyclesModal .custom-select-trigger,
+        #soldMotorcyclesModal .custom-select-options {
+            display: none !important;
+            pointer-events: none !important;
+            visibility: hidden !important;
+        }
+    }
+    
+    /* Container de filtros - overflow visible para dropdowns */
+    .filter-controls-wrapper,
+    #soldMotorcyclesModal [style*="padding: 18px 20px"],
+    #soldMotorcyclesModal .filter-controls-wrapper {
+        overflow: visible !important;
+        overflow-x: visible !important;
+        overflow-y: visible !important;
+        position: relative !important;
+        z-index: 9999 !important;
+    }
+    
+    /* Fix para dropdowns nativos mobile */
+    @media (max-width: 768px) {
+        .filter-controls-wrapper,
+        #soldMotorcyclesModal [style*="padding: 18px 20px"] {
+            overflow-x: auto !important;
+            -webkit-overflow-scrolling: touch !important;
+            touch-action: pan-x pan-y !important;
+        }
+        
+        #soldMotorcyclesModal select {
+            background-image: none !important;
+            font-size: 16px !important; /* Previne zoom no iOS */
+            min-height: 44px !important; /* Touch target mínimo */
+            padding: 12px !important;
+            touch-action: manipulation !important;
+            -webkit-tap-highlight-color: rgba(255, 102, 0, 0.2) !important;
+        }
+        
+        #soldMotorcyclesModal select:focus {
+            outline: 2px solid #ff6600 !important;
+            outline-offset: 2px !important;
+        }
+    }
+    
+    /* 📱 CARDS DE MOTOS VENDIDAS - Minimalista MacDavis */
+    #soldMotorcyclesModal .modal-body > div > div > div[style*="grid-template-columns"] {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 1rem !important;
+    }
+    
+    /* Forçar coluna única para o container dos cards */
+    #soldMotorcyclesModal [style*="repeat(auto-fill"] {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+    }
+    
+    /* Garantir que cada card ocupe largura total */
+    #soldMotorcyclesModal [data-marca] {
+        width: 100% !important;
+        max-width: 100% !important;
+        background: linear-gradient(145deg, #2a2a2a, #1f1f1f) !important;
+        border: 1px solid rgba(255, 102, 0, 0.2) !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+        position: relative !important;
+        z-index: 1 !important;
+    }
+    
+    /* Grid de specs - Estilo MacDavis minimalista */
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] > div {
+        background: rgba(255, 102, 0, 0.08) !important;
+        border-left: 2px solid #ff6600 !important;
+        border-radius: 4px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] p:last-child {
+        color: #ff6600 !important;
+    }
+    
+    /* Placa - Estilo MacDavis */
+    #soldMotorcyclesModal [style*="Placa:"],
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(156, 39, 176"] {
+        background: rgba(255, 102, 0, 0.1) !important;
+        border: 1px solid rgba(255, 102, 0, 0.3) !important;
+        border-left: 3px solid #ff6600 !important;
+    }
+    
+    #soldMotorcyclesModal [style*="Placa:"] span,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(156, 39, 176"] span {
+        color: #ff9944 !important;
+    }
+    
+    /* Dados da venda - Estilo MacDavis */
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"],
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] {
+        background: rgba(76, 175, 80, 0.08) !important;
+        border: 1px solid rgba(76, 175, 80, 0.2) !important;
+        border-left: 3px solid #4caf50 !important;
+    }
+    
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"] h5,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] h5 {
+        color: #66bb6a !important;
+    }
+    
+    /* Seções de mês - Estilo MacDavis */
+    #soldMotorcyclesModal [style*="Janeiro de"],
+    #soldMotorcyclesModal [style*="Fevereiro de"],
+    #soldMotorcyclesModal [style*="Março de"],
+    #soldMotorcyclesModal [style*="Abril de"],
+    #soldMotorcyclesModal [style*="Maio de"],
+    #soldMotorcyclesModal [style*="Junho de"],
+    #soldMotorcyclesModal [style*="Julho de"],
+    #soldMotorcyclesModal [style*="Agosto de"],
+    #soldMotorcyclesModal [style*="Setembro de"],
+    #soldMotorcyclesModal [style*="Outubro de"],
+    #soldMotorcyclesModal [style*="Novembro de"],
+    #soldMotorcyclesModal [style*="Dezembro de"] {
+        background: rgba(255, 102, 0, 0.12) !important;
+        border-left: 4px solid #ff6600 !important;
+        border-radius: 6px !important;
+        box-shadow: 0 2px 6px rgba(255, 102, 0, 0.1) !important;
+    }
+    
+    /* Reduzir tamanho da imagem dos cards vendidos */
+    #soldMotorcyclesModal img {
+        max-height: 120px !important;
+        object-fit: cover;
+        border-radius: 6px !important;
+    }
+    
+    /* Reduzir padding dos cards vendidos */
+    #soldMotorcyclesModal [style*="background: linear-gradient"][style*="border-radius: 12px"] {
+        padding: 0.6rem !important;
+        margin-bottom: 0.6rem !important;
+        border-radius: 8px !important;
+    }
+    
+    /* Container principal do card */
+    #soldMotorcyclesModal [style*="box-shadow"][style*="border-radius: 12px"] {
+        border-radius: 8px !important;
+        margin-bottom: 1rem !important;
+    }
+    
+    /* Grid de specs compacto - 2 colunas */
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        margin-bottom: 10px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] > div {
+        padding: 8px 10px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] p {
+        font-size: 0.65rem !important;
+        margin: 0 0 2px 0 !important;
+    }
+    
+    #soldMotorcyclesModal [style*="grid-template-columns: repeat(2, 1fr)"] p:last-child {
+        font-size: 0.95rem !important;
+        margin-top: 2px !important;
+    }
+    
+    /* Ajustar fonte dos títulos */
+    #soldMotorcyclesModal h4 {
+        font-size: 0.95rem !important;
+        margin: 0 !important;
+        padding: 10px !important;
+        line-height: 1.3 !important;
+    }
+    
+    #soldMotorcyclesModal h5 {
+        font-size: 0.75rem !important;
+        margin: 0 0 8px 0 !important;
+    }
+    
+    /* Dados da venda - FORÇAR fonte menor */
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"],
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] {
+        padding: 8px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"] p,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] p {
+        font-size: 0.75rem !important;
+        margin: 4px 0 !important;
+        line-height: 1.3 !important;
+    }
+    
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"] span,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] span {
+        font-size: 0.7rem !important;
+        padding: 2px 6px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="DADOS DA VENDA"] h5,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(76, 175, 80"] h5 {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Placa - FORÇAR fonte menor */
+    #soldMotorcyclesModal [style*="Placa:"],
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(156, 39, 176"] {
+        padding: 7px 9px !important;
+        margin-bottom: 8px !important;
+    }
+    
+    #soldMotorcyclesModal [style*="Placa:"] p,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(156, 39, 176"] p {
+        font-size: 0.75rem !important;
+    }
+    
+    #soldMotorcyclesModal [style*="Placa:"] span,
+    #soldMotorcyclesModal div[style*="background: linear-gradient(135deg, rgba(156, 39, 176"] span {
+        font-size: 0.8rem !important;
+    }
+    
+    /* Botões compactos e em grid 2 colunas */
+    #soldMotorcyclesModal [style*="display: grid"][style*="grid-template-columns"] {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+    
+    #soldMotorcyclesModal button {
+        padding: 0.65rem 0.5rem !important;
+        font-size: 0.8rem !important;
+        white-space: nowrap !important;
+    }
+    
+    #soldMotorcyclesModal button span {
+        font-size: 0.9rem !important;
+    }
+    
+    /* Seções de mês proporcionais */
+    #soldMotorcyclesModal [style*="Janeiro de"],
+    #soldMotorcyclesModal [style*="Fevereiro de"],
+    #soldMotorcyclesModal [style*="Março de"],
+    #soldMotorcyclesModal [style*="Abril de"],
+    #soldMotorcyclesModal [style*="Maio de"],
+    #soldMotorcyclesModal [style*="Junho de"],
+    #soldMotorcyclesModal [style*="Julho de"],
+    #soldMotorcyclesModal [style*="Agosto de"],
+    #soldMotorcyclesModal [style*="Setembro de"],
+    #soldMotorcyclesModal [style*="Outubro de"],
+    #soldMotorcyclesModal [style*="Novembro de"],
+    #soldMotorcyclesModal [style*="Dezembro de"] {
+        padding: 10px 14px !important;
+        margin-bottom: 10px !important;
+        font-size: 1rem !important;
+    }
+    
+    .nav-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+/* Telas muito pequenas */
+@media (max-width: 480px) {
+    .moto-title {
+        font-size: 1.1rem;
+    }
+    
+    .moto-details {
+        font-size: 0.9rem;
+    }
+    
+    .doc-badge {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.9rem;
+    }
+    
+    /* Botões maiores para toque */
+    .btn, .btn-primary, .btn-danger, .btn-secondary {
+        min-height: 44px;
+        padding: 0.8rem 1.2rem;
+    }
+    
+    .modal-header h3 {
+        font-size: 1.2rem;
+    }
+}
+
+/* Animações de Entrada */
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.admin-card {
+    opacity: 1;
+}
+
+.stat-card {
+    opacity: 1;
+}
+
+/* Estados de Loading */
+.loading {
+    opacity: 0.6;
+    pointer-events: none;
+    position: relative;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 20px;
+    height: 20px;
+    margin: -10px 0 0 -10px;
+    border: 2px solid rgba(255, 122, 24, 0.2);
+    border-top: 2px solid var(--orange-500);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0 0 10px rgba(255, 122, 24, 0.5);
+    
+    /* Otimizações para Chrome */
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* Utilitários */
+.text-gradient {
+    background: var(--gradient-accent);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.glow {
+    filter: var(--rgb-glow);
+}
+
+.glass {
+    background: var(--bg-glass);
+    border: 1px solid var(--border-glass);
+}
+
+/* Galeria de Imagens no Modal */
+.modal-image-gallery {
+    position: relative;
+    width: 100%;
+    height: 400px;
+    background: #1a1a1a;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.modal-image-gallery img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.gallery-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border: none;
+    padding: 1rem;
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+    z-index: 10;
+    border-radius: var(--radius-sm);
+}
+
+.gallery-nav:hover {
+    background: var(--orange-primary);
+    color: #000;
+}
+
+.gallery-nav.prev {
+    left: 1rem;
+}
+
+.gallery-nav.next {
+    right: 1rem;
+}
+
+.gallery-nav:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+}
+
+.gallery-counter {
+    position: absolute;
+    bottom: 1rem;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.gallery-thumbnails {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    overflow-x: auto;
+    padding: 0.5rem 0;
+}
+
+.gallery-thumb {
+    width: 80px;
+    height: 60px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.gallery-thumb:hover {
+    border-color: var(--orange-primary);
+    transform: scale(1.05);
+}
+
+.gallery-thumb.active {
+    border-color: var(--orange-primary);
+    box-shadow: 0 0 10px var(--orange-primary);
+}
+
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Estilos para formulário de venda */
+#placa {
+    text-transform: uppercase;
+}
+
+#saleMotorcycleInfo {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+}
+
+/* ========================================
+   MODAL DE VENDA - LAYOUT OTIMIZADO
+   ======================================== */
+
+/* Modal de Venda com tamanho otimizado */
+#saleModal .modal-content {
+    max-width: 1100px;
+    width: 95%;
+    max-height: 95vh;
+}
+
+/* Títulos das seções do formulário de venda */
+#saleForm h4 {
+    color: #ff6600;
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(255, 102, 0, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Info da moto com destaque */
+#saleMotorcycleInfo {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.08), rgba(255, 170, 0, 0.05));
+    padding: 1.2rem;
+    border-radius: 12px;
+    margin-bottom: 1.5rem;
+    border-left: 4px solid #ff6600;
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.1);
+}
+
+/* Form rows com melhor espaçamento */
+#saleForm .form-row {
+    margin-bottom: 0.5rem;
+}
+
+/* Form groups com espaçamento otimizado */
+#saleForm .form-group {
+    margin-bottom: 1.2rem;
+}
+
+#saleForm .form-group label {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+    display: block;
+    font-size: 0.95rem;
+}
+
+#saleForm input,
+#saleForm select,
+#saleForm textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+#saleForm input:focus,
+#saleForm select:focus,
+#saleForm textarea:focus {
+    border-color: #ff6600;
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+}
+
+#saleForm textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Ações do modal */
+#saleForm .modal-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 2px solid #e0e0e0;
+    justify-content: center;
+    align-items: center;
+}
+
+#saleForm .modal-actions button {
+    flex: 1;
+    padding: 1rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0;
+}
+
+#saleForm .btn-primary {
+    background: linear-gradient(135deg, #ff6600, #ff8533);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.3);
+}
+
+#saleForm .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(255, 102, 0, 0.4);
+}
+
+#saleForm .btn-secondary {
+    background: #e0e0e0;
+    color: #333;
+    border: 2px solid #ccc;
+}
+
+#saleForm .btn-secondary:hover {
+    background: #d0d0d0;
+    border-color: #bbb;
+}
+
+/* Placeholder mais visível */
+#saleForm input::placeholder,
+#saleForm textarea::placeholder,
+#saleForm select::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Select customizado */
+#saleForm select {
+    cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ff6600' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+/* Scroll suave no formulário */
+#saleForm {
+    scroll-behavior: smooth;
+}
+
+/* Modal de Vendas - Fullscreen Interativo */
+#soldMotorcyclesModal {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    padding: 0;
+    background: rgba(0, 0, 0, 0.95) !important;
+    z-index: 9998 !important;
+}
+
+#soldMotorcyclesModal.modal {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+    pointer-events: none !important;
+}
+
+#soldMotorcyclesModal .modal-content {
+    pointer-events: auto !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    max-height: 100vh !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border-radius: 0 !important;
+    display: flex;
+    flex-direction: column;
+    box-shadow: none;
+    background: #0f0f0f !important;
+    z-index: 1 !important;
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+#soldMotorcyclesModal .modal-body,
+#soldMotorcyclesModal #soldMotorcyclesContent {
+    position: relative !important;
+    top: auto !important;
+    left: auto !important;
+    transform: none !important;
+}
+
+/* Mobile refinement: ensure sold modal truly fills viewport and remove bottom gap */
+@media (max-width: 900px) {
+    #soldMotorcyclesModal {
+        height: 100vh !important;
+        padding: 0 !important;
+    }
+
+    #soldMotorcyclesModal .modal-content {
+        height: 100vh !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        box-shadow: none !important;
+    }
+
+    #soldMotorcyclesModal .modal-body {
+        padding-top: 12px !important;
+        padding-bottom: env(safe-area-inset-bottom, 8px) !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+}
+
+/* Remover qualquer posicionamento estranho dos inputs */
+#soldMotorcyclesModal input[type="text"] {
+    position: relative !important;
+    transform: none !important;
+    z-index: 1 !important;
+}
+
+/* ESCONDER a caixa de busca do catálogo quando modal de vendas estiver aberto */
+.modal-open #searchInput,
+body:has(#soldMotorcyclesModal:not([style*="display: none"])) #searchInput,
+body:has(#soldMotorcyclesModal:not([style*="display:none"])) #searchInput {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+}
+
+/* Garantir que filtros do catálogo fiquem escondidos APENAS quando modal de vendas estiver aberto */
+
+/* Removido display:none dos filtros do admin no modal de vendas para permitir animação JS */
+
+/* Classe para fade/slide animado dos filtros/estatísticas no Painel de Vendas */
+.sales-fade-scroll {
+    transition: opacity 0.35s cubic-bezier(0.4,0,0.2,1),
+                transform 0.35s cubic-bezier(0.4,0,0.2,1);
+    will-change: opacity, transform;
+}
+
+/* Estilo para a caixa de busca no painel de vendas */
+.sold-search-input {
+    background: white !important;
+    border: 2px solid rgba(255, 255, 255, 0.3) !important;
+    border-radius: 12px !important;
+    padding: 1rem 1.5rem !important;
+    color: #1a1a1a !important;
+    font-size: 1rem !important;
+    font-weight: 600 !important;
+}
+
+@keyframes modalSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* === HEADER MINIMALISTA PROFISSIONAL PAINEL DE VENDAS === */
+#soldMotorcyclesModal .sales-panel-header {
+    background: #000000;
+    border-bottom: 1px solid #1a1a1a;
+    padding: 1.25rem 2rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.sales-header-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+}
+
+.sales-brand-section {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.sales-brand-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.sales-brand-icon:hover {
+    background: #242424;
+    border-color: #ff6600;
+    box-shadow: 0 0 12px rgba(255, 102, 0, 0.2);
+    transform: translateY(-1px);
+}
+
+.sales-logo {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: drop-shadow(0 2px 8px rgba(255, 102, 0, 0.3));
+}
+
+.sales-brand-identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.sales-brand-name {
+    font-family: 'Inter', sans-serif;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.3;
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.sales-brand-tagline {
+    font-size: 0.875rem;
+    color: #ff6600;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: none;
+    margin: 0;
+}
+
+.sales-close-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1.5rem;
+    background: transparent;
+    border: 1px solid #3a3a3a;
+    color: #999999;
+    transition: all 0.2s ease;
+}
+
+.sales-close-btn:hover {
+    background: #1a1a1a;
+    color: #ffffff;
+    border-color: #666666;
+    transform: rotate(90deg);
+}
+
+.sales-header-divider {
+    height: 1px;
+    background: #ff6600;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* === CARDS DE ESTATÍSTICAS PROFISSIONAIS MACDAVIS === */
+.macdavis-stat-card {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.2s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+/* Linha de Acento no Topo */
+.card-accent {
+    height: 2px;
+    width: 100%;
+    flex-shrink: 0;
+}
+
+/* Header do Card */
+.card-header {
+    padding: 1rem 1rem 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.card-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+    font-size: 1.75rem;
+}
+
+.card-badge {
+    padding: 0.35rem 0.75rem;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* Body do Card */
+.card-body {
+    padding: 0.5rem 1rem;
+    flex: 1;
+}
+
+.card-value {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'Inter', sans-serif;
+    color: #ffffff;
+    line-height: 1;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.03em;
+}
+
+.card-label {
+    font-size: 0.875rem;
+    color: #999999;
+    font-weight: 500;
+    letter-spacing: 0.02em;
+}
+
+/* Footer do Card */
+.card-footer {
+    padding: 0.85rem 1rem;
+    border-top: 1px solid #242424;
+    background: #0f0f0f;
+}
+
+.card-detail {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #666666;
+}
+
+.detail-icon {
+    font-size: 1.2rem;
+    opacity: 0.7;
+}
+
+.detail-text {
+    font-weight: 500;
+    letter-spacing: 0.3px;
+}
+
+/* Hover Effect */
+.macdavis-stat-card:hover {
+    transform: translateY(-2px);
+    border-color: #3a3a3a;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.macdavis-stat-card:hover .card-icon {
+    transform: scale(1.05);
+}
+
+.macdavis-stat-card:hover .card-accent {
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.3);
+}
+
+/* Animação sutil de entrada */
+@keyframes cardFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.macdavis-stat-card {
+    animation: cardFadeIn 0.4s ease-out forwards;
+}
+
+.macdavis-stat-card:nth-child(1) { animation-delay: 0.05s; }
+.macdavis-stat-card:nth-child(2) { animation-delay: 0.1s; }
+.macdavis-stat-card:nth-child(3) { animation-delay: 0.15s; }
+.macdavis-stat-card:nth-child(4) { animation-delay: 0.2s; }
+
+/* Responsivo para stats grid */
+@media (max-width: 768px) {
+    .sales-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    
+    .card-value {
+        font-size: 2rem;
+    }
+    
+    /* Responsividade do Header */
+    .sales-header-wrapper {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .sales-close-btn {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+    }
+    
+    .sales-brand-section {
+        padding-right: 3rem;
+    }
+
+    /* 📄 MODAL DE CONTRATO - MOBILE FIX */
+    #contractModal .modal-content {
+        max-width: 100% !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        margin: 0 !important;
+    }
+
+    #contractModal .form-actions {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 12px !important;
+        padding: 20px !important;
+        background: white !important;
+        position: sticky !important;
+        bottom: 0 !important;
+        left: 0 !important;
+        right: 0 !important;
+        z-index: 1000 !important;
+        border-top: 2px solid rgba(255, 102, 0, 0.2) !important;
+        box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.15) !important;
+        margin: 0 !important;
+        width: 100% !important;
+    }
+
+    #contractModal .form-actions button {
+        width: 100% !important;
+        min-height: 48px !important;
+        font-size: 1.1rem !important;
+        padding: 14px 20px !important;
+        border-radius: 8px !important;
+        font-weight: 700 !important;
+        display: block !important;
+        text-align: center !important;
+        cursor: pointer !important;
+        touch-action: manipulation !important;
+        -webkit-tap-highlight-color: rgba(255, 102, 0, 0.3) !important;
+    }
+
+    #contractModal .btn-primary {
+        background: linear-gradient(135deg, #ff6600, #ff8533) !important;
+        color: white !important;
+        border: none !important;
+        box-shadow: 0 4px 12px rgba(255, 102, 0, 0.4) !important;
+    }
+
+    #contractModal .btn-primary:active {
+        background: linear-gradient(135deg, #cc5200, #ff6600) !important;
+        transform: scale(0.98) !important;
+    }
+
+    #contractModal .btn-secondary {
+        background: white !important;
+        color: #ff6600 !important;
+        border: 2px solid #ff6600 !important;
+    }
+
+    #contractModal .btn-secondary:active {
+        background: rgba(255, 102, 0, 0.1) !important;
+        transform: scale(0.98) !important;
+    }
+
+    /* Garantir que formulário tenha padding-bottom para não sobrepor botões */
+    #contractForm {
+        padding-bottom: 180px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .sales-stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+    
+    .macdavis-stat-card {
+        padding: 0;
+    }
+    
+    .card-header {
+        padding: 1.2rem 1.2rem 0.6rem;
+    }
+    
+    .card-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 1.2rem;
+    }
+    
+    .card-badge {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.65rem;
+        letter-spacing: 0.8px;
+    }
+    
+    .card-body {
+        padding: 0.6rem 1.2rem;
+    }
+    
+    .card-footer {
+        padding: 0.8rem 1.2rem;
+    }
+    
+    .sales-brand-icon {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .sales-logo {
+        width: 26px;
+        height: 26px;
+    }
+    
+    .sales-brand-name {
+        font-size: 1.2rem;
+    }
+    
+    .sales-brand-tagline {
+        font-size: 0.65rem;
+    }
+}
+
+/* COMPATIBILIDADE - Esconder cards antigos se existirem */
+.stat-card:not(.macdavis-stat-card) {
+    display: none;
+}
+
+/* COMPATIBILIDADE COM ESTILOS ANTIGOS */
+#soldMotorcyclesModal .modal-header:not(.sales-panel-header) {
+    background: linear-gradient(135deg, #ff6600 0%, #ff8533 50%, #ffaa00 100%);
+    padding: 1.2rem 1.5rem;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(255, 102, 0, 0.3);
+}
+
+#soldMotorcyclesModal .modal-header h3 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+#soldMotorcyclesModal .close {
+    width: 50px;
+    height: 50px;
+    font-size: 1.5rem;
+    background: rgba(255, 255, 255, 0.15);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+#soldMotorcyclesModal .close:hover {
+    background: rgba(255, 255, 255, 0.25);
+    border-color: rgba(255, 255, 255, 0.5);
+    transform: rotate(90deg) scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}
+
+#soldMotorcyclesModal .modal-body {
+    flex: 1 1 0;
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    padding: 0;
+    margin: 0;
+    background: #0f0f0f !important;
+    min-height: 0;
+    max-height: 100%;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Container interno com scroll */
+#soldMotorcyclesContent {
+    overflow-y: auto !important;
+    overflow-x: hidden !important;
+    max-height: calc(100vh - 150px) !important;
+    background: #0f0f0f !important;
+    position: relative !important;
+    z-index: 0 !important;
+}
+
+/* Stats grid abaixo dos filtros mas acima dos cards */
+#soldMotorcyclesModal .sales-stats-grid {
+    position: relative !important;
+    z-index: 500 !important;
+    background: #0f0f0f !important;
+}
+
+/* Scrollbar personalizada para o conteúdo */
+#soldMotorcyclesContent::-webkit-scrollbar,
+#soldMotorcyclesModal .modal-body::-webkit-scrollbar {
+    width: 10px;
+}
+
+#soldMotorcyclesContent::-webkit-scrollbar-track,
+#soldMotorcyclesModal .modal-body::-webkit-scrollbar-track {
+    background: #1a1a1a;
+    border-radius: 0;
+}
+
+#soldMotorcyclesContent::-webkit-scrollbar-thumb,
+#soldMotorcyclesModal .modal-body::-webkit-scrollbar-thumb {
+    background: #ff6600;
+    border-radius: 5px;
+    border: 2px solid #1a1a1a;
+}
+
+#soldMotorcyclesContent::-webkit-scrollbar-thumb:hover,
+#soldMotorcyclesModal .modal-body::-webkit-scrollbar-thumb:hover {
+    background: #ff7a1a;
+}
+
+/* Cards de motos no modal fullscreen - OTIMIZADO */
+#soldMotorcyclesModal .month-section {
+    margin-bottom: 35px;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Grid de cards */
+
+/* Ensure consistent orange scrollbars across main pages (WebKit-based browsers) */
+body::-webkit-scrollbar,
+.modal-body::-webkit-scrollbar,
+.page-content::-webkit-scrollbar,
+.scrollable::-webkit-scrollbar,
+.custom-select-options::-webkit-scrollbar {
+    width: 10px;
+}
+
+body::-webkit-scrollbar-track,
+.modal-body::-webkit-scrollbar-track,
+.page-content::-webkit-scrollbar-track,
+.scrollable::-webkit-scrollbar-track,
+.custom-select-options::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+body::-webkit-scrollbar-thumb,
+.modal-body::-webkit-scrollbar-thumb,
+.page-content::-webkit-scrollbar-thumb,
+.scrollable::-webkit-scrollbar-thumb,
+.custom-select-options::-webkit-scrollbar-thumb {
+    background: #ff6600;
+    border-radius: 5px;
+    border: 2px solid #1a1a1a;
+}
+
+body::-webkit-scrollbar-thumb:hover,
+.modal-body::-webkit-scrollbar-thumb:hover,
+.page-content::-webkit-scrollbar-thumb:hover,
+.scrollable::-webkit-scrollbar-thumb:hover,
+.custom-select-options::-webkit-scrollbar-thumb:hover {
+    background: #ff7a1a;
+}
+#soldMotorcyclesModal .month-section > div:last-child {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Cards individuais - Z-INDEX BAIXO */
+#soldMotorcyclesModal [data-marca],
+#soldMotorcyclesModal .motorcycle-card {
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+/* Garantir que NADA dentro dos cards fique acima dos filtros */
+#soldMotorcyclesModal [data-marca] *,
+#soldMotorcyclesModal .motorcycle-card * {
+    z-index: auto !important;
+}
+
+/* === CARDS DE VENDAS - MODERNO MINIMALISTA === */
+.sold-card-modern {
+    background: #1a1a1a;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid rgba(255, 102, 0, 0.2);
+    transition: all 0.3s ease;
+    position: relative;
+    z-index: 1;
+}
+
+.sold-card-modern:hover {
+    border-color: rgba(255, 102, 0, 0.5);
+    box-shadow: 0 8px 24px rgba(255, 102, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+/* Imagem do Card */
+.sold-card-image {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+    background: #0f0f0f;
+}
+
+.sold-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s ease;
+}
+
+.sold-card-modern:hover .sold-card-image img {
+    transform: scale(1.05);
+}
+
+.sold-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: #4caf50;
+    color: white;
+    padding: 4px 12px;
+    border-radius: 16px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    box-shadow: 0 2px 8px rgba(76, 175, 80, 0.4);
+}
+
+/* Header do Card */
+.sold-card-header {
+    padding: 16px 16px 12px;
+    border-bottom: 1px solid rgba(255, 102, 0, 0.15);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.sold-card-header h4 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    flex: 1;
+    line-height: 1.3;
+}
+
+.sold-card-plate {
+    background: linear-gradient(135deg, rgba(255, 102, 0, 0.2), rgba(255, 102, 0, 0.1));
+    color: #ff6600;
+    padding: 6px 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 800;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+    border: 2px solid rgba(255, 102, 0, 0.5);
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
+}
+
+/* Specs Grid Minimalista */
+.sold-card-specs {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    background: rgba(255, 102, 0, 0.1);
+    padding: 0;
+    margin: 0;
+}
+
+.spec-item {
+    background: #1a1a1a;
+    padding: 12px 8px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.spec-value {
+    font-size: 20px;
+    font-weight: 800;
+    color: #ff6600;
+    line-height: 1;
+}
+
+.spec-value small {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.8;
+}
+
+.spec-label {
+    font-size: 10px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Informações de Venda */
+.sold-card-sale-info {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sale-info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.sale-info-row:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    font-size: 13px;
+    font-weight: 700;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    min-width: 90px;
+}
+
+.info-value {
+    font-size: 16px;
+    font-weight: 700;
+    color: white;
+    text-align: right;
+    flex: 1;
+}
+
+.chassi-text {
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: normal;
+}
+
+.sale-notes {
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(255, 102, 0, 0.05);
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 102, 0, 0.15);
+}
+
+.sale-notes .info-value {
+    text-align: left;
+    font-size: 12px;
+    opacity: 0.85;
+    font-style: italic;
+    margin-top: 4px;
+}
+
+/* Botões de Ação Minimalistas */
+.sold-card-actions {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px 16px;
+    flex-wrap: wrap;
+}
+
+.action-btn {
+    flex: 1;
+    min-width: calc(33.333% - 6px);
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.action-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.btn-purple {
+    background: linear-gradient(135deg, #9c27b0, #7b1fa2);
+}
+
+.btn-purple:hover {
+    box-shadow: 0 4px 12px rgba(156, 39, 176, 0.4);
+}
+
+.btn-cyan {
+    background: linear-gradient(135deg, #00bcd4, #0097a7);
+}
+
+.btn-cyan:hover {
+    box-shadow: 0 4px 12px rgba(0, 188, 212, 0.4);
+}
+
+.btn-orange {
+    background: linear-gradient(135deg, #ff9800, #f57c00);
+}
+
+.btn-orange:hover {
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+}
+
+.btn-blue {
+    background: linear-gradient(135deg, #2196f3, #1976d2);
+}
+
+.btn-blue:hover {
+    box-shadow: 0 4px 12px rgba(33, 150, 243, 0.4);
+}
+
+.btn-red {
+    background: linear-gradient(135deg, #f44336, #d32f2f);
+}
+
+.btn-red:hover {
+    box-shadow: 0 4px 12px rgba(244, 67, 54, 0.4);
+}
+
+/* Mobile Responsivo */
+@media (max-width: 768px) {
+    .sold-card-specs {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .spec-value {
+        font-size: 18px;
+    }
+    
+    .sold-card-header h4 {
+        font-size: 16px;
+    }
+    
+    /* Aumentar largura mínima apenas dos cards de motos vendidas (não estatísticas) */
+    #soldMotorcyclesModal .month-section [style*="grid-template-columns"][style*="450px"] {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr)) !important;
+    }
+    
+    /* Reorganizar botões: CRLV e Editar na 1ª linha, Retomar e Excluir na 2ª linha */
+    .sold-card-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+    
+    .action-btn {
+        min-width: unset !important;
+        font-size: 12px;
+        padding: 10px 8px;
+    }
+    
+    /* CRLV ocupa primeira posição */
+    .sold-card-actions .btn-purple {
+        order: 1;
+    }
+    
+    /* Editar ocupa segunda posição */
+    .sold-card-actions .btn-orange {
+        order: 2;
+    }
+    
+    /* Retomar ocupa terceira posição (2ª linha, 1ª coluna) */
+    .sold-card-actions .btn-blue {
+        order: 3;
+    }
+    
+    /* Excluir ocupa quarta posição (2ª linha, 2ª coluna) */
+    .sold-card-actions .btn-red {
+        order: 4;
+    }
+    
+    /* Chassi com texto menor e quebra de linha permitida */
+    .chassi-text {
+        font-size: 13px !important;
+        word-break: break-all !important;
+        line-height: 1.3 !important;
+    }
+}
+
+/* Melhorar interatividade dos cards - Grid layout - OTIMIZADO */
+#soldMotorcyclesModal .month-section > div:last-child > div {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    position: relative !important;
+    z-index: 1 !important;
+}
+
+#soldMotorcyclesModal .month-section > div:last-child > div:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(255, 102, 0, 0.15);
+}
+
+/* Imagens - sem zoom para performance */
+#soldMotorcyclesModal img {
+    transition: opacity 0.2s ease;
+}
+
+/* Botões mais atrativos - SIMPLIFICADO */
+#soldMotorcyclesModal button {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 600;
+}
+
+#soldMotorcyclesModal button:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+}
+
+#soldMotorcyclesModal button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2) !important;
+}
+
+/* Select de filtro estilizado - OTIMIZADO */
+#soldMotorcyclesModal select {
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    font-weight: 500;
+}
+
+#soldMotorcyclesModal select:hover {
+    border-color: #ff6600;
+    box-shadow: 0 2px 8px rgba(255, 102, 0, 0.15);
+}
+
+#soldMotorcyclesModal select:focus {
+    border-color: #ff6600;
+    box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.1);
+    outline: none;
+}

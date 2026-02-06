@@ -1,0 +1,7 @@
+/* Page-scoped override to restore mobile pan & overscroll
+   Use this by injecting into the appointments page (Console) for quick reversible test.
+*/
+html, body {
+  touch-action: pan-y !important;
+  overscroll-behavior-y: auto !important;
+}

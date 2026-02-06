@@ -1,0 +1,41 @@
+================================================================================
+PASTAS MOVIDAS - 25/01/2026 23:44:58
+================================================================================
+
+CATEGORIA 1: PEGA AE JACK
+CATEGORIA 2: CACHE E OLD VERSIONS
+✅ [Cache/Old] PASTA: _old_versions\
+✅ [Cache/Old] PASTA: _obsolete_word_import\
+✅ [Cache/Old] PASTA: old_versions\
+CATEGORIA 3: BACKUPS DUPLICADOS
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_101718\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_101718_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_101718_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_111625\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_111625_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_111625_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_171549\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_171549_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260119_171549_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260120_122813\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260120_122813_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260120_122813_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260121_111043\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260121_111043_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260121_111043_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260122_232256\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260122_232256_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260122_232256_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_120026\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_120026_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_120026_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_155257\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_155257_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260123_155257_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_094105\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_094105_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_094105_copia2\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_100401\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_100401_copia1\
+✅ [Backup Antigo] PASTA: Backup_Sistema_20260124_100401_copia2\
+Total: 33 | 23:50:53

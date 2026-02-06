@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Diagnóstico de Horários - MacDavis Motos</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2rem;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .status-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+        }
+
+        .status-label {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .status-value {
+            color: #666;
+        }
+
+        .status-value.success {
+            color: #28a745;
+            font-weight: 600;
+        }
+
+        .status-value.warning {
+            color: #ff6600;
+            font-weight: 600;
+        }
+
+        .status-value.error {
+            color: #dc3545;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+
+        .btn:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-danger {
+            background: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background: #c82333;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+        }
+
+        .actions {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #e0e0e0;
+        }
+
+        .log-container {
+            background: #1e1e1e;
+            color: #d4d4d4;
+            padding: 20px;
+            border-radius: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+        }
+
+        .log-line {
+            margin: 5px 0;
+            padding: 2px 0;
+        }
+
+        .log-line.success {
+            color: #4ec9b0;
+        }
+
+        .log-line.error {
+            color: #f48771;
+        }
+
+        .log-line.warning {
+            color: #ce9178;
+        }
+
+        .log-line.info {
+            color: #9cdcfe;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        th {
+            background: #667eea;
+            color: white;
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background: #f8f9fa;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .badge-realizado {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-pendente {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-cancelado {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔍 Diagnóstico de Horários</h1>
+        <p class="subtitle">Sistema de verificação de disponibilidade - MacDavis Motos</p>
+
+        <div class="info-box">
+            <h3>📊 Status do Sistema</h3>
+            <div id="systemStatus">
+                <div class="status-item">
+                    <span class="status-label">Carregando...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>📅 Agendamentos de Hoje (17/01/2026)</h3>
+            <div id="todayAppointments">
+                <div class="status-item">
+                    <span class="status-label">Carregando...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-box">
+            <h3>🕒 Horários Disponíveis</h3>
+            <div id="availableSlots">
+                <div class="status-item">
+                    <span class="status-label">Carregando...</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <h3 style="margin-bottom: 15px;">⚡ Ações Rápidas</h3>
+            <button class="btn btn-danger" onclick="clearLocalStorage()">🗑️ Limpar LocalStorage</button>
+            <button class="btn btn-danger" onclick="clearCache()">🧹 Limpar Cache</button>
+            <button class="btn btn-success" onclick="reloadData()">🔄 Recarregar Dados</button>
+            <button class="btn" onclick="window.location.href='agendamento.html'">📅 Ir para Agendamento</button>
+        </div>
+
+        <div class="log-container" id="logContainer">
+            <div class="log-line info">Sistema iniciado...</div>
+        </div>
+    </div>
+
+    <script>
+        const today = '2026-01-17';
+        let todosAgendamentos = [];
+
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('logContainer');
+            const line = document.createElement('div');
+            line.className = `log-line ${type}`;
+            const timestamp = new Date().toLocaleTimeString('pt-BR');
+            line.textContent = `[${timestamp}] ${message}`;
+            logContainer.appendChild(line);
+            logContainer.scrollTop = logContainer.scrollHeight;
+            console.log(`[${type.toUpperCase()}]`, message);
+        }
+
+        async function loadData() {
+            log('Iniciando diagnóstico...', 'info');
+
+            // Verificar API
+            try {
+                const response = await fetch('/api/appointments');
+                if (response.ok) {
+                    todosAgendamentos = await response.json();
+                    log(`✅ API respondeu: ${todosAgendamentos.length} agendamentos carregados`, 'success');
+                } else {
+                    log(`❌ Erro na API: ${response.status}`, 'error');
+                    todosAgendamentos = [];
+                }
+            } catch (error) {
+                log(`❌ Erro ao conectar com API: ${error.message}`, 'error');
+                todosAgendamentos = [];
+            }
+
+            // Verificar LocalStorage
+            const localData = localStorage.getItem('appointments');
+            if (localData) {
+                const localAppointments = JSON.parse(localData);
+                log(`📦 LocalStorage tem ${localAppointments.length} agendamentos`, 'info');
+            } else {
+                log('📦 LocalStorage vazio', 'info');
+            }
+
+            // Analisar agendamentos de hoje
+            analyzeToday();
+            
+            // Calcular horários disponíveis
+            calculateAvailableSlots();
+
+            // Atualizar status do sistema
+            updateSystemStatus();
+        }
+
+        function analyzeToday() {
+            log(`Analisando agendamentos para ${today}...`, 'info');
+
+            const todayAppointments = todosAgendamentos.filter(ag => {
+                const agDate = ag.data || ag.date;
+                return agDate === today;
+            });
+
+            log(`📊 Total de agendamentos para hoje: ${todayAppointments.length}`, 'info');
+
+            const byStatus = {
+                pendente: todayAppointments.filter(a => !a.status || a.status === 'pendente').length,
+                realizado: todayAppointments.filter(a => a.status === 'realizado').length,
+                cancelado: todayAppointments.filter(a => a.status === 'cancelado').length
+            };
+
+            log(`  - Pendentes: ${byStatus.pendente}`, byStatus.pendente > 0 ? 'warning' : 'info');
+            log(`  - Realizados: ${byStatus.realizado}`, 'info');
+            log(`  - Cancelados: ${byStatus.cancelado}`, 'info');
+
+            // Atualizar interface
+            const container = document.getElementById('todayAppointments');
+            
+            if (todayAppointments.length === 0) {
+                container.innerHTML = `
+                    <div class="status-item">
+                        <span class="status-label">Nenhum agendamento encontrado</span>
+                        <span class="status-value success">✅ TODOS os horários disponíveis</span>
+                    </div>
+                `;
+            } else {
+                let html = `
+                    <div class="status-item">
+                        <span class="status-label">Total de agendamentos</span>
+                        <span class="status-value">${todayAppointments.length}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Pendentes (bloqueiam horários)</span>
+                        <span class="status-value ${byStatus.pendente > 0 ? 'warning' : 'success'}">${byStatus.pendente}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Realizados (liberam horários)</span>
+                        <span class="status-value">${byStatus.realizado}</span>
+                    </div>
+                    <div class="status-item">
+                        <span class="status-label">Cancelados (liberam horários)</span>
+                        <span class="status-value">${byStatus.cancelado}</span>
+                    </div>
+                `;
+
+                if (todayAppointments.length > 0) {
+                    html += '<table><thead><tr><th>Horário</th><th>Cliente</th><th>Status</th></tr></thead><tbody>';
+                    todayAppointments.forEach(apt => {
+                        const horario = apt.horario || apt.time;
+                        const cliente = apt.cliente || apt.name;
+                        const status = apt.status || 'pendente';
+                        html += `
+                            <tr>
+                                <td><strong>${horario}</strong></td>
+                                <td>${cliente}</td>
+                                <td><span class="badge badge-${status}">${status.toUpperCase()}</span></td>
+                            </tr>
+                        `;
+                    });
+                    html += '</tbody></table>';
+                }
+
+                container.innerHTML = html;
+            }
+        }
+
+        function calculateAvailableSlots() {
+            log('Calculando horários disponíveis...', 'info');
+
+            const allTimes = [
+                '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+                '12:00', '12:30', '13:00', '13:30',
+                '14:00', '14:30', '15:00', '15:30', '16:00', '16:30', '17:00', '17:30'
+            ];
+
+            // Filtrar apenas agendamentos PENDENTES (não cancelados nem realizados)
+            const bookedTimes = todosAgendamentos
+                .filter(ag => {
+                    const agDate = ag.data || ag.date;
+                    const status = ag.status || 'pendente';
+                    return agDate === today && 
+                           status !== 'cancelado' && 
+                           status !== 'realizado';
+                })
+                .map(ag => ag.horario || ag.time);
+
+            log(`🚫 Horários ocupados: ${bookedTimes.length}`, bookedTimes.length > 0 ? 'warning' : 'success');
+            bookedTimes.forEach(time => {
+                log(`   - ${time}`, 'warning');
+            });
+
+            const availableTimes = allTimes.filter(time => !bookedTimes.includes(time));
+            log(`✅ Horários disponíveis: ${availableTimes.length}`, 'success');
+
+            // Atualizar interface
+            const container = document.getElementById('availableSlots');
+            
+            if (availableTimes.length === 0) {
+                container.innerHTML = `
+                    <div class="status-item">
+                        <span class="status-label">⚠️ ATENÇÃO</span>
+                        <span class="status-value error">Todos os ${allTimes.length} horários estão ocupados!</span>
+                    </div>
+                `;
+            } else {
+                let html = `
+                    <div class="status-item">
+                        <span class="status-label">Horários disponíveis</span>
+                        <span class="status-value success">${availableTimes.length} de ${allTimes.length} horários</span>
+                    </div>
+                `;
+
+                html += '<table><thead><tr><th>Horário</th><th>Status</th></tr></thead><tbody>';
+                allTimes.forEach(time => {
+                    const isBooked = bookedTimes.includes(time);
+                    html += `
+                        <tr>
+                            <td><strong>${time}</strong></td>
+                            <td>
+                                ${isBooked 
+                                    ? '<span class="badge badge-cancelado">❌ Ocupado</span>' 
+                                    : '<span class="badge badge-realizado">✅ Disponível</span>'
+                                }
+                            </td>
+                        </tr>
+                    `;
+                });
+                html += '</tbody></table>';
+
+                container.innerHTML = html;
+            }
+        }
+
+        function updateSystemStatus() {
+            const container = document.getElementById('systemStatus');
+            
+            const hasLocalStorage = !!localStorage.getItem('appointments');
+            const apiWorking = todosAgendamentos.length >= 0;
+
+            container.innerHTML = `
+                <div class="status-item">
+                    <span class="status-label">Conexão com API</span>
+                    <span class="status-value ${apiWorking ? 'success' : 'error'}">
+                        ${apiWorking ? '✅ Conectado' : '❌ Erro'}
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">LocalStorage</span>
+                    <span class="status-value ${hasLocalStorage ? 'warning' : 'success'}">
+                        ${hasLocalStorage ? '⚠️ Contém dados (pode causar conflito)' : '✅ Limpo'}
+                    </span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Total de agendamentos no sistema</span>
+                    <span class="status-value">${todosAgendamentos.length}</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-label">Data/Hora atual</span>
+                    <span class="status-value">${new Date().toLocaleString('pt-BR')}</span>
+                </div>
+            `;
+        }
+
+        function clearLocalStorage() {
+            if (confirm('Tem certeza que deseja limpar o LocalStorage? Isso pode resolver problemas de cache.')) {
+                localStorage.removeItem('appointments');
+                localStorage.removeItem('todosAgendamentos');
+                log('🗑️ LocalStorage limpo!', 'success');
+                alert('✅ LocalStorage limpo! Recarregue a página de agendamento.');
+                reloadData();
+            }
+        }
+
+        function clearCache() {
+            if (confirm('Tem certeza que deseja limpar o cache? A página será recarregada.')) {
+                log('🧹 Limpando cache...', 'info');
+                
+                // Limpar LocalStorage
+                localStorage.clear();
+                
+                // Limpar SessionStorage
+                sessionStorage.clear();
+                
+                // Recarregar página ignorando cache
+                window.location.reload(true);
+            }
+        }
+
+        function reloadData() {
+            log('🔄 Recarregando dados...', 'info');
+            loadData();
+        }
+
+        // Inicializar ao carregar a página
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>

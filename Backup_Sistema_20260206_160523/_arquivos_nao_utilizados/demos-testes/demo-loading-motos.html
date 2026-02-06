@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏍️ Demo: Loading Alternante MacDavis</title>
+    
+    <link rel="stylesheet" href="catalog-styles-dark-modern.css">
+    
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2c3e50 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .demo-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            color: var(--orange-primary, #ff7300);
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 2.5rem;
+        }
+        
+        .subtitle {
+            color: #aaa;
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 1.1rem;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 15px 30px;
+            font-size: 1rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #ff7300 0%, #ff9500 100%);
+            box-shadow: 0 4px 15px rgba(255, 115, 0, 0.3);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 115, 0, 0.4);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            box-shadow: 0 4px 15px rgba(44, 62, 80, 0.3);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(44, 62, 80, 0.4);
+        }
+        
+        .info-box {
+            background: rgba(0, 0, 0, 0.3);
+            border-left: 4px solid var(--orange-primary, #ff7300);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        
+        .info-box h3 {
+            color: var(--orange-primary, #ff7300);
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        
+        .info-box ul {
+            color: #ccc;
+            line-height: 1.8;
+        }
+        
+        .info-box li {
+            margin-bottom: 8px;
+        }
+        
+        .style-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            margin-right: 8px;
+        }
+        
+        .badge-cruiser {
+            background: rgba(255, 115, 0, 0.2);
+            color: #ff7300;
+            border: 1px solid #ff7300;
+        }
+        
+        .badge-sport {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            border: 1px solid #00ff88;
+        }
+        
+        .badge-trail {
+            background: rgba(255, 51, 102, 0.2);
+            color: #ff3366;
+            border: 1px solid #ff3366;
+        }
+        
+        .timer-display {
+            text-align: center;
+            font-size: 1.5rem;
+            color: #fff;
+            margin-top: 20px;
+            font-family: 'Courier New', monospace;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .current-style {
+            text-align: center;
+            font-size: 1.8rem;
+            margin-top: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="demo-container">
+        <h1>🏍️ Loading Alternante MacDavis</h1>
+        <p class="subtitle">Demonstração do sistema de animação que alterna entre estilos de moto</p>
+        
+        <div class="info-box">
+            <h3>📋 Como Funciona</h3>
+            <ul>
+                <li><span class="style-badge badge-cruiser">0-0.8s</span> <strong>Custom/Cruiser</strong> - Harley style: roda traseira grande, assento baixo, guidão alto</li>
+                <li><span class="style-badge badge-sport">0.8-1.6s</span> <strong>Esportiva</strong> - Racing: carenagem agressiva, posição inclinada, rodas rápidas</li>
+                <li><span class="style-badge badge-trail">1.6-2.4s</span> <strong>Trail/Adventure</strong> - Off-road: suspensão longa, tanque alto, para-brisa</li>
+            </ul>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="startDemo()">
+                ▶️ Iniciar Demonstração
+            </button>
+            <button class="btn btn-secondary" onclick="stopDemo()">
+                ⏹️ Parar
+            </button>
+            <button class="btn btn-secondary" onclick="showLoading(2000)">
+                ⏱️ 2s (Cruiser+Sport)
+            </button>
+            <button class="btn btn-secondary" onclick="showLoading(3500)">
+                ⏱️ 3.5s (Todas)
+            </button>
+            <button class="btn btn-secondary" onclick="showLoading(4500)">
+                ⏱️ 4.5s (Ciclo completo)
+            </button>
+        </div>
+        
+        <div class="timer-display" id="timerDisplay">
+            Clique em "Iniciar Demonstração" para começar
+        </div>
+        
+        <div class="current-style" id="currentStyle"></div>
+    </div>
+    
+    <!-- Loading Overlay -->
+    <div class="loading-overlay" id="loadingOverlay" style="display: none;">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Carregando...</div>
+        </div>
+    </div>
+    
+    <!-- Script do Animador -->
+    <script src="loading-motorcycle-animator.js"></script>
+    
+    <script>
+        let demoInterval = null;
+        let startTime = null;
+        let autoStopTimeout = null;
+        const AUTO_STOP_DURATION = 10000; // 10 segundos
+        
+        function startDemo() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'flex';
+            overlay.style.opacity = '1';
+            
+            startTime = Date.now();
+            updateTimer();
+            
+            // Atualiza o timer a cada 100ms
+            demoInterval = setInterval(updateTimer, 100);
+            
+            // Timer automático para parar após 10 segundos
+            autoStopTimeout = setTimeout(() => {
+                stopDemo();
+                alert('⏱️ Demonstração finalizada automaticamente após 10 segundos');
+            }, AUTO_STOP_DURATION);
+            
+            // Inicia o animador
+            if (window.motorcycleAnimator) {
+                motorcycleAnimator.start();
+            }
+        }
+        
+        function stopDemo() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.style.display = 'none';
+            overlay.style.opacity = '0';
+            
+            if (demoInterval) {
+                clearInterval(demoInterval);
+                demoInterval = null;
+            }
+            
+            // Cancela o timer automático se existir
+            if (autoStopTimeout) {
+                clearTimeout(autoStopTimeout);
+                autoStopTimeout = null;
+            }
+            
+            // Para o animador
+            if (window.motorcycleAnimator) {
+                motorcycleAnimator.stop();
+            }
+            
+            document.getElementById('timerDisplay').textContent = 'Demonstração parada';
+            document.getElementById('currentStyle').textContent = '';
+        }
+        
+        function showLoading(duration) {
+            startDemo();
+            setTimeout(() => {
+                stopDemo();
+            }, duration);
+        }
+        
+        function updateTimer() {
+            if (!startTime) return;
+            
+            const elapsed = Date.now() - startTime;
+            const seconds = (elapsed / 1000).toFixed(1);
+            const remaining = ((AUTO_STOP_DURATION - elapsed) / 1000).toFixed(1);
+            
+            document.getElementById('timerDisplay').textContent = 
+                `⏱️ Tempo: ${seconds}s | ⏰ Para automaticamente em: ${remaining}s`;
+            
+            // Atualiza estilo atual
+            let currentStyle = '';
+            let styleClass = '';
+            
+            if (elapsed < 1500) {
+                currentStyle = '🏍️ Custom/Cruiser';
+                styleClass = 'badge-cruiser';
+            } else if (elapsed < 3000) {
+                currentStyle = '🏁 Esportiva';
+                styleClass = 'badge-sport';
+            } else {
+                currentStyle = '🏔️ Trail/Adventure';
+                styleClass = 'badge-trail';
+            }
+            
+            document.getElementById('currentStyle').innerHTML = 
+                `Estilo Atual: <span class="style-badge ${styleClass}">${currentStyle}</span>`;
+        }
+        
+        // Atalhos de teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                if (document.getElementById('loadingOverlay').style.display === 'none') {
+                    startDemo();
+                } else {
+                    stopDemo();
+                }
+            } else if (e.key === 'Escape') {
+                stopDemo();
+            } else if (e.key === '1') {
+                showLoading(2500);
+            } else if (e.key === '2') {
+                showLoading(3500);
+            } else if (e.key === '3') {
+                showLoading(5000);
+            }
+        });
+    </script>
+</body>
+</html>

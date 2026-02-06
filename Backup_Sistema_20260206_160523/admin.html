@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Painel Administrativo - MacDavis Motos</title>
+    <link rel="icon" type="image/png" href="PNG MD.png">
+    <link rel="apple-touch-icon" href="PNG MD.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="admin-styles-dark-modern.css?v=20260127_filters_fix">
+    <link rel="stylesheet" href="contract-styles.css?v=20260107">
+    <link rel="stylesheet" href="page-transitions.css?v=20260104c">
+    <!-- 📱 FIX MOBILE MODALS FULLSCREEN -->
+    <link rel="stylesheet" href="mobile-modal-fix.css?v=20260118">
+    <!-- ⚡ SMART LOADING - Sistema de loading inteligente -->
+    <!-- TEMPORARIAMENTE DESABILITADO PARA DEBUG -->
+    <!-- <link rel="stylesheet" href="smart-loading.css?v=20260114">
+    <script src="smart-loading.js?v=20260114"></script> -->
+    <!-- 📱 MOBILE EXTREME OPTIMIZATION -->
+    <link rel="stylesheet" href="mobile-extreme.css?v=20260104c">
+    <!-- 🦊 FIREFOX PERFORMANCE FIX -->
+    <link rel="stylesheet" href="firefox-performance-fix.css?v=20260114">
+    <link rel="stylesheet" href="dialogs.css?v=20260204">
+    <!-- 🎨 ESCONDER MENSAGENS ANTIGAS -->
+    <style>
+        .message, .success-message, .error-message, .warning-message, .info-message {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+    <style>
+        /* Overrides to ensure filters and custom-selects receive pointer events and sit above overlays */
+        .admin-filters, .filter-controls-wrapper, .filter-pill-group, .filter-pill-button {
+            pointer-events: auto !important;
+            /* Lowered so hamburger/menu overlays can appear above filter controls */
+            z-index: 200 !important;
+        }
+        .custom-select, .custom-select-trigger, .custom-select-options, .custom-option {
+            pointer-events: auto !important;
+        }
+        .custom-select-trigger {
+            cursor: pointer !important;
+            touch-action: manipulation !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+        /* Visuals for fixed filters inside Sales modal */
+        .sold-filters-fixed {
+            background: rgba(15,15,18,0.95) !important;
+            backdrop-filter: blur(6px) !important;
+            -webkit-backdrop-filter: blur(6px) !important;
+            border-radius: 10px !important;
+            padding: 12px 14px !important;
+        }
+        .custom-select { position: relative !important; }
+        .custom-select .custom-select-options { position: absolute !important; left: 0; right: 0; top: 100%; z-index: 100000 !important; }
+        /* Ensure filter controls container doesn't clip dropdowns */
+        .filter-controls-wrapper { overflow: visible !important; }
+    </style>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <meta name="cache-control" content="no-cache, no-store, must-revalidate, max-age=0">
+    <meta name="expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
+
+    <script src="dialogs.js" defer></script>
+    <script>
+        // 🔥 LIMPEZA AGRESSIVA DE CACHE - v20260116toast8
+        console.log('%c🧹 CACHE v8 - ÚLTIMA TENTATIVA!', 'background: red; color: white; padding: 10px; font-size: 20px;');
+        
+        // Limpar Service Workers
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) {
+                    registration.unregister();
+                }
+            });
+        }
+        
+        // Limpar Cache Storage
+        if ('caches' in window) {
+            caches.keys().then(function(names) {
+                for (let name of names) {
+                    caches.delete(name);
+                    console.log('🗑️ Cache deletado:', name);
+                }
+            });
+        }
+        
+        // Limpar LocalStorage de scripts antigos
+        try {
+            localStorage.removeItem('admin-js-version');
+            localStorage.removeItem('toast-version');
+        } catch(e) {}
+        
+        // Marcar versão atual
+        const CURRENT_VERSION = '20260116toast2';
+        // Disponibiliza a versão para scripts posteriores
+        window.ADMIN_CURRENT_VERSION = CURRENT_VERSION;
+        const lastVersion = sessionStorage.getItem('admin-version');
+        
+        if (lastVersion !== CURRENT_VERSION) {
+            console.log('%c🔄 NOVA VERSÃO DETECTADA! Forçando reload...', 'background: orange; color: white; padding: 8px;');
+            sessionStorage.setItem('admin-version', CURRENT_VERSION);
+            // Hard reload
+            window.location.reload(true);
+        }
+        
+        console.log('%c✅ VERSÃO:', CURRENT_VERSION, 'background: green; color: white; padding: 5px;');
+    </script>
+    <meta name="expires" content="Thu, 01 Jan 1970 00:00:00 GMT">
+
+    <!-- CSS para loading e outros estilos -->
+    <style>
+        /* Page-scoped override to restore mobile pan & overscroll for Admin pages */
+        /* Reversible quick fix — prefers to be replaced by a scoped rule in mobile-extreme.css */
+        html, body {
+            touch-action: pan-y !important;
+            overscroll-behavior-y: auto !important;
+        }
+    </style>
+    <style>
+        /* ESCONDE TODAS AS LINHAS DECORATIVAS */
+        svg:not(.spinner svg):not(.moto-animation svg):not([class*="moto"]):not([id*="loading"]) {
+            display: none !important;
+        }
+        
+        canvas {
+            display: none !important;
+        }
+        
+        *[class*="decorative"],
+        *[class*="floating"],
+        *[id*="decorative"],
+        *[id*="floating"] {
+            display: none !important;
+        }
+        
+        /* Mata pseudo-elementos suspeitos */
+        *::before:not(button::before):not(.btn-primary::before):not(.btn-secondary::before),
+        *::after:not(button::after):not(.btn-primary::after):not(.btn-secondary::after) {
+            border: none !important;
+            background-image: none !important;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .admin-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(20, 20, 20, 0.98) 0%, rgba(30, 30, 30, 0.98) 100%);
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            color: white;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+            pointer-events: none;
+        }
+
+                // Adicional: watcher específico para o card "Elite 2025"
+                function attachEliteWatcher(g) {
+                    if (!g) return;
+
+                    function processElite() {
+                        try {
+                            const cards = Array.from(g.querySelectorAll('.moto-card'));
+                            const elite = cards.find(c => {
+                                const titleEl = c.querySelector('.moto-title') || c.querySelector('h4') || c.querySelector('h3');
+                                const t = titleEl && titleEl.textContent ? titleEl.textContent.trim().toLowerCase() : '';
+                                return t.includes('elite 2025');
+                            });
+                            if (!elite) return;
+
+                            function doFix() {
+                                try {
+                                    // Force a minimal style-change + layout read to trigger browser reflow
+                                    elite.style.willChange = 'transform';
+                                    void elite.offsetHeight;
+                                    elite.getBoundingClientRect();
+                                    forceReflow();
+                                    setTimeout(() => { try { elite.style.willChange = 'auto'; } catch(e){} }, 120);
+                                } catch (e) { /* silent */ }
+                            }
+
+                            const imgs = Array.from(elite.querySelectorAll('img'));
+                            if (imgs.length === 0) {
+                                doFix();
+                                return;
+                            }
+
+                            let remaining = imgs.length;
+                            imgs.forEach(img => {
+                                if (img.complete) { remaining--; return; }
+                                img.addEventListener('load', () => { remaining--; if (remaining <= 0) doFix(); }, { once: true });
+                                img.addEventListener('error', () => { remaining--; if (remaining <= 0) doFix(); }, { once: true });
+                            });
+                            if (remaining <= 0) doFix();
+                        } catch (e) { console.warn('processElite erro', e); }
+                    }
+
+                    // Run immediately and on subtree changes
+                    processElite();
+                    const eliteObserver = new MutationObserver(() => processElite());
+                    eliteObserver.observe(g, { childList: true, subtree: true });
+                }
+
+        
+                    attachObserverToGrid(grid);
+                    attachEliteWatcher(grid);
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: all !important;
+        }
+
+        .loading-content {
+            text-align: center;
+                            attachObserverToGrid(grid);
+                            attachEliteWatcher(grid);
+                            // garantir reflow após anexar
+                            forceReflow();
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #ff7a18;
+        }
+
+        .loading-text {
+            margin-top: 20px;
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .loading-spinner {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 30px;
+        }
+        
+        /* Moto Custom realista */
+        .moto-animation {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 165px;
+            height: 85px;
+            animation: customRide 5s ease-in-out infinite;
+            filter: drop-shadow(0 10px 30px rgba(0, 0, 0, 0.8)) 
+                    drop-shadow(0 20px 50px rgba(255, 102, 17, 0.3))
+                    drop-shadow(0 0 70px rgba(255, 102, 17, 0.15));
+            z-index: 10;
+        }
+        
+        .moto-animation svg {
+            width: 100%;
+            height: 100%;
+        }
+        
+        @keyframes customRide {
+            0%, 100% {
+                transform: translate(-50%, -50%) translateY(0px);
+            }
+            25% {
+                transform: translate(-50%, -50%) translateY(-0.8px);
+            }
+            50% {
+                transform: translate(-50%, -50%) translateY(-0.2px);
+            }
+            75% {
+                transform: translate(-50%, -50%) translateY(-1px);
+            }
+        }
+        
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin 2s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+        }
+        
+        .spinner-ring:nth-child(2) {
+            border-top-color: #ff7a18;
+            border-bottom-color: #ff7a18;
+            opacity: 0.8;
+        }
+        
+        .spinner-ring:nth-child(3) {
+            border-right-color: #e74c3c;
+            border-left-color: #e74c3c;
+            animation-delay: 0.2s;
+            width: 80%;
+            height: 80%;
+            top: 10%;
+            left: 10%;
+            opacity: 0.6;
+        }
+        
+        .spinner-ring:nth-child(4) {
+            border-top-color: #3498db;
+            border-bottom-color: #3498db;
+            animation-delay: 0.4s;
+            width: 60%;
+            height: 60%;
+            top: 20%;
+            left: 20%;
+            opacity: 0.4;
+        }
+        
+        /* Loading dots */
+        .loading-dots {
+            display: inline-flex;
+
+                transform: scale(0.8);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1.2);
+                opacity: 1;
+            }
+        }
+
+        .form-hint {
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+        
+        .loading {
+            font-size: 18px;
+            text-align: center;
+        }
+        
+        /* Spinner alternativo para elementos menores */
+        .spinner {
+            border: 4px solid rgba(255, 122, 24, 0.2);
+            border-top: 4px solid #ff7a18;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        .connection-status {
+            padding: 10px;
+            margin: 20px 0;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 500;
+        }
+        
+        .connection-status.online {
+            background: rgba(76, 175, 80, 0.1);
+            color: #4caf50;
+            border: 1px solid rgba(76, 175, 80, 0.3);
+        }
+        
+        .connection-status.offline {
+            background: rgba(244, 67, 54, 0.1);
+            color: #f44336;
+            border: 1px solid rgba(244, 67, 54, 0.3);
+        }
+        
+        /* Estilos para cards das motos */
+        .moto-card {
+            background: white;
+            border-radius: 12px;
+            padding: 0.6rem 0.8rem 0.4rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid #e1e8ed;
+        }
+        
+        .moto-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .moto-image {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .moto-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .no-image {
+            font-size: 48px;
+            color: #ccc;
+        }
+        
+        .moto-info h4 {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+            font-size: 18px;
+        }
+        
+        .moto-info p {
+            margin: 5px 0;
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 12px;
+        }
+        
+        .status.disponivel {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.vendido {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .moto-actions {
+            margin-top: 0.6rem;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-edit, .btn-delete {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-edit {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+        
+        .btn-delete {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .btn-delete:hover {
+            background: #c0392b;
+        }
+    </style>
+    
+    <!-- 🎯 Sistema de Notificações Toast -->
+    <link rel="stylesheet" href="toast-notifications.css?v=20260116toast8" />
+    
+    <!-- 🦊 Firefox Performance Optimization -->
+    <script src="firefox-performance-fix.js?v=20260114"></script>
+    
+    <style>
+        /* Botão de Limpar Cache */
+        .clear-cache-btn {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-weight: 700;
+            cursor: pointer;
+            z-index: 99998;
+            box-shadow: 0 4px 15px rgba(255, 68, 68, 0.4);
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+        
+        .clear-cache-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 68, 68, 0.6);
+        }
+        
+        .clear-cache-btn:active {
+            transform: translateY(0);
+        }
+    </style>
+    <!-- Override final para garantir padding compacto nos cards (carrega por último) -->
+    <style>
+        /* Priorizar grid específico e regras com !important caso haja conflitos */
+        #adminGrid .moto-card,
+        .moto-card {
+            padding: 0.6rem 0.8rem 0.4rem !important;
+        }
+
+        #adminGrid .moto-card .moto-actions,
+        .moto-card .moto-actions {
+            margin-top: 0.6rem !important;
+            padding-top: 0.4rem !important;
+            border-top: none !important;
+        }
+
+        /* Fallback para cards do admin em tema claro/escuro */
+        .admin-card {
+            padding: 1.5rem 1.5rem 0.5rem !important;
+        }
+        /* Reduzir altura das imagens e margens internas para evitar cards altos */
+        #adminGrid .moto-card .moto-image,
+        .moto-card .moto-image {
+            height: 120px !important;
+            margin-bottom: 8px !important;
+            overflow: hidden !important;
+        }
+
+        #adminGrid .moto-card .moto-image img,
+        .moto-card .moto-image img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
+
+        /* Compactar info e títulos */
+        #adminGrid .moto-card .moto-info,
+        .moto-card .moto-info {
+            padding: 0.4rem !important;
+        }
+
+        #adminGrid .moto-card .moto-title,
+        .moto-card .moto-title {
+            margin: 0 0 4px 0 !important;
+            font-size: 1rem !important;
+        }
+
+        #adminGrid .moto-card .moto-description p,
+        .moto-card .moto-description p {
+            margin: 0 !important;
+            padding: 0 !important;
+            font-size: 0.85rem !important;
+        }
+
+        /* Botões menores e sem espaço extra */
+        #adminGrid .moto-card .moto-actions,
+        .moto-card .moto-actions {
+            margin-top: 0.4rem !important;
+            gap: 0.4rem !important;
+            padding-top: 0 !important;
+            border-top: none !important;
+        }
+
+        #adminGrid .moto-card .moto-actions button,
+        .moto-card .moto-actions button {
+            padding: 0.4rem 0.6rem !important;
+            font-size: 0.82rem !important;
+        }
+
+        /* Layout fix: usar flex-column para evitar saltos ao carregar imagens
+           e manter os botões alinhados ao rodapé do card. */
+        #adminGrid .moto-card,
+        .moto-card {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: stretch !important;
+            height: auto !important;
+            min-height: 220px !important;
+            box-sizing: border-box !important;
+        }
+
+        #adminGrid .moto-card .moto-info,
+        .moto-card .moto-info {
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 1 auto !important;
+            padding: 0.4rem !important;
+            box-sizing: border-box !important;
+        }
+
+        #adminGrid .moto-card .moto-actions,
+        .moto-card .moto-actions {
+            margin-top: auto !important; /* push actions to bottom */
+            padding-top: 0 !important;
+        }
+
+        /* Garantir que imagens não aumentem a altura do card inesperadamente */
+        #adminGrid .moto-card img,
+        .moto-card img {
+            max-height: 140px !important;
+            width: 100% !important;
+            height: 120px !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
+        
+        /* Ajustes específicos para o modal de visualização (Ver) */
+        /* Reduz padding, força overflow interno e limita altura para evitar salto de layout */
+        #viewModal .modal-content,
+        .modal#viewModal .modal-content,
+        .modal .modal-content {
+            padding: 8px !important;
+            max-height: 80vh !important;
+            overflow: auto !important;
+            box-sizing: border-box !important;
+        }
+
+        /* Área de conteúdo dentro do modal */
+        #viewModal #viewContent,
+        #viewModal .modal-body,
+        .modal .modal-body {
+            padding: 6px 8px !important;
+        }
+
+        /* Tornar ações do modal mais compactas */
+        #viewModal .modal-actions,
+        #viewModal .modal-content .modal-actions {
+            padding: 6px !important;
+            gap: 0.4rem !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- App version badge removed (now displayed inside the hamburger menu) -->
+    
+    <!-- Iniciar loading imediatamente -->
+    <script>
+        if (window.SmartLoading) {
+            SmartLoading.show('Carregando vendas...');
+        }
+    </script>
+    
+    <!-- Loading overlay para transições suaves -->
+    
+                        <defs>
+                            <linearGradient id="tankGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" style="stop-color:#b84400;stop-opacity:1" />
+                                <stop offset="20%" style="stop-color:#ff6611;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#ff8833;stop-opacity:1" />
+                                <stop offset="80%" style="stop-color:#ff6611;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#b84400;stop-opacity:1" />
+                            </linearGradient>
+                            <radialGradient id="chromeGradient">
+                                <stop offset="20%" style="stop-color:#ffffff;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#d0d0d0;stop-opacity:1" />
+                                <stop offset="80%" style="stop-color:#999999;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#666666;stop-opacity:1" />
+                            </radialGradient>
+                            <linearGradient id="tireGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                                <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+                                <stop offset="50%" style="stop-color:#000000;stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        
+                        <!-- Para-lama traseiro CROMADO volumoso -->
+                        <path d="M 20 45 Q 22 40 32 38 Q 42 37 52 38 Q 62 40 64 45 L 64 54 Q 63 60 59 65 Q 54 70 46 72 Q 36 73 26 72 Q 22 70 20 65 Q 18 60 18 54 Z" 
+                              fill="url(#chromeGradient)" stroke="#999" stroke-width="2"/>
+                        <path d="M 24 43 Q 42 40 60 43" fill="none" stroke="#fff" stroke-width="1.5" opacity="0.6"/>
+                        <path d="M 26 48 Q 42 46 58 48" fill="none" stroke="#ff7722" stroke-width="2.5"/>
+                        <ellipse cx="42" cy="48" rx="12" ry="4" fill="#e0e0e0" opacity="0.3"/>
+                        
+                        <!-- Roda traseira -->
+                        <g>
+                            <ellipse cx="42" cy="66" rx="20" ry="18" fill="url(#tireGradient)" stroke="#000" stroke-width="1.5"/>
+                            <ellipse cx="42" cy="66" rx="18" ry="16" fill="none" stroke="#0a0a0a" stroke-width="0.8"/>
+                            
+                            <!-- Aro cromado -->
+                            <circle cx="42" cy="66" r="13" fill="#3a3a3a" stroke="#888" stroke-width="3"/>
+                            <circle cx="42" cy="66" r="11" fill="url(#chromeGradient)"/>
+                            
+                            <!-- Raios cromados detalhados -->
+                            <g stroke="#bbb" stroke-width="1.2" opacity="0.9">
+                                <line x1="42" y1="53" x2="42" y2="79"/>
+                                <line x1="29" y1="66" x2="55" y2="66"/>
+                                <line x1="32" y1="56" x2="52" y2="76"/>
+                                <line x1="32" y1="76" x2="52" y2="56"/>
+                                <line x1="34" y1="58" x2="50" y2="74"/>
+                                <line x1="34" y1="74" x2="50" y2="58"/>
+                                <line x1="36" y1="60" x2="48" y2="72"/>
+                                <line x1="36" y1="72" x2="48" y2="60"/>
+                                <line x1="38" y1="62" x2="46" y2="70"/>
+                                <line x1="38" y1="70" x2="46" y2="62"/>
+                                <animateTransform attributeName="transform" type="rotate" from="0 42 66" to="360 42 66" dur="2.3s" repeatCount="indefinite"/>
+                            </g>
+                            
+                            <!-- Cubo -->
+                            <circle cx="42" cy="66" r="4" fill="url(#chromeGradient)" stroke="#ccc" stroke-width="1"/>
+                            <circle cx="42" cy="66" r="1.8" fill="#fff" opacity="0.95"/>
+                            
+                            <!-- Disco de freio -->
+                            <circle cx="42" cy="66" r="15" fill="none" stroke="#777" stroke-width="1.5" opacity="0.5"/>
+                        </g>
+                        
+                        <!-- Bolsa lateral GRANDE (saddle bag) -->
+                        <rect x="18" y="56" width="18" height="14" rx="2" fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1.5"/>
+                        <rect x="19" y="57" width="16" height="3" fill="#1a1a1a"/>
+                        <line x1="20" y1="61" x2="34" y2="61" stroke="#2a2a2a" stroke-width="0.8"/>
+                        <line x1="20" y1="65" x2="34" y2="65" stroke="#2a2a2a" stroke-width="0.8"/>
+                        
+                        <!-- Para-lama dianteiro CROMADO -->
+                        <path d="M 148 45 Q 150 40 160 39 Q 170 40 174 45 Q 174 52 172 58" 
+                              fill="url(#chromeGradient)" stroke="#999" stroke-width="2"/>
+                        <path d="M 151 45 Q 160 42 170 45" fill="none" stroke="#fff" stroke-width="1.2" opacity="0.6"/>
+                        <path d="M 153 48 Q 160 46 168 48" fill="none" stroke="#ff7722" stroke-width="2"/>
+                        
+                        <!-- Roda dianteira -->
+                        <g>
+                            <ellipse cx="160" cy="66" rx="17" ry="16" fill="url(#tireGradient)" stroke="#000" stroke-width="1.5"/>
+                            <ellipse cx="160" cy="66" rx="15.5" ry="14.5" fill="none" stroke="#0a0a0a" stroke-width="0.8"/>
+                            
+                            <!-- Aro cromado -->
+                            <circle cx="160" cy="66" r="12" fill="#3a3a3a" stroke="#888" stroke-width="2.5"/>
+                            <circle cx="160" cy="66" r="10" fill="url(#chromeGradient)"/>
+                            
+                            <!-- Raios cromados -->
+                            <g stroke="#bbb" stroke-width="1.1" opacity="0.9">
+                                <line x1="160" y1="54" x2="160" y2="78"/>
+                                <line x1="148" y1="66" x2="172" y2="66"/>
+                                <line x1="151" y1="57" x2="169" y2="75"/>
+                                <line x1="151" y1="75" x2="169" y2="57"/>
+                                <line x1="153" y1="59" x2="167" y2="73"/>
+                                <line x1="153" y1="73" x2="167" y2="59"/>
+                                <line x1="155" y1="61" x2="165" y2="71"/>
+                                <line x1="155" y1="71" x2="165" y2="61"/>
+                                <animateTransform attributeName="transform" type="rotate" from="0 160 66" to="360 160 66" dur="2.1s" repeatCount="indefinite"/>
+                            </g>
+                            
+                            <circle cx="160" cy="66" r="3.5" fill="url(#chromeGradient)" stroke="#ccc" stroke-width="1"/>
+                            <circle cx="160" cy="66" r="1.5" fill="#fff" opacity="0.95"/>
+                            
+                            <!-- Disco de freio dianteiro -->
+                            <circle cx="160" cy="66" r="13.5" fill="none" stroke="#777" stroke-width="1.8" opacity="0.6"/>
+                        </g>
+                        
+                        <!-- Garfo dianteiro cromado GROSSO -->
+                        <path d="M 152 58 L 160 66" stroke="url(#chromeGradient)" stroke-width="4.5" stroke-linecap="round"/>
+                        <path d="M 168 58 L 160 66" stroke="url(#chromeGradient)" stroke-width="4.5" stroke-linecap="round"/>
+                        <line x1="151" y1="58" x2="152" y2="52" stroke="#aaa" stroke-width="4"/>
+                        <line x1="169" y1="58" x2="168" y2="52" stroke="#aaa" stroke-width="4"/>
+                        
+                        <!-- Motor V-Twin MUITO PROEMINENTE E CROMADO -->
+                        <g>
+                            <!-- Cilindro traseiro -->
+                            <path d="M 58 54 L 56 68 L 63 72 L 72 69 L 74 54 Z" fill="#2a2a2a" stroke="#666" stroke-width="2"/>
+                            <rect x="59" y="55" width="14" height="7" fill="#3a3a3a"/>
+                            <line x1="61" y1="54" x2="61" y2="72" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <line x1="65" y1="54" x2="65" y2="72" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <line x1="69" y1="54" x2="69" y2="72" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <ellipse cx="66" cy="58" rx="5" ry="2.5" fill="url(#chromeGradient)" opacity="0.5"/>
+                            
+                            <!-- Cilindro dianteiro -->
+                            <path d="M 78 56 L 76 70 L 83 74 L 92 71 L 94 56 Z" fill="#2a2a2a" stroke="#666" stroke-width="2"/>
+                            <rect x="79" y="57" width="14" height="7" fill="#3a3a3a"/>
+                            <line x1="81" y1="56" x2="81" y2="74" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <line x1="85" y1="56" x2="85" y2="74" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <line x1="89" y1="56" x2="89" y2="74" stroke="#1a1a1a" stroke-width="1.2"/>
+                            <ellipse cx="86" cy="60" rx="5" ry="2.5" fill="url(#chromeGradient)" opacity="0.5"/>
+                            
+                            <!-- Carter CROMADO muito visível -->
+                            <ellipse cx="76" cy="68" rx="13" ry="7" fill="url(#chromeGradient)" stroke="#aaa" stroke-width="2"/>
+                            <ellipse cx="76" cy="67" rx="10" ry="5" fill="#e0e0e0" opacity="0.5"/>
+                            <ellipse cx="76" cy="66" rx="7" ry="3" fill="#fff" opacity="0.4"/>
+                        </g>
+                        
+                        <!-- Quadro estrutural -->
+                        <path d="M 42 66 L 50 61 L 60 56" stroke="#2a2a2a" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 60 56 L 82 53 L 110 52 L 135 53 L 150 55" stroke="#2a2a2a" stroke-width="5" stroke-linecap="round"/>
+                        <path d="M 150 55 L 152 58" stroke="#2a2a2a" stroke-width="4.5" stroke-linecap="round"/>
+                        
+                        <!-- Tanque LARANJA volumoso com detalhes pretos -->
+                        <path d="M 80 48 L 86 38 L 125 38 L 131 48 L 129 55 L 124 57 L 86 57 L 82 55 Z" 
+                              fill="url(#tankGradient)" stroke="#ff6611" stroke-width="2.8"/>
+                        
+                        <!-- Faixa preta no tanque -->
+                        <path d="M 88 42 L 123 42 L 127 49 L 84 49 Z" fill="#0a0a0a" opacity="0.8"/>
+                        <ellipse cx="106" cy="44" rx="16" ry="3.5" fill="#ff9944" opacity="0.4"/>
+                        <line x1="106" y1="38" x2="106" y2="57" stroke="#cc4400" stroke-width="1.2" opacity="0.5"/>
+                        
+                        <!-- Assento longo ESCURO -->
+                        <path d="M 60 50 L 68 46 L 90 45 L 95 47 L 93 52 L 62 53 Z" 
+                              fill="#0a0a0a" stroke="#1a1a1a" stroke-width="1.8"/>
+                        <line x1="62" y1="50" x2="90" y2="46" stroke="#2a2a2a" stroke-width="1"/>
+                        
+                        <!-- Sissy bar (encosto cromado) -->
+                        <path d="M 60 50 L 58 42 L 58 35 L 60 40" fill="#0a0a0a" stroke="url(#chromeGradient)" stroke-width="2"/>
+                        <rect x="57" y="35" width="2.5" height="7" fill="url(#chromeGradient)" stroke="#aaa" stroke-width="1"/>
+                        
+                        <!-- Amortecedores traseiros CROMADOS -->
+                        <line x1="50" y1="61" x2="62" y2="52" stroke="url(#chromeGradient)" stroke-width="3.5" stroke-linecap="round"/>
+                        <line x1="35" y1="61" x2="58" y2="52" stroke="url(#chromeGradient)" stroke-width="3.5" stroke-linecap="round"/>
+                        <circle cx="62" cy="52" r="2.5" fill="#aaa" stroke="#ccc" stroke-width="1"/>
+                        <circle cx="58" cy="52" r="2.5" fill="#aaa" stroke="#ccc" stroke-width="1"/>
+                        
+                        <!-- Escapamentos duplos CROMADOS GROSSOS -->
+                        <path d="M 66 66 L 54 68 L 38 70 L 24 71.5" stroke="url(#chromeGradient)" stroke-width="4.5" stroke-linecap="round"/>
+                        <path d="M 66 70 L 54 72 L 38 74 L 24 75.5" stroke="url(#chromeGradient)" stroke-width="4.5" stroke-linecap="round"/>
+                        
+                        <!-- Brilho nos escapamentos -->
+                        <path d="M 64 65.5 L 52 67.5 L 36 69.5 L 26 70.5" stroke="#ffffff" stroke-width="1.5" opacity="0.85" stroke-linecap="round"/>
+                        <path d="M 64 69.5 L 52 71.5 L 36 73.5 L 26 75" stroke="#ffffff" stroke-width="1.5" opacity="0.85" stroke-linecap="round"/>
+                        
+                        <!-- Ponteiras cromadas dos escapamentos -->
+                        <ellipse cx="22" cy="71.5" rx="4" ry="5" fill="#1a1a1a" stroke="#bbb" stroke-width="2"/>
+                        <ellipse cx="22" cy="75.5" rx="4" ry="5" fill="#1a1a1a" stroke="#bbb" stroke-width="2"/>
+                        <circle cx="22" cy="71.5" r="3" fill="#0a0a0a"/>
+                        <circle cx="22" cy="75.5" r="3" fill="#0a0a0a"/>
+                        
+                        <!-- Guidão cromado -->
+                        <path d="M 152 58 L 157 48 L 162 38 L 165 33" stroke="url(#chromeGradient)" stroke-width="3.5" stroke-linecap="round"/>
+                        <path d="M 168 58 L 163 48 L 158 38 L 155 33" stroke="url(#chromeGradient)" stroke-width="3.5" stroke-linecap="round"/>
+                        <line x1="155" y1="33" x2="165" y2="33" stroke="url(#chromeGradient)" stroke-width="3.2"/>
+                        
+                        <!-- Manoplas pretas -->
+                        <ellipse cx="165" cy="32" rx="2.5" ry="4" fill="#0a0a0a" stroke="#555" stroke-width="1"/>
+                        <ellipse cx="155" cy="32" rx="2.5" ry="4" fill="#0a0a0a" stroke="#555" stroke-width="1"/>
+                        
+                        <!-- Farol redondo CROMADO grande -->
+                        <circle cx="172" cy="48" r="7.5" fill="#fffadd" stroke="#aaa" stroke-width="3" opacity="0.98"/>
+                        <circle cx="172" cy="48" r="6" fill="#ffffee"/>
+                        <circle cx="173" cy="47" r="2.5" fill="#ffffff" opacity="0.95"/>
+                        <circle cx="171" cy="49" r="1.2" fill="#ffffff" opacity="0.7"/>
+                        
+                        <!-- Detalhes estruturais -->
+                        <circle cx="110" cy="52" r="2.5" fill="#3a3a3a" stroke="#666" stroke-width="1.2"/>
+                        <line x1="110" y1="52" x2="116" y2="62" stroke="#2a2a2a" stroke-width="3"/>
+                    </svg>
+                </div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+                <div class="spinner-ring"></div>
+            </div>
+            <h3 id="adminLoadingTitle">🔧 MacDavis Admin</h3>
+        </div>
+    </div>
+    <nav class="admin-nav">
+        <div class="nav-content">
+            <div class="logo">
+                <img src="PNG MD.png" alt="MacDavis Motos" style="height: 58px; width: auto; margin-left: 8px; margin-right: 15px; filter: drop-shadow(0 2px 8px rgba(255, 102, 0, 0.3));">
+                <div>
+                    <h1>MacDavis Motos</h1>
+                    <span class="admin-badge">Admin</span>
+                </div>
+            </div>
+            <div class="nav-actions">
+                <!-- Botões do sistema consolidados no menu -->
+                <!-- Botões exclusivos do menu mobile -->
+                <button class="btn-success mobile-only" onclick="showSoldMotorcycles()" title="Ver motocicletas vendidas">
+                    💰 Ver Vendidas
+                </button>
+                <button class="btn-secondary mobile-only" id="backupsButtonMenuMobile" title="Gerenciar backups automáticos">
+                    💾 Backups
+                </button>
+                <button class="btn-warning mobile-only" id="clearCacheMobileBtn" title="Limpar cache do navegador">
+                    🗑️ Limpar Cache
+                </button>
+                <button class="btn-secondary mobile-only" id="systemStatusMobileBtn" title="Status do Sistema">
+                    📊 Status do Sistema
+                </button>
+                <button class="btn-primary mobile-only" id="addMotoMobileBtn" title="Nova Motocicleta">
+                    + Nova Motocicleta
+                </button>
+                
+                    <style>
+                    /* Só mostra no mobile, esconde no desktop */
+                    .mobile-only {
+                        display: none !important;
+                    }
+                    @media (max-width: 900px) {
+                        .mobile-only {
+                            display: block !important;
+                            width: 100%;
+                            margin-bottom: 10px;
+                        }
+                        /* Esconder o botão fixo de limpar cache no mobile (será acessível via menu) */
+                        .clear-cache-btn {
+                            display: none !important;
+                        }
+                        /* Remover o painel de status da tela principal no mobile (acessível pelo menu) */
+                        .system-status-panel {
+                            display: none !important;
+                        }
+                    }
+                    </style>
+                <button class="btn-secondary" onclick="goToClient()">
+                    🌐 Visualizar como Cliente
+                </button>
+                <button class="btn-danger" onclick="logout()">
+                    Sair
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <main class="admin-content">
+        <!-- Overlay para fechar menu ao clicar fora -->
+        <div class="mobile-menu-overlay" id="mobileMenuOverlay"></div>
+        
+        <div class="admin-header">
+            <div class="header-title-group">
+                <h2>Gerenciamento de Motocicletas</h2>
+                <div class="user-badge">
+                    <span class="user-icon">👤</span>
+                    <span class="user-name" id="adminUserName">Administrador</span>
+                </div>
+            </div>
+            <div class="header-actions">
+                <button class="btn-primary desktop-only" onclick="showAddMotorcycleModal()" style="transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); cursor: pointer;" onmouseover="this.style.transform='translateY(-4px) scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(255, 102, 0, 0.7)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='';">
+                    + Nova Motocicleta
+                </button>
+                <button class="btn-secondary desktop-only" id="backupsButtonMenuDesktop" title="Gerenciar backups automáticos">
+                    💾 Backups
+                </button>
+                <button class="btn-success" onclick="showSoldMotorcycles()" style="transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); cursor: pointer;" onmouseover="this.style.transform='translateY(-4px) scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(0, 255, 136, 0.5)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='';">
+                    💰 Ver Vendidas
+                </button>
+                <style>
+                /* Só mostra no desktop, esconde no mobile */
+                .desktop-only {
+                    display: block !important;
+                }
+                @media (max-width: 900px) {
+                    .desktop-only {
+                        display: none !important;
+                    }
+                }
+                </style>
+            </div>
+        </div>
+
+        <!-- Status de conexão -->
+        <div id="connectionStatus" class="connection-status"></div>
+
+        <!-- Estatísticas rápidas -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <h3 id="totalMotos">0</h3>
+                <p>Total de Motos</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="disponiveisCount">0</h3>
+                <p>Disponíveis</p>
+            </div>
+            <div class="stat-card">
+                <h3 id="vendidosCount">0</h3>
+                <p>Vendidos</p>
+            </div>
+            <div class="stat-card stat-appointments">
+                <h3 id="totalAgendamentos">0</h3>
+                <p>📅 Agendamentos</p>
+            </div>
+        </div>
+
+        <!-- Status do Sistema -->
+        <div class="system-status-panel">
+            <h3>📊 Status do Sistema</h3>
+            <div class="status-indicators">
+                <div class="status-indicator">
+                    <span class="status-icon">🏍️</span>
+                    <div class="status-info">
+                        <span class="status-label">Catálogo</span>
+                        <span class="status-value" id="catalog-moto-count">0 motocicletas</span>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-icon">✅</span>
+                    <div class="status-info">
+                        <span class="status-label">Integridade</span>
+                        <span class="status-value">100% Confiável</span>
+                    </div>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-icon">🌐</span>
+                    <div class="status-info">
+                        <span class="status-label">API</span>
+                        <span class="status-value" id="admin-api-status">Verificando...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seção de Agendamentos -->
+        <div class="appointments-section">
+            <div class="section-header">
+                <h3>📅 Agendamentos de Clientes</h3>
+                <div class="header-actions" style="gap: 10px;">
+                    <input type="text" 
+                           id="searchAppointmentId" 
+                           placeholder="🔍 Buscar por ID..." 
+                           style="padding: 8px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(0,0,0,0.3); color: white; min-width: 200px;"
+                           oninput="searchByAppointmentId(this.value)">
+                    <select id="appointmentStatusFilter" class="filter-select" onchange="filterAppointments()" aria-label="Filtrar agendamentos por status">
+                        <option value="pendente">⏳ Pendentes (0)</option>
+                        <option value="todos">Todos (0)</option>
+                        <option value="realizado">✅ Realizados (0)</option>
+                        <option value="cancelado">❌ Cancelados (0)</option>
+                    </select>
+                </div>
+            </div>
+            <div id="appointmentsList" class="appointments-list">
+                <!-- Agendamentos serão inseridos aqui -->
+            </div>
+        </div>
+
+        <!-- Filtros e busca -->
+        <div class="admin-filters">
+            <input type="text" id="searchInput" placeholder="🔍 Buscar por marca, modelo..." class="search-input">
+            <select id="estiloFilter" class="filter-select" aria-label="Filtrar por estilo de motocicleta">
+                <option value="">Todos os Estilos</option>
+                <option value="scooter">🛵 Scooters</option>
+                <option value="street">🏍️ Streets</option>
+                <option value="trail">🏔️ Trail</option>
+                <option value="alta-cilindrada">🏁 Alta Cilindrada</option>
+                <option value="custom">🎸 Custom</option>
+            </select>
+            <select id="statusFilter" class="filter-select" aria-label="Filtrar por status de disponibilidade">
+                <option value="">Todos os Status</option>
+                <option value="disponivel" selected>Disponível</option>
+                <option value="vendido">Vendido</option>
+            </select>
+            <select id="marcaFilter" class="filter-select" aria-label="Filtrar por marca">
+                <option value="">Todas as Marcas</option>
+            </select>
+            <select id="cilindradaFilter" class="filter-select" aria-label="Filtrar por cilindrada">
+                <option value="">Todas as Cilindradas</option>
+                <option value="50-100">50-100cc</option>
+                <option value="110-190">110-190cc</option>
+                <option value="200-400">200-400cc</option>
+                <option value="500+">500cc+</option>
+            </select>
+        </div>
+
+
+
+        <!-- Lista de motocicletas -->
+        <div class="admin-grid" id="adminGrid">
+            <!-- Cards serão inseridos aqui via JavaScript -->
+        </div>
+    </main>
+
+    <!-- Modal para adicionar/editar motocicleta -->
+    <div id="motorcycleModal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Nova Motocicleta</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="motorcycleForm" class="modal-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="marca">Marca:</label>
+                        <input type="text" id="marca" name="marca" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="modelo">Modelo:</label>
+                        <input type="text" id="modelo" name="modelo" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="ano">Ano/Modelo:</label>
+                        <input type="text" id="ano" name="ano" maxlength="9" placeholder="YYYY/YYYY" inputmode="numeric" required
+                               oninput="this.value = this.value.replace(/[^0-9/]/g,'').replace(/^(\d{4})(\d)/,'$1/$2').slice(0,9)">
+                        <small class="form-hint">Digite como 2015/2016 — a barra é inserida automaticamente.</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="cor">Cor:</label>
+                        <input type="text" id="cor" name="cor" required>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="placa">Placa:</label>
+                        <input type="text" id="placa" name="placa" placeholder="ABC-1234" maxlength="8">
+                        <small class="form-hint">Formato: ABC-1234 ou ABC1D23</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="quilometragem">Quilometragem:</label>
+                        <input type="number" id="quilometragem" name="quilometragem" min="0">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="renavam">RENAVAM:</label>
+                        <input type="text" id="renavam" name="renavam" placeholder="0000-0000-000" oninput="formatRenavam(this)">
+                        <small class="form-hint">Código de 11 dígitos</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="chassi">Chassi:</label>
+                        <input type="text" id="chassi" name="chassi" placeholder="17 dígitos" maxlength="17">
+                        <small class="form-hint">Código VIN do veículo</small>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tipo">Tipo:</label>
+                    <select id="tipo" name="tipo" required>
+                        <option value="">Selecione...</option>
+                        <option value="street">Street</option>
+                        <option value="sport">Sport</option>
+                        <option value="trail">Trail</option>
+                        <option value="scooter">Scooter</option>
+                        <option value="touring">Touring</option>
+                        <option value="custom">Custom</option>
+                        <option value="naked">Naked</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cilindradas">Cilindradas (cc):</label>
+                        <input type="number" id="cilindradas" name="cilindradas" min="50" max="2000" placeholder="Ex: 250">
+                    </div>
+                    <div class="form-group">
+                        <label for="combustivel">Combustível:</label>
+                        <select id="combustivel" name="combustivel">
+                            <option value="">Selecione...</option>
+                            <option value="Gasolina">Gasolina</option>
+                            <option value="Etanol">Etanol</option>
+                            <option value="Flex">Flex</option>
+                            <option value="Elétrica">Elétrica</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="status">Status:</label>
+                    <select id="status" name="status" required>
+                        <option value="disponivel">Disponível</option>
+                        <option value="vendido">Vendido</option>
+                    </select>
+                </div>
+                
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="showInCatalog" name="showInCatalog" checked style="width: auto; margin: 0;">
+                    <label for="showInCatalog" style="margin: 0; cursor: pointer;">📱 Exibir no Catálogo de Clientes</label>
+                </div>
+                
+                <div class="form-group">
+                    <label for="descricao">Descrição:</label>
+                    <textarea id="descricao" name="descricao" rows="3"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem">Caminho da Imagem Principal:</label>
+                    <input type="text" id="imagem" name="imagem" placeholder="Cole o caminho completo ou relativo">
+                    <small class="form-hint">
+                        💡 Dica: Cole o caminho completo (ex: C:\Users\...\Fotos motos\Bandit\foto.jpg) ou apenas o caminho relativo (ex: images/Bandit/foto.jpg)
+                    </small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem2">Imagem Adicional 2 (Opcional):</label>
+                    <input type="text" id="imagem2" name="imagem2" placeholder="Cole o caminho da segunda imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem3">Imagem Adicional 3 (Opcional):</label>
+                    <input type="text" id="imagem3" name="imagem3" placeholder="Cole o caminho da terceira imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="imagem4">Imagem Adicional 4 (Opcional):</label>
+                    <input type="text" id="imagem4" name="imagem4" placeholder="Cole o caminho da quarta imagem">
+                </div>
+                
+                <div class="form-group">
+                    <label for="documentoPDF">📄 Documento CRLV (PDF):</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="documentoPDF" name="documentoPDF" placeholder="Cole o caminho do arquivo PDF do CRLV" style="flex:1;">
+                        <button type="button" class="btn-secondary" onclick="selectCRLVFile()">Selecionar arquivo</button>
+                    </div>
+                    <input type="file" id="hiddenFileInputCRLV" accept="application/pdf" style="display:none">
+                    <small class="form-hint">
+                        💡 Caminho do arquivo PDF (ex: C:\Users\...\Documentos\CRLV_ABC1234.pdf ou documents/CRLV_ABC1234.pdf)
+                    </small>
+                </div>
+                
+                
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn-secondary" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="btn-primary">Salvar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Visualização -->
+    <div id="viewModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Detalhes da Motocicleta</h3>
+                <span class="close" onclick="closeViewModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="viewContent">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Venda -->
+    <div id="saleModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>💰 Registrar Venda</h3>
+                <span class="close" onclick="closeSaleModal()">&times;</span>
+            </div>
+            <form id="saleForm" class="modal-form">
+                <input type="hidden" id="saleMotoId" name="motoId">
+                <div id="saleMotorcycleInfo">
+                    <!-- Informações da moto serão inseridas aqui -->
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">📋 Dados do Comprador</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 2fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="buyerName">Nome do Comprador:</label>
+                        <input type="text" id="buyerName" name="buyerName" placeholder="Digite o nome completo do comprador">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="buyerPhone">Telefone:</label>
+                        <input type="tel" id="buyerPhone" name="buyerPhone" placeholder="(00) 00000-0000" oninput="formatPhone(this)">
+                    </div>
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">🏍️ Documentação da Moto</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="saleRenavam">RENAVAM:</label>
+                        <input type="text" id="saleRenavam" name="renavam" placeholder="0000-0000-000" oninput="formatRenavam(this)">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salePlaca">Placa:</label>
+                        <input type="text" id="salePlaca" name="placa" placeholder="ABC-1234" maxlength="8">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleChassi">Chassi:</label>
+                    <input type="text" id="saleChassi" name="chassi" placeholder="9BWZZZ377VT004251" maxlength="17">
+                </div>
+
+                <div class="form-group">
+                    <label for="contratoPDF">📄 Contrato (PDF):</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <input type="text" id="contratoPDF" name="contratoPDF" placeholder="Cole o caminho do arquivo PDF do contrato (assinatura escaneada)" style="flex:1;">
+                        <button type="button" class="btn-secondary" onclick="selectContratoFile()">Selecionar arquivo</button>
+                    </div>
+                    <input type="file" id="hiddenFileInputContrato" accept="application/pdf" style="display:none">
+                    <small class="form-hint">
+                        💡 Caminho do arquivo PDF do contrato assinado (ex: C:\Users\...\Documentos\CONTRATO_ABC1234.pdf ou documents/CONTRATO_ABC1234.pdf)
+                    </small>
+                </div>
+                
+                <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">💰 Dados da Venda</h4>
+                
+                <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                        <label for="saleDate">Data da Venda:</label>
+                        <input type="date" id="saleDate" name="saleDate">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="salePrice">Valor da Venda (R$):</label>
+                        <input type="text" id="salePrice" name="salePrice" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="paymentMethod">Forma de Pagamento:</label>
+                    <select id="paymentMethod" name="paymentMethod" onchange="togglePaymentDetails()">
+                        <option value="">Selecione...</option>
+                        <option value="dinheiro">Dinheiro</option>
+                        <option value="pix">PIX</option>
+                        <option value="transferencia">Transferência</option>
+                        <option value="cartao">Cartão</option>
+                        <option value="financiamento">Financiamento</option>
+                        <option value="misto">Misto</option>
+                    </select>
+                </div>
+                
+                <!-- Campo de detalhes do pagamento misto (oculto por padrão) -->
+                <div class="form-group" id="paymentDetailsGroup" style="display: none;">
+                    <label for="paymentDetails">Detalhes do Pagamento Misto:</label>
+                    <textarea id="paymentDetails" name="paymentDetails" rows="2" placeholder="Ex: R$ 5.000 em dinheiro + R$ 3.000 no PIX"></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="saleNotes">Observações:</label>
+                    <textarea id="saleNotes" name="saleNotes" rows="3" placeholder="Ex: Garantia, parcelas, pendências, etc."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="submit" class="btn-primary">✅ Confirmar Venda</button>
+                    <button type="button" class="btn-accent" onclick="openContractModal(document.getElementById('saleMotoId').value)">📄 Gerar Contrato</button>
+                    <button type="button" class="btn-warning" onclick="clearSaleForm()" style="background: linear-gradient(135deg, #ff9800, #f57c00); border: none;">🗑️ Limpar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Geração de Contrato MacDavis -->
+    <div id="contractModal" class="modal">
+        <div class="modal-content" style="max-width: 700px; max-height: 90vh; overflow-y: auto;">
+            <div class="modal-header">
+                <h2>📄 Gerar Contrato de Venda MacDavis</h2>
+                <span class="close" onclick="closeContractModal()">&times;</span>
+            </div>
+            <form id="contractForm" onsubmit="generateContract(event)">
+                <input type="hidden" id="contractMotoId">
+                
+                <!-- Informações da Moto (Read-only) -->
+                <div class="form-section" style="background: rgba(255,102,0,0.05); padding: 15px; border-radius: 8px; border-left: 4px solid #ff6600; margin-bottom: 25px;">
+                    <h3 style="margin-top: 0; color: #ff6600;">🏍️ Motocicleta</h3>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 14px;">
+                        <div><strong>Marca/Modelo:</strong> <span id="contractMotoDisplay"></span></div>
+                        <div><strong>Ano:</strong> <span id="contractAnoDisplay"></span></div>
+                        <div><strong>Cor:</strong> <span id="contractCorDisplay"></span></div>
+                        <div><strong>Placa:</strong> <span id="contractPlacaDisplay"></span></div>
+                    </div>
+                </div>
+
+                <!-- Dados do Comprador -->
+                <div class="form-section">
+                    <h3 style="color: #ff6600;">👤 Dados do Comprador</h3>
+                    <div class="form-group">
+                        <label for="buyerNome">Nome Completo *</label>
+                        <input type="text" id="buyerNome" placeholder="Nome completo do comprador" required>
+                    </div>
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                    
+                            <label for="buyerCPF">CPF *</label>
+                            <input type="text" id="buyerCPF" placeholder="000.000.000-00" required maxlength="14" oninput="formatCPF(this)">
+                        </div>
+                        <div class="form-group">
+                            <label for="buyerRG">RG / CPF *</label>
+                            <input type="text" id="buyerRG" placeholder="00.000.000-0 ou 000.000.000-00" required maxlength="14" oninput="formatRG(this)">
+                            <small style="color: #999; font-size: 11px; display: block; margin-top: 4px;">
+                                💡 RG antigo (9 dígitos) ou novo RG/CPF (11 dígitos)
+                            </small>
+                        </div>
+                    </div>
+                    <div class="form-group" id="addressField">
+                        <label for="buyerEndereco">Endereço Completo *</label>
+                        <input type="text" id="buyerEndereco" placeholder="Rua, número, bairro, cidade - UF" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="saleDate">📅 Data do Contrato *</label>
+                        <input type="date" id="saleDate" name="saleDate" required>
+                    </div>
+                </div>
+
+                <!-- Cláusula 01 - PREÇO E FORMA DE PAGAMENTO (Editável) -->
+                <div class="form-section payment-section" style="background: rgba(255,102,0,0.1); padding: 20px; border-radius: 8px; border: 2px dashed #ff6600;">
+                    <h3 style="color: #ff6600; margin-top: 0;">💰 Cláusula 01 - Preço e Forma de Pagamento</h3>
+                    <p style="font-size: 13px; color: #666; margin-bottom: 15px;">Esta é a ÚNICA cláusula editável. Todas as demais são fixas conforme modelo padrão da loja.</p>
+                    
+                    <div class="form-group">
+                        <label for="valorTotal">Valor Total da Venda (R$) *</label>
+                        <input type="number" id="valorTotal" placeholder="0.00" step="0.01" min="0" required oninput="updateValorExtenso()">
+                        <small id="valorTotalExtenso" style="color: #666; font-style: italic;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorDinheiro">Valor em Dinheiro (R$)</label>
+                        <input type="number" id="valorDinheiro" placeholder="0.00" step="0.01" min="0" value="0" oninput="updatePagamentoValues()">
+                        <small id="dinheiroExtenso" style="color: #666; font-style: italic;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorCartao">Valor no Cartão de Crédito (R$)</label>
+                        <input type="number" id="valorCartao" placeholder="0.00" step="0.01" min="0" value="0" oninput="updatePagamentoValues()">
+                        <small id="cartaoExtenso" style="color: #666; font-style: italic;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="valorFinanciado">Valor Financiado (R$)</label>
+                        <input type="number" id="valorFinanciado" placeholder="0.00" step="0.01" min="0" value="0" oninput="updatePagamentoValues()">
+                        <small id="financiadoExtenso" style="color: #666; font-style: italic;"></small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numeroParcelas">Número de Parcelas (se parcelado no cartão)</label>
+                        <input type="number" id="numeroParcelas" placeholder="1" min="1" max="60" value="1" oninput="updateParcelasExtenso()">
+                        <small id="parcelasExtenso" style="color: #666; font-style: italic;"></small>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="form-actions" style="margin-top: 25px;">
+                    <button type="button" class="btn-secondary" onclick="closeContractModal()">❌ Cancelar</button>
+                    <button type="submit" class="btn-primary">📄 Gerar Contrato PDF</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Motos Vendidas -->
+    <div id="soldMotorcyclesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header sales-panel-header">
+                <div class="sales-header-wrapper">
+                    <div class="sales-brand-section">
+                        <div class="sales-brand-icon">
+                            <img src="PNG MD.png" alt="MacDavis" class="sales-logo">
+                        </div>
+                        <div class="sales-brand-identity">
+                            <h3 class="sales-brand-name">Painel de Vendas</h3>
+                            <p class="sales-brand-tagline">MacDavis Motos</p>
+                        </div>
+                    </div>
+                    <span class="close sales-close-btn" onclick="closeSoldMotorcyclesModal()">&times;</span>
+                </div>
+                <div class="sales-header-divider"></div>
+            </div>
+            <div class="modal-body" id="soldMotorcyclesContent">
+                <!-- Skeleton Loader - mostrado enquanto carrega -->
+                <div id="soldPanelSkeleton" style="padding: 20px;">
+                    <!-- Skeleton Dashboard Cards -->
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 25px;">
+                        <div class="skeleton-card" style="height: 120px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 10px;"></div>
+                        <div class="skeleton-card" style="height: 120px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.1s; border-radius: 10px;"></div>
+                        <div class="skeleton-card" style="height: 120px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.2s; border-radius: 10px;"></div>
+                        <div class="skeleton-card" style="height: 120px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.3s; border-radius: 10px;"></div>
+                    </div>
+                    
+                    <!-- Skeleton Filter Box -->
+                    <div style="height: 80px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 12px; margin-bottom: 20px;"></div>
+                    
+                    <!-- Skeleton Motorcycle Cards -->
+                    <div style="display: flex; flex-direction: column; gap: 15px;">
+                        <div style="height: 140px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.4s; border-radius: 8px;"></div>
+                        <div style="height: 140px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.5s; border-radius: 8px;"></div>
+                        <div style="height: 140px; background: linear-gradient(90deg, rgba(255,255,255,0.05) 25%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.05) 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; animation-delay: 0.6s; border-radius: 8px;"></div>
+                    </div>
+                    
+                    <style>
+                        @keyframes skeleton-loading {
+                            0% { background-position: 200% 0; }
+                            100% { background-position: -200% 0; }
+                        }
+                    </style>
+                </div>
+                <!-- Conteúdo real será preenchido via JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Edição de Venda -->
+    <div id="editSoldMotoModal" class="modal">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>✏️ Editar Dados da Venda</h3>
+                <span class="close" onclick="closeEditSoldMotoModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div id="editSoldMotoInfo" style="background: rgba(255, 102, 0, 0.1); padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #ff6600;">
+                    <!-- Info da moto será preenchida aqui -->
+                </div>
+                
+                <form id="editSoldMotoForm">
+                    <input type="hidden" id="editSoldMotoId">
+                    
+                    <h4 style="margin-top: 0; margin-bottom: 1rem; color: #ff6600;">👤 Dados do Comprador</h4>
+                    
+                    <div class="form-group">
+                        <label for="editBuyerName">Nome do Comprador: <span style="color: red;">*</span></label>
+                        <input type="text" id="editBuyerName" required placeholder="Nome completo">
+                    </div>
+                    
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">🏍️ Documentação da Moto</h4>
+                    
+                    <div class="form-row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                        <div class="form-group">
+                            <label for="editSaleRenavam">RENAVAM:</label>
+                            <input type="text" id="editSaleRenavam" placeholder="0000-0000-000" oninput="formatRenavam(this)">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="editSalePlaca">Placa:</label>
+                            <input type="text" id="editSalePlaca" placeholder="ABC-1234" maxlength="8">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editSaleChassi">Chassi:</label>
+                        <input type="text" id="editSaleChassi" placeholder="9BWZZZ377VT004251" maxlength="17">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="editContratoPDF">📄 Contrato (PDF):</label>
+                        <div style="display:flex; gap:8px; align-items:center;">
+                            <input type="text" id="editContratoPDF" name="editContratoPDF" placeholder="Cole o caminho do arquivo PDF do contrato (assinatura escaneada)" style="flex:1;">
+                            <button type="button" class="btn-secondary" onclick="selectEditContratoFile()">Selecionar arquivo</button>
+                        </div>
+                        <input type="file" id="hiddenFileInputEditContrato" accept="application/pdf" style="display:none">
+                        <small class="form-hint">💡 Caminho do arquivo PDF do contrato assinado (ex: C:\\Users\\...\\CONTRATO_ABC1234.pdf ou documents/CONTRATO_ABC1234.pdf)</small>
+                    </div>
+                    
+                    <h4 style="margin-top: 1.5rem; margin-bottom: 1rem; color: #ff6600;">💰 Dados da Venda</h4>
+                    
+                    <div class="form-group">
+                        <label for="editSaleDate">Data da Venda: <span style="color: red;">*</span></label>
+                        <input type="date" id="editSaleDate" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="editSaleNotes">Observações:</label>
+                        <textarea id="editSaleNotes" rows="3" placeholder="Informações adicionais sobre a venda..."></textarea>
+                    </div>
+                    
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-primary" style="flex: 1;">
+                            💾 Salvar Alterações
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="closeEditSoldMotoModal()" style="flex: 1;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Listagem de Administradores -->
+    <div id="adminUsersListModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <h3>👥 Gerenciar Administradores</h3>
+                <span class="close" onclick="closeAdminUsersListModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="section-header" style="margin: 0 0 20px 0; border-bottom: 2px solid rgba(255, 102, 0, 0.2); padding-bottom: 15px;">
+                    <div class="header-actions" style="width: 100%; justify-content: flex-end;">
+                        <button class="btn-primary btn-small" onclick="showAddAdminModal()">
+                            + Novo Administrador
+                        </button>
+                        <button class="btn-secondary btn-small" onclick="refreshAdminUsers()">
+                            🔄 Atualizar
+                        </button>
+                    </div>
+                </div>
+                <div id="adminUsersListContent" class="admin-users-list">
+                    <!-- Lista de administradores será inserida aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Adicionar/Editar Administrador -->
+    <div id="adminUserModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h3 id="adminUserModalTitle">👤 Novo Administrador</h3>
+                <span class="close" onclick="closeAdminUserModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="adminUserForm">
+                    <input type="hidden" id="editAdminUserId">
+                    
+                    <div class="form-group">
+                        <label for="adminUsername">👤 Nome de Usuário: <span style="color: red;">*</span></label>
+                        <input type="text" id="adminUsername" required placeholder="Digite o nome de usuário" autocomplete="off">
+                        <small class="form-hint">Será usado para fazer login</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminPassword">🔒 Senha: <span style="color: red;">*</span></label>
+                        <input type="password" id="adminPassword" required placeholder="Digite a senha" autocomplete="new-password">
+                        <small class="form-hint">Mínimo de 6 caracteres</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminPasswordConfirm">🔒 Confirmar Senha: <span style="color: red;">*</span></label>
+                        <input type="password" id="adminPasswordConfirm" required placeholder="Digite a senha novamente" autocomplete="new-password">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminFullName">📝 Nome Completo:</label>
+                        <input type="text" id="adminFullName" placeholder="Nome completo do administrador">
+                    </div>
+                    
+                    <div class="form-actions" style="display: flex; gap: 10px; margin-top: 20px;">
+                        <button type="submit" class="btn-primary" style="flex: 1;">
+                            💾 Salvar Administrador
+                        </button>
+                        <button type="button" class="btn-secondary" onclick="closeAdminUserModal()" style="flex: 1;">
+                            ❌ Cancelar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎯 Toast Notifications - FORÇA RELOAD -->
+    <script src="toast-notifications.js?v=20260116toast8"></script>
+    <script src="admin.js?v=20260116toast8"></script>
+    <script src="contract-functions-macdavis.js?v=20260116toast8"></script>
+    <script src="admin-users.js?v=20260116toast8"></script>
+    <script src="scroll-emergency-fix.js"></script>
+    
+    <script>
+        // � FUNÇÃO PARA LIMPAR CACHE E RECARREGAR
+        function forceHardReload() {
+            console.log('%c🧹 LIMPANDO TODO O CACHE...', 'background: red; color: white; padding: 10px; font-size: 18px;');
+            
+            if (window.Toast) {
+                Toast.info('🧹 Limpando cache... Aguarde!', 3000);
+            }
+            
+            // Limpar tudo
+            localStorage.clear();
+            sessionStorage.clear();
+            
+            // Limpar Cache API
+            if ('caches' in window) {
+                caches.keys().then(names => {
+                    return Promise.all(names.map(name => caches.delete(name)));
+                }).then(() => {
+                    console.log('✅ Cache Storage limpo!');
+                    // Forçar reload TOTAL
+                    window.location.href = window.location.href + '?nocache=' + Date.now();
+                });
+            } else {
+                window.location.href = window.location.href + '?nocache=' + Date.now();
+            }
+        }
+        
+        // �🚀 FORÇA AUTO-REFRESH (INLINE)
+        console.log('%c🔥 SCRIPT INLINE EXECUTADO!', 'background: red; color: white; padding: 10px; font-size: 16px;');
+        
+        // Garantir que auto-refresh inicia mesmo se admin.js falhar
+        window.addEventListener('load', function() {
+            console.log('%c⚡ WINDOW LOAD - Verificando auto-refresh...', 'background: purple; color: white; padding: 8px;');
+            
+            setTimeout(function() {
+                if (typeof startAutoRefresh === 'function') {
+                    console.log('%c✅ startAutoRefresh encontrado! Tentando iniciar...', 'color: green; font-size: 14px; font-weight: bold;');
+                    try {
+                        startAutoRefresh();
+                    } catch(e) {
+                        console.error('❌ Erro ao chamar startAutoRefresh:', e);
+                    }
+                } else {
+                    console.error('%c❌ startAutoRefresh NÃO ENCONTRADO!', 'background: red; color: white; padding: 8px; font-size: 14px;');
+                    console.log('Funções disponíveis:', Object.keys(window).filter(k => k.includes('refresh')));
+                }
+            }, 2000);
+        });
+    </script>
+    
+    <script>
+        // 🚀 INICIALIZAÇÃO ANTI-CACHE
+        window.addEventListener('DOMContentLoaded', function() {
+            console.log('🎯 ADMIN PANEL CARREGADO - VERSION: 20251216152400');
+            
+            // Verificar autenticação
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                console.log('❌ Usuário não autenticado, redirecionando...');
+                window.location.href = 'admin-login.html?redirect=admin';
+                return;
+            }
+            
+            const user = JSON.parse(userData);
+            if (user.tipo !== 'admin') {
+                console.log('❌ Acesso negado - usuário não é admin');
+                alert('Acesso negado! Esta área é restrita a administradores.');
+                window.location.href = 'admin-login.html';
+                return;
+            }
+            
+            console.log('✅ Admin autenticado:', user.nome);
+            
+            // Exibir nome do usuário no header
+            const adminUserNameElement = document.getElementById('adminUserName');
+            if (adminUserNameElement && user.nome) {
+                adminUserNameElement.textContent = user.nome;
+            }
+            
+            // O admin.js vai inicializar automaticamente via DOMContentLoaded
+            console.log('🎯 Admin panel carregado, aguardando inicialização do admin.js...');
+        });
+
+        // Detectar refresh manual (F5 ou Ctrl+F5)
+        window.addEventListener('beforeunload', function(e) {
+            // Verificar se é refresh manual (não é navegação normal)
+            if (performance.navigation.type === 1) {
+                showAdminLoading('MacDavis Motos - Acesso Administrativo');
+            }
+        });
+        
+        // Função para voltar ao catálogo (cliente - porta 3000)
+        function goToClient() {
+            showAdminLoading('MacDavis Motos');
+            setTimeout(() => {
+                // Use o host atual (IP ou domínio) e porta 3000 para evitar "localhost"
+                const target = `${location.protocol}//${location.hostname}:3000`;
+                window.location.href = target;
+            }, 600);
+        }
+        
+        // Função de logout
+        async function logout() {
+            const ok = await (window.askConfirm ? askConfirm('Deseja realmente sair do painel administrativo?') : Promise.resolve(confirm('Deseja realmente sair do painel administrativo?')));
+            if (ok) {
+                showAdminLoading('MacDavis Motos - Acesso Administrativo');
+                localStorage.removeItem('userData');
+                setTimeout(() => {
+                    const timestamp = Date.now();
+                    window.location.href = `admin-login.html?v=${timestamp}&logout=true`;
+                }, 500);
+            }
+        }
+        
+        // Função para mostrar/ocultar campo de detalhes do pagamento misto
+        function togglePaymentDetails() {
+            const paymentMethod = document.getElementById('paymentMethod').value;
+            const paymentDetailsGroup = document.getElementById('paymentDetailsGroup');
+            
+            if (paymentMethod === 'misto') {
+                paymentDetailsGroup.style.display = 'block';
+            } else {
+                paymentDetailsGroup.style.display = 'none';
+                document.getElementById('paymentDetails').value = ''; // Limpar campo se não for misto
+            }
+        }
+        
+        // Função para formatar campo de valor em tempo real (estilo calculadora)
+        function formatCurrency(input) {
+            // Pegar apenas os números digitados
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limitar a 12 dígitos (999.999.999,99)
+            if (value.length > 12) {
+                value = value.slice(0, 12);
+            }
+            
+            // Se vazio, limpar
+            if (value === '' || value === '0') {
+                input.value = '';
+                return;
+            }
+            
+            // Remover zeros à esquerda
+            value = value.replace(/^0+/, '');
+            
+            // Se ficou vazio após remover zeros, reiniciar
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            
+            // Garantir pelo menos 3 dígitos (para ter centavos)
+            while (value.length < 3) {
+                value = '0' + value;
+            }
+            
+            // Separar centavos (últimos 2 dígitos) dos reais
+            const centavos = value.slice(-2);
+            const reais = value.slice(0, -2);
+            
+            // Formatar a parte dos reais com pontos de milhar
+            const reaisFormatted = reais.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
+            
+            // Montar o valor final
+            input.value = `R$ ${reaisFormatted},${centavos}`;
+        }
+        
+        // Função para formatar telefone brasileiro (DDD + 9 dígitos)
+        function formatPhone(input) {
+            // Pegar apenas os números
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limitar a 11 dígitos (DDD + 9 dígitos)
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            
+            // Se vazio, limpar
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            
+            // Aplicar formatação baseada na quantidade de dígitos
+            if (value.length <= 2) {
+                // Apenas DDD: (44
+                input.value = `(${value}`;
+            } else if (value.length <= 6) {
+                // DDD + primeiros dígitos: (44) 9983
+                input.value = `(${value.slice(0, 2)}) ${value.slice(2)}`;
+            } else if (value.length <= 10) {
+                // Telefone fixo: (44) 3333-4444
+                input.value = `(${value.slice(0, 2)}) ${value.slice(2, 6)}-${value.slice(6)}`;
+            } else {
+                // Celular com 9 dígitos: (44) 99839-0950
+                input.value = `(${value.slice(0, 2)}) ${value.slice(2, 7)}-${value.slice(7)}`;
+            }
+        }
+        
+        // Função para formatar RENAVAM (11 dígitos: 0000-0000-000)
+        function formatRenavam(input) {
+            // Pegar apenas os números
+            let value = input.value.replace(/\D/g, '');
+            
+            // Limitar a 11 dígitos
+            if (value.length > 11) {
+                value = value.slice(0, 11);
+            }
+            
+            // Se vazio, limpar
+            if (value === '') {
+                input.value = '';
+                return;
+            }
+            
+            // Aplicar formatação baseada na quantidade de dígitos
+            if (value.length <= 4) {
+                // Primeiros 4 dígitos: 0132
+                input.value = value;
+            } else if (value.length <= 8) {
+                // Até 8 dígitos: 0132-3510
+                input.value = `${value.slice(0, 4)}-${value.slice(4)}`;
+            } else {
+                // Completo: 0132-3510-386
+                input.value = `${value.slice(0, 4)}-${value.slice(4, 8)}-${value.slice(8)}`;
+            }
+        }
+        
+        // Função para atualizar dados
+        function refreshData() {
+            console.log('🔄 Atualizando dados...');
+            if (typeof loadMotorcycles === 'function') {
+                loadMotorcycles();
+            }
+        }
+
+        // Sistema de Dropdown Customizado com Animação Cascata
+        document.addEventListener('DOMContentLoaded', function() {
+            // Converter todos os selects em dropdowns customizados (apenas em desktop)
+            const isMobileInit = window.matchMedia && window.matchMedia('(max-width: 1024px)').matches;
+            if (!isMobileInit) {
+                const selects = document.querySelectorAll('select.filter-select');
+                selects.forEach(select => {
+                    try { createCustomSelect(select); } catch(e) { console.warn('createCustomSelect erro:', e); }
+                });
+            }
+        });
+
+        function createCustomSelect(selectElement) {
+                    // Permitir criar custom-selects por padrão; só respeitar explicitamente opt-out via data-no-custom
+                    if (!selectElement || selectElement.dataset.noCustom === 'true') {
+                        return;
+                    }
+
+                    // Idempotency guard: se já foi processado, não criar novamente
+                    try {
+                        if (selectElement.dataset.__customCreated === '1') return;
+                        if (selectElement.previousElementSibling && selectElement.previousElementSibling.classList && selectElement.previousElementSibling.classList.contains('custom-select')) {
+                            // mark as created to avoid race conditions elsewhere
+                            try { selectElement.dataset.__customCreated = '1'; } catch(e){}
+                            return;
+                        }
+                    } catch(e) {}
+
+            // Se não houver opções, não criar custom select (evita exceções)
+            const opts = selectElement.options || [];
+            if (!opts.length) {
+                console.warn('⚠️ createCustomSelect: select sem opções, pulando para', selectElement.id || selectElement.name || selectElement);
+                return;
+            }
+
+            // Criar container customizado
+            const customSelect = document.createElement('div');
+            customSelect.className = 'custom-select';
+            
+            // Criar trigger (botão principal)
+            const trigger = document.createElement('div');
+            trigger.className = 'custom-select-trigger';
+            const selIndex = (typeof selectElement.selectedIndex === 'number' && selectElement.selectedIndex >= 0) ? selectElement.selectedIndex : 0;
+            trigger.textContent = (selectElement.options[selIndex] && selectElement.options[selIndex].text) || (selectElement.getAttribute('placeholder') || 'Selecionar');
+            
+            // Criar lista de opções
+            const optionsContainer = document.createElement('div');
+            optionsContainer.className = 'custom-select-options';
+            
+            // Criar cada opção
+            Array.from(selectElement.options).forEach((option, index) => {
+                const customOption = document.createElement('div');
+                customOption.className = 'custom-option';
+                customOption.textContent = option.text;
+                customOption.dataset.value = option.value;
+                
+                if (option.selected) {
+                    customOption.classList.add('selected');
+                }
+                
+                // Click na opção
+                customOption.addEventListener('click', () => {
+                    // Atualizar select original
+                    selectElement.selectedIndex = index;
+                    selectElement.dispatchEvent(new Event('change'));
+                    
+                    // Atualizar visual
+                    trigger.textContent = option.text;
+                    optionsContainer.querySelectorAll('.custom-option').forEach(opt => {
+                        opt.classList.remove('selected');
+                    });
+                    customOption.classList.add('selected');
+                    
+                    // Fechar dropdown
+                    customSelect.classList.remove('open');
+                });
+                
+                optionsContainer.appendChild(customOption);
+            });
+            
+            // Toggle dropdown
+            trigger.addEventListener('click', (e) => {
+                e.stopPropagation();
+                
+                // Fechar outros dropdowns
+                document.querySelectorAll('.custom-select.open').forEach(other => {
+                    if (other !== customSelect) {
+                        other.classList.remove('open');
+                    }
+                });
+                
+                // Toggle este dropdown
+                customSelect.classList.toggle('open');
+            });
+            
+            // Fechar ao clicar fora
+            document.addEventListener('click', () => {
+                customSelect.classList.remove('open');
+            });
+            
+            // Montar estrutura
+            customSelect.appendChild(trigger);
+            customSelect.appendChild(optionsContainer);
+            
+            // Substituir select original
+            selectElement.style.display = 'none';
+            selectElement.parentNode.insertBefore(customSelect, selectElement);
+            // marcar que foi criado um custom-select para este select (evitar duplicação futura)
+            try { selectElement.dataset.__customCreated = '1'; } catch(e) {}
+        }
+
+        // Depois de definir createCustomSelect, garantir inicialização segura dos selects (desktop apenas)
+        (function initCustomSelectsSafe(){
+            try {
+                const isMobileInit = window.matchMedia && window.matchMedia('(max-width: 1024px)').matches;
+                if (isMobileInit) return; // não inicializa em mobile
+                document.querySelectorAll('select.filter-select').forEach(select => {
+                    if (!select.previousElementSibling || !select.previousElementSibling.classList.contains('custom-select')) {
+                        try { createCustomSelect(select); } catch(e) { console.warn('Erro ao criar custom select (init):', e); }
+                    }
+                });
+                console.log('✅ initCustomSelectsSafe: custom-selects inicializados');
+            } catch (e) {
+                console.warn('⚠️ initCustomSelectsSafe falhou:', e);
+            }
+        })();
+    </script>
+    
+    <!-- jsPDF para geração de PDF -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <!-- Sistema de Transições -->
+    <script src="page-transitions.js"></script>
+    
+    <!-- 📱 MOBILE UX ENHANCEMENT -->
+    <script src="mobile-ux.js?v=20260104c"></script>
+    
+    <!-- 🧹 FORÇAR TOAST NO ADMIN -->
+    <script>
+        console.log('%c🎨 TOAST v5 - Escondendo mensagens antigas!', 'background: blue; color: white; padding: 5px;');
+        
+        // Remover TODAS mensagens antigas se aparecerem
+        setInterval(() => {
+            const oldMessages = document.querySelectorAll('.message, .success-message, .error-message, .warning-message, .info-message');
+            if (oldMessages.length > 0) {
+                console.log('🗑️ Removendo', oldMessages.length, 'mensagens antigas');
+                oldMessages.forEach(msg => {
+                    msg.remove();
+                });
+            }
+        }, 100);
+    </script>
+    
+    <!-- Modal de Backups (Mobile) -->
+    <div id="backupsModal" class="modal">
+        <div class="modal-content" style="max-width: 100vw; width: 100vw; height: 100vh; max-height: 100vh; padding: 0; overflow: hidden; margin: 0; border-radius: 0;">
+            <div class="modal-header" style="padding: 1rem; background: rgba(26, 26, 46, 0.95); border-bottom: 2px solid rgba(255, 122, 24, 0.3); margin: 0;">
+                <h3 style="margin: 0; color: #ff9f43;">💾 Gerenciamento de Backups</h3>
+                <span class="close" onclick="closeBackupsModal()" style="font-size: 2rem; color: #ff9f43;">&times;</span>
+            </div>
+            <div class="modal-body" style="padding: 0; height: calc(100vh - 60px); overflow: hidden;">
+                <iframe id="backupsIframe" src="" style="width: 100%; height: 100%; border: none; background: transparent;"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Status do Sistema (mobile) -->
+    <div id="systemStatusModal" class="modal" style="display:none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <div class="modal-header">
+                <h3>📊 Status do Sistema</h3>
+                <span class="close" onclick="closeSystemStatusModal()">&times;</span>
+            </div>
+            <div class="modal-body" id="systemStatusModalBody">
+                <!-- Conteúdo será clonado via JS -->
+            </div>
+        </div>
+    </div>
+    
+    <!-- 📢 Sistema de Notificações Desktop -->
+    <script src="admin-notifications.js?v=20260117"></script>
+    <!-- Botão Limpar Cache fixo (desktop) -->
+    <button class="clear-cache-btn" onclick="forceHardReload()" title="Limpar cache do navegador">
+        🗑️ Limpar Cache
+    </button>
+</body>
+<!-- Observer para forçar reflow quando cards mudarem, evitando scroll manual pesado -->
+<script>
+    (function(){
+        function forceReflow(){
+            try{
+                window.requestAnimationFrame(()=>window.dispatchEvent(new Event('resize')));
+                setTimeout(()=>window.dispatchEvent(new Event('resize')),80);
+            }catch(e){console.warn('forceReflow erro',e)}
+        }
+
+        let grid = document.getElementById('adminGrid');
+        function attachObserverToGrid(g) {
+            // Helper para forçar reflow em um card específico
+            function fixCard(card) {
+                try {
+                    if (!card) return;
+                    if (card.dataset.fixedByScript === '1') return; // idempotent per card
+
+                    // Stronger fix: ensure all images inside card have forced dimensions and object-fit
+                    const imgs = Array.from(card.querySelectorAll('img'));
+
+                    function applyImageStyles(img) {
+                        try {
+                            img.style.display = 'block';
+                            img.style.width = '100%';
+                            img.style.height = '120px';
+                            img.style.objectFit = 'cover';
+                            img.style.marginBottom = '8px';
+                        } catch(e){}
+                    }
+
+                    // Apply immediately for existing images and attach listeners for late-load images
+                    let pending = 0;
+                    imgs.forEach(img => {
+                        applyImageStyles(img);
+                        if (!img.complete) {
+                            pending++;
+                            img.addEventListener('load', () => { applyImageStyles(img); pending--; if (pending <= 0) finalize(); }, { once: true });
+                            img.addEventListener('error', () => { pending--; if (pending <= 0) finalize(); }, { once: true });
+                        }
+                    });
+
+                    // finalize: perform reflow nudge and mark card fixed
+                    function finalize() {
+                        try {
+                            card.dataset.fixedByScript = '1';
+                            card.style.willChange = 'transform';
+                            void card.offsetHeight; // read
+                            card.getBoundingClientRect();
+                            // quick transform to force paint
+                            card.style.transform = 'translateZ(0)';
+                            forceReflow();
+                            setTimeout(() => {
+                                try { card.style.willChange = 'auto'; card.style.transform = ''; } catch(e){}
+                            }, 120);
+                        } catch (e) { console.warn('finalize erro', e); }
+                    }
+
+                    if (pending === 0) finalize();
+                } catch (e) { console.warn('fixCard erro', e); }
+            }
+
+            const obs = new MutationObserver((mutations)=>{
+                // Always trigger a general reflow
+                forceReflow();
+
+                // For each added node, if it's or contains moto-card(s), fix them and attach image listeners
+                mutations.forEach(m => {
+                    m.addedNodes && m.addedNodes.forEach(n => {
+                        try {
+                            if (!n) return;
+                            if (n.classList && n.classList.contains('moto-card')) {
+                                fixCard(n);
+                            } else if (n.querySelectorAll) {
+                                const list = Array.from(n.querySelectorAll('.moto-card'));
+                                list.forEach(c => fixCard(c));
+                                // also attach image listeners under the node
+                                n.querySelectorAll('img').forEach(img => {
+                                    if (!img.complete) img.addEventListener('load', forceReflow, { once: true });
+                                });
+                            }
+                        } catch(e) { /* ignore */ }
+                    });
+                });
+            });
+            obs.observe(g, { childList: true, subtree: true, attributes: true });
+
+            // listener para imagens já presentes no grid
+            g.querySelectorAll('img').forEach(img => {
+                if (!img.complete) img.addEventListener('load', () => { try { forceReflow(); } catch(e){} }, { once: true });
+            });
+
+            // Run initial pass to fix any already-rendered cards
+            Array.from(g.querySelectorAll('.moto-card')).forEach(c => fixCard(c));
+            // small polling fallback for late arrivals during initial 2s
+            const start = Date.now();
+            const poll = setInterval(() => {
+                Array.from(g.querySelectorAll('.moto-card:not([data-fixed-by-script])')).forEach(c => fixCard(c));
+                if (Date.now() - start > 2000) clearInterval(poll);
+            }, 200);
+        }
+
+        if (grid) {
+            attachObserverToGrid(grid);
+        } else {
+            // aguardar criação do grid (algumas renderizações assíncronas)
+            let waited = 0;
+            const waiter = setInterval(() => {
+                grid = document.getElementById('adminGrid');
+                if (grid) {
+                    clearInterval(waiter);
+                    attachObserverToGrid(grid);
+                    // garantir reflow após anexar
+                    forceReflow();
+                }
+                waited += 100;
+                if (waited > 8000) { // timeout 8s
+                    clearInterval(waiter);
+                    console.warn('adminGrid não apareceu em 8s; observer não anexado');
+                }
+            }, 100);
+        }
+
+        // pequeno atalho: se o usuário rolar rapidamente para cima, reaplica reflow
+        let triggered = false;
+        window.addEventListener('scroll', () => {
+            if (window.scrollY < 100 && !triggered) {
+                triggered = true;
+                forceReflow();
+                setTimeout(() => { triggered = false; }, 400);
+            }
+        }, { passive: true });
+    })();
+</script>
+</html>
+

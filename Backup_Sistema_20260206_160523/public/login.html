@@ -1,0 +1,468 @@
+<!doctype html>
+<html lang="pt-BR">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Login - MacDavis Motos</title>
+        <link rel="stylesheet" href="CSS.css" />
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <style>
+            :root {
+                --accent: #ff7a18;
+                --muted: #666;
+                --bg: #ffffff;
+            }
+            
+            * {
+                box-sizing: border-box;
+            }
+            
+            body {
+                font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                font-weight: 400;
+                line-height: 1.6;
+                color: #1a1a1a;
+                margin: 0;
+                background: #0f0f0f;
+                min-height: 100vh;
+                position: relative;
+                overflow-x: hidden;
+                -webkit-font-smoothing: antialiased;
+                -moz-osx-font-smoothing: grayscale;
+            }
+            
+            /* Marca d'água da logo */
+            body::before {
+                content: "";
+                position: fixed;
+                inset: 0;
+                pointer-events: none;
+                opacity: 0.08;
+                background-image: url('logo-watermark.png');
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: 35vmin;
+                mix-blend-mode: screen;
+                z-index: 1;
+            }
+            
+            /* Texto de marca d'água de fallback */
+            body::after {
+                content: 'MacDavis motos';
+                position: fixed;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 8vmin;
+                color: var(--accent);
+                opacity: 0.03;
+                pointer-events: none;
+                font-weight: 700;
+                letter-spacing: 4px;
+                z-index: 1;
+            }
+            
+            /* Barras decorativas superior e inferior */
+            .site-bar-top, .site-bar-bottom {
+                position: fixed;
+                left: 0;
+                right: 0;
+                height: 44px;
+                background: #0f0f0f;
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                border: 1px solid rgba(255, 122, 24, 0.2);
+            }
+            
+            .site-bar-top {
+                top: 0;
+                border-bottom: 1px solid rgba(255, 122, 24, 0.3);
+            }
+            
+            .site-bar-bottom {
+                bottom: 0;
+                border-top: 1px solid rgba(255, 122, 24, 0.3);
+            }
+            
+            .site-bar-top .brand, .site-bar-bottom .brand {
+                color: var(--accent);
+                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                font-weight: 600;
+                font-size: 1rem;
+                letter-spacing: 1px;
+                text-transform: uppercase;
+            }
+            
+            .login-container {
+                max-width: 420px;
+                margin: 80px auto;
+                padding: 40px;
+                background: rgba(255, 255, 255, 0.95);
+                border-radius: 10px;
+                box-shadow: 0 12px 40px rgba(10, 20, 40, 0.15);
+                position: relative;
+                z-index: 10;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255, 122, 24, 0.1);
+            }
+            
+            .login-header {
+                text-align: center;
+                margin-bottom: 30px;
+            }
+            
+            .login-header h1 {
+                margin: 0 0 8px 0;
+                color: var(--accent);
+                font-size: 2rem;
+                font-weight: 700;
+                font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                letter-spacing: -0.025em;
+            }
+            
+            .login-header p {
+                margin: 0;
+                color: var(--muted);
+                font-size: 1rem;
+                font-weight: 400;
+                opacity: 0.9;
+                letter-spacing: 0.01em;
+            }
+            
+            .login-form .form-group {
+                margin-bottom: 20px;
+            }
+            
+            .login-form label {
+                display: block;
+                margin-bottom: 8px;
+                font-weight: 500;
+                color: #1a1a1a;
+                font-size: 0.95rem;
+                letter-spacing: 0.01em;
+            }
+            
+            .login-form input {
+                width: 100%;
+                padding: 14px;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                font-size: 16px;
+                font-family: 'Inter', sans-serif;
+                font-weight: 400;
+                box-sizing: border-box;
+                background: #fff;
+                color: #1a1a1a;
+                transition: border-color 0.2s, box-shadow 0.2s;
+            }
+            
+            .login-form input:focus {
+                outline: none;
+                border-color: var(--accent);
+                box-shadow: 0 0 0 2px rgba(255, 122, 24, 0.25);
+            }
+            
+            .login-form input::placeholder {
+                color: #777;
+            }
+            
+            .login-btn {
+                width: 100%;
+                padding: 14px;
+                background: var(--accent);
+                color: #000;
+                border: none;
+                border-radius: 8px;
+                font-size: 16px;
+                font-weight: 600;
+                font-family: 'Inter', sans-serif;
+                letter-spacing: -0.005em;
+                cursor: pointer;
+                transition: all 0.2s ease;
+            }
+            
+            .login-btn:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(255, 122, 24, 0.3);
+            }
+            
+            .login-btn:disabled {
+                background: #6c757d;
+                cursor: not-allowed;
+                opacity: 0.7;
+            }
+            
+            .error-message {
+                color: #dc3545;
+                font-size: 14px;
+                margin-top: 10px;
+                display: none;
+            }
+            
+            .success-message {
+                color: #28a745;
+                font-size: 14px;
+                margin-top: 10px;
+                display: none;
+            }
+            
+            .admin-info {
+                margin-top: 20px;
+                padding: 15px;
+                background: rgba(233, 236, 239, 0.8);
+                border-radius: 6px;
+                font-size: 13px;
+                color: #495057;
+                backdrop-filter: blur(5px);
+                border: 1px solid rgba(255, 122, 24, 0.1);
+            }
+            
+            .admin-info code {
+                background: rgba(255, 122, 24, 0.1);
+                padding: 2px 4px;
+                border-radius: 3px;
+                color: var(--accent);
+                font-weight: 600;
+            }
+            
+            /* Seleção de texto com cores da marca */
+            ::selection {
+                background: var(--accent);
+                color: #000;
+            }
+            
+            ::-moz-selection {
+                background: var(--accent);
+                color: #000;
+            }
+            
+            /* Responsividade */
+            @media (max-width: 480px) {
+                .login-container {
+                    margin: 60px 20px;
+                    padding: 30px;
+                }
+                
+                .site-bar-top .brand, .site-bar-bottom .brand {
+                    font-size: 0.8rem;
+                    letter-spacing: 1px;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <!-- Barra decorativa superior -->
+        <div class="site-bar-top">
+            <div class="brand">MacDavis motos</div>
+        </div>
+        
+        <div class="login-container">
+            <div class="login-header">
+                <h1>MacDavis Motos</h1>
+                <p>Entre para agendar sua visita</p>
+            </div>
+            
+            <form id="loginForm" class="login-form">
+                <div class="form-group">
+                    <label for="name">Nome completo</label>
+                    <input type="text" id="name" name="name" required placeholder="Seu nome completo" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">E-mail</label>
+                    <input type="email" id="email" name="email" required placeholder="seu@exemplo.com" />
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Telefone (opcional)</label>
+                    <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000" />
+                </div>
+                
+                <button type="submit" id="loginBtn" class="login-btn">Entrar</button>
+                
+                <div id="errorMessage" class="error-message"></div>
+                <div id="successMessage" class="success-message"></div>
+                
+                <div class="admin-info">
+                    <strong>Acesso Administrativo:</strong><br>
+                    Para acessar o painel admin, use:<br>
+                    E-mail: <code>admin@macdavis.com</code> | Senha: qualquer nome<br>
+                    E-mail: <code>manager@macdavis.com</code> | Senha: qualquer nome
+                </div>
+            </form>
+        </div>
+        
+        <!-- Loading Overlay -->
+        <div id="loadingOverlay" class="loading-overlay">
+            <div class="loading-spinner">
+                <div class="spinner"></div>
+                <div class="loading-text">Fazendo login...</div>
+            </div>
+        </div>
+        
+        <!-- Barra decorativa inferior -->
+        <div class="site-bar-bottom">
+            <div class="brand">Sistema de agendamento</div>
+        </div>
+
+        <script>
+            // Page entrance animation
+            document.addEventListener('DOMContentLoaded', function() {
+                document.body.classList.add('page-fade-in');
+                document.querySelector('.login-container').classList.add('scale-in');
+            });
+
+            // Check if already logged in
+            function isLoggedIn() {
+                try {
+                    return !!localStorage.getItem('user_v1');
+                } catch (e) {
+                    return false;
+                }
+            }
+
+            function getLoggedUser() {
+                try {
+                    const s = localStorage.getItem('user_v1');
+                    return s ? JSON.parse(s) : null;
+                } catch (e) {
+                    return null;
+                }
+            }
+
+            function setLoggedUser(user) {
+                try {
+                    localStorage.setItem('user_v1', JSON.stringify(user));
+                } catch (e) {
+                    console.error('Failed to save user to localStorage:', e);
+                }
+            }
+
+            function showLoading(text = 'Carregando...') {
+                const overlay = document.getElementById('loadingOverlay');
+                const loadingText = overlay.querySelector('.loading-text');
+                loadingText.textContent = text;
+                overlay.classList.add('show');
+            }
+
+            function hideLoading() {
+                const overlay = document.getElementById('loadingOverlay');
+                overlay.classList.remove('show');
+            }
+
+            function showError(message) {
+                const errorEl = document.getElementById('errorMessage');
+                const successEl = document.getElementById('successMessage');
+                errorEl.textContent = message;
+                errorEl.style.display = 'block';
+                successEl.style.display = 'none';
+            }
+
+            function showSuccess(message) {
+                const errorEl = document.getElementById('errorMessage');
+                const successEl = document.getElementById('successMessage');
+                successEl.textContent = message;
+                successEl.style.display = 'block';
+                errorEl.style.display = 'none';
+            }
+
+            function redirectToMain() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const returnUrl = urlParams.get('return') || './catalog.html';
+                window.location.href = returnUrl;
+            }
+
+            // If already logged in, redirect immediately
+            if (isLoggedIn()) {
+                redirectToMain();
+            }
+
+            // Prefill form if user data exists but not in current session
+            const existingUser = getLoggedUser();
+            if (existingUser) {
+                document.getElementById('name').value = existingUser.name || '';
+                document.getElementById('email').value = existingUser.email || '';
+                document.getElementById('phone').value = existingUser.phone || '';
+            }
+
+            // Tratar submissão do formulário
+            document.getElementById('loginForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const name = document.getElementById('name').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                
+                if (!name || !email) {
+                    showError('Por favor, preencha nome e e-mail.');
+                    return;
+                }
+
+                // Basic email validation
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(email)) {
+                    showError('Por favor, insira um e-mail válido.');
+                    return;
+                }
+
+                const loginBtn = document.getElementById('loginBtn');
+                loginBtn.disabled = true;
+                loginBtn.classList.add('btn-loading');
+                
+                // Show loading with animation
+                showLoading('Fazendo login...');
+
+                // Simulate authentication delay with realistic timing
+                setTimeout(() => {
+                    try {
+                        const user = { name, email, phone, loginTime: new Date().toISOString() };
+                        setLoggedUser(user);
+                        
+                        // Change loading text and prepare transition
+                        showLoading('Login realizado! Preparando sistema...');
+                        showSuccess('Login realizado com sucesso!');
+                        
+                        // Start elegant page transition
+                        setTimeout(() => {
+                            // Fade out loading
+                            hideLoading();
+                            
+                            // Start page transition animation
+                            document.body.classList.add('page-transition-out');
+                            document.querySelector('.login-container').classList.add('login-container-exit');
+                            document.querySelector('.site-bar-top').classList.add('slide-out-left');
+                            document.querySelector('.site-bar-bottom').classList.add('slide-out-left');
+                            
+                            // Final redirect after animation completes
+                            setTimeout(() => {
+                                redirectToMain();
+                            }, 600);
+                        }, 1200);
+                        
+                    } catch (error) {
+                        console.error('Login error:', error);
+                        hideLoading();
+                        showError('Erro ao fazer login. Tente novamente.');
+                        loginBtn.disabled = false;
+                        loginBtn.classList.remove('btn-loading');
+                    }
+                }, 1200); // Realistic authentication delay
+            });
+
+            // Handle Enter key on inputs
+            document.querySelectorAll('input').forEach(input => {
+                input.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        document.getElementById('loginForm').dispatchEvent(new Event('submit'));
+                    }
+                });
+            });
+        </script>
+    </body>
+</html>

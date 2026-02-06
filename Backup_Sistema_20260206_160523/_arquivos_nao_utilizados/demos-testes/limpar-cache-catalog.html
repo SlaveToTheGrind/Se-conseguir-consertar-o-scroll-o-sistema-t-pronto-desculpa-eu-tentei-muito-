@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Limpando Cache</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        .container {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            backdrop-filter: blur(10px);
+        }
+        h1 {
+            margin-bottom: 20px;
+        }
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .info {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧹 Limpando Cache...</h1>
+        <div class="spinner"></div>
+        <p class="info">Aguarde, você será redirecionado em instantes...</p>
+    </div>
+
+    <script>
+        // Limpar todos os caches possíveis
+        async function limparTudo() {
+            // 1. Limpar localStorage
+            localStorage.clear();
+            
+            // 2. Limpar sessionStorage
+            sessionStorage.clear();
+            
+            // 3. Tentar limpar cache da API
+            if ('caches' in window) {
+                const cacheNames = await caches.keys();
+                await Promise.all(
+                    cacheNames.map(cacheName => caches.delete(cacheName))
+                );
+            }
+            
+            // 4. Aguardar um pouco
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // 5. Redirecionar com cache buster
+            const timestamp = Date.now();
+            window.location.href = `catalog.html?_clean=${timestamp}`;
+        }
+        
+        limparTudo();
+    </script>
+</body>
+</html>

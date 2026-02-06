@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>Agendar Visita - MacDavis Motos</title>
+    <link rel="stylesheet" href="CSS.css" />
+    <style>
+        /* Estilos adicionais se necessário */
+    </style>
+</head>
+<body>
+    <!-- Elementos decorativos animados -->
+    <div class="decorative-elements">
+        <div class="floating-shape shape-1"></div>
+        <div class="floating-shape shape-2"></div>
+        <div class="floating-shape shape-3"></div>
+        <div class="floating-shape shape-4"></div>
+        <div class="floating-shape shape-5"></div>
+    </div>
+    
+    <!-- Header -->
+    <header class="top">
+        <h1>MacDavis Motos — Agendamento</h1>
+        <p class="subtitle">Agende sua visita para conhecer a motocicleta escolhida</p>
+        
+        <!-- Navegação -->
+        <nav style="position: absolute; top: 20px; right: 20px; display: flex; gap: 15px;">
+            <button onclick="goBack()" style="background: rgba(255,255,255,0.2); color: #fff; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer;">
+                ← Voltar ao Catálogo
+            </button>
+            <button onclick="logout()" style="background: var(--accent); color: #000; border: none; padding: 10px 15px; border-radius: 8px; cursor: pointer; font-weight: 600;">
+                Sair
+            </button>
+        </nav>
+    </header>
+
+    <main class="container">
+        <!-- Motocicleta selecionada -->
+        <section class="selected-moto" id="selectedMoto">
+            <!-- Será preenchida via JavaScript -->
+        </section>
+
+        <!-- Formulário de agendamento -->
+        <section class="agendamento">
+            <h2>Agendar Serviço</h2>
+            
+            <!-- Informações do usuário -->
+            <div class="user-info-display" id="userInfoDisplay">
+                <div style="color: white; padding: 15px;">🔄 Carregando dados do usuário...</div>
+            </div>
+            
+            <form id="appointmentForm" class="appointment-form">
+                <div class="form-group">
+                    <label for="serviceSelect">Motocicleta Selecionada:</label>
+                    <select id="serviceSelect" name="service" required>
+                        <option value="">🔄 Carregando motocicletas...</option>
+                    </select>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="appointmentDate">Data da Visita:</label>
+                        <input type="date" id="appointmentDate" name="date" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="appointmentTime">Horário:</label>
+                        <select id="appointmentTime" name="time" required>
+                            <option value="">Selecione um horário</option>
+                            <option value="08:00">08:00</option>
+                            <option value="09:00">09:00</option>
+                            <option value="10:00">10:00</option>
+                            <option value="11:00">11:00</option>
+                            <option value="14:00">14:00</option>
+                            <option value="15:00">15:00</option>
+                            <option value="16:00">16:00</option>
+                            <option value="17:00">17:00</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="notes">Observações (opcional):</label>
+                    <textarea id="notes" name="notes" rows="3" placeholder="Alguma informação adicional sobre sua visita..."></textarea>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="submit-btn-enhanced">
+                        <span>📅</span>
+                        Confirmar Agendamento
+                    </button>
+                </div>
+            </form>
+        </section>
+
+        <!-- Lista de agendamentos do usuário -->
+        <section class="appointments-section">
+            <h2>Seus Agendamentos</h2>
+            <div id="appointmentsList" class="appointments-list">
+                <div style="color: white; padding: 20px; text-align: center;">
+                    🔄 Carregando agendamentos...
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner">
+            <div class="spinner"></div>
+            <div class="loading-text">Processando agendamento...</div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        console.log('🚀 AGENDAMENTO: Sistema iniciado');
+        
+        // Variáveis globais
+        let motorcycles = [];
+        let agendamentos = [];
+        let selectedMoto = null;
+        let userData = null;
+
+        document.addEventListener('DOMContentLoaded', async function() {
+            console.log('🔄 AGENDAMENTO: DOM carregado');
+            
+            try {
+                // Verificar login
+                checkUserLogin();
+                
+                // Carregar dados
+                await loadMotorcycles();
+                
+                // Configurar moto selecionada
+                setupSelectedMoto();
+                
+                // Configurar formulário
+                setupForm();
+                
+                // Carregar agendamentos
+                await loadAppointments();
+                
+                // Renderizar interface
+                renderSelectedMoto();
+                renderUserInfo();
+                renderAppointments();
+                
+                console.log('✅ AGENDAMENTO: Sistema pronto!');
+                
+            } catch (error) {
+                console.error('❌ AGENDAMENTO: Erro na inicialização:', error);
+            }
+        });
+
+        // Verificar se usuário está logado
+        function checkUserLogin() {
+            const userDataStr = localStorage.getItem('userData');
+            if (!userDataStr) {
+                // Criar dados temporários para funcionamento
+                userData = { 
+                    nome: 'Usuário', 
+                    email: 'usuario@macdavis.com',
+                    tipo: 'cliente'
+                };
+                localStorage.setItem('userData', JSON.stringify(userData));
+            } else {
+                try {
+                    userData = JSON.parse(userDataStr);
+                } catch (e) {
+                    userData = { nome: 'Usuário', email: 'usuario@macdavis.com' };
+                }
+            }
+        }
+
+        // Carregar motocicletas
+        async function loadMotorcycles() {
+            updateDebug('Iniciando carregamento de motocicletas...');
+            
+            try {
+                const timestamp = Date.now();
+                const response = await fetch(`/api/motorcycles?v=${timestamp}`, {
+                    method: 'GET',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Cache-Control': 'no-cache',
+                        'Pragma': 'no-cache'
+                    }
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                motorcycles = Array.isArray(data) ? data : [];
+                updateDebug(`API funcionou! ${motorcycles.length} motocicletas encontradas`);
+                
+                // Salvar backup no localStorage
+                localStorage.setItem('motorcycles', JSON.stringify(motorcycles));
+                
+            } catch (error) {
+                updateDebug(`API falhou (${error.message}), tentando localStorage...`);
+                
+                const stored = localStorage.getItem('motorcycles');
+                if (stored) {
+                    try {
+                        motorcycles = JSON.parse(stored);
+                        updateDebug(`localStorage funcionou! ${motorcycles.length} motocicletas`);
+                    } catch (e) {
+                        updateDebug('Erro no localStorage, usando dados fallback');
+                        motorcycles = getFallbackMotorcycles();
+                    }
+                } else {
+                    updateDebug('Nada no localStorage, usando dados fallback');
+                    motorcycles = getFallbackMotorcycles();
+                }
+            }
+        }
+
+        // Dados fallback se tudo falhar
+        function getFallbackMotorcycles() {
+            return [
+                {
+                    "id": "moto-fallback-1",
+                    "name": "CB 250 TWISTER",
+                    "year": "2022/22",
+                    "color": "Vermelha",
+                    "displacement": 250
+                },
+                {
+                    "id": "moto-fallback-2",
+                    "name": "CBX 250 TWISTER",
+                    "year": "2006/07", 
+                    "color": "Amarela",
+                    "displacement": 250
+                },
+                {
+                    "id": "moto-fallback-3",
+                    "name": "HONDA CG 160",
+                    "year": "2020/21",
+                    "color": "Preta", 
+                    "displacement": 160
+                }
+            ];
+        }
+
+        // Configurar formulário
+        function setupForm() {
+            updateDebug('🔧 Iniciando setupForm...');
+            
+            const serviceSelect = document.getElementById('serviceSelect');
+            updateDebug(`🔍 serviceSelect encontrado: ${!!serviceSelect}`);
+            
+            if (!serviceSelect) {
+                updateDebug('❌ ERRO CRÍTICO: Select serviceSelect não encontrado!');
+                // Tentar encontrar manualmente
+                const allSelects = document.querySelectorAll('select');
+                updateDebug(`🔍 Selects encontrados: ${allSelects.length}`);
+                allSelects.forEach((select, index) => {
+                    updateDebug(`  Select ${index}: id="${select.id}", name="${select.name}"`);
+                });
+                return;
+            }
+            
+            updateDebug(`🔧 Limpando select... Current innerHTML: "${serviceSelect.innerHTML}"`);
+            serviceSelect.innerHTML = '';
+            
+            updateDebug(`🔍 Verificando motorcycles: ${!!motorcycles}, length: ${motorcycles ? motorcycles.length : 'N/A'}`);
+            
+            if (!motorcycles || motorcycles.length === 0) {
+                serviceSelect.innerHTML = '<option value="">❌ Nenhuma motocicleta disponível</option>';
+                updateDebug('⚠️ AVISO: Lista de motocicletas vazia');
+                return;
+            }
+            
+            // Preencher select
+            updateDebug(`🔧 Preenchendo select com ${motorcycles.length} motocicletas...`);
+            serviceSelect.innerHTML = '<option value="">✅ Selecione uma motocicleta</option>';
+            
+            motorcycles.forEach((moto, index) => {
+                updateDebug(`🏍️ Processando moto ${index + 1}: ${JSON.stringify(moto)}`);
+                
+                const option = document.createElement('option');
+                option.value = moto.id;
+                
+                // Tentar diferentes formatos de nome
+                let displayName = '';
+                if (moto.marca && moto.modelo) {
+                    displayName = `${moto.marca} ${moto.modelo}`;
+                } else if (moto.name) {
+                    displayName = moto.name;
+                } else {
+                    displayName = `Moto ${moto.id}`;
+                }
+                
+                if (moto.year || moto.ano) {
+                    displayName += ` - ${moto.year || moto.ano}`;
+                }
+                
+                if (moto.color || moto.cor) {
+                    displayName += ` (${moto.color || moto.cor})`;
+                }
+                
+                option.textContent = displayName;
+                serviceSelect.appendChild(option);
+                updateDebug(`✅ Moto ${index + 1} adicionada: ${displayName}`);
+            });
+            
+            updateDebug(`✅ setupForm concluído! ${motorcycles.length} motocicletas no select`);
+            updateDebug(`🔍 Final innerHTML: ${serviceSelect.innerHTML.substring(0, 200)}...`);
+            
+            // Configurar data mínima (hoje)
+            const today = new Date().toISOString().split('T')[0];
+            const dateInput = document.getElementById('appointmentDate');
+            if (dateInput) {
+                dateInput.min = today;
+            }
+            
+            // Handler do formulário
+            const form = document.getElementById('appointmentForm');
+            if (form) {
+                form.onsubmit = function(e) {
+                    e.preventDefault();
+                    updateDebug('Formulário enviado!');
+                    alert('✅ Agendamento funcionando! (modo teste)');
+                };
+            }
+        }
+
+        // Funções vazias para evitar erros
+        function setupSelectedMoto() { updateDebug('setupSelectedMoto executado'); }
+        function loadAppointments() { updateDebug('loadAppointments executado'); return Promise.resolve(); }
+        function renderSelectedMoto() { updateDebug('renderSelectedMoto executado'); }
+        function renderUserInfo() { updateDebug('renderUserInfo executado'); }
+        function renderAppointments() { updateDebug('renderAppointments executado'); }
+        function logout() { updateDebug('logout executado'); }
+        function goBack() { updateDebug('goBack executado'); window.location.href = 'catalog.html'; }
+
+        // INICIALIZAÇÃO PRINCIPAL
+        window.onload = async function() {
+            updateDebug('🚀 Página carregada, iniciando sistema...');
+            
+            // Carregar motocicletas
+            await loadMotorcycles();
+            
+            // Configurar formulário
+            setupForm();
+            
+            // Outras configurações
+            setupSelectedMoto();
+            renderUserInfo();
+            
+            updateDebug('✅ Sistema inicializado com sucesso!');
+        };
+
+        // Backup: executar também quando DOM estiver pronto
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDebug('DOM carregado, verificando inicialização...');
+            if (!window.systemInitialized) {
+                updateDebug('Sistema não inicializado, fazendo backup da inicialização...');
+                setTimeout(async () => {
+                    await loadMotorcycles();
+                    setupForm();
+                    window.systemInitialized = true;
+                }, 500);
+            }
+        });
+    </script>
+</body>
+</html>

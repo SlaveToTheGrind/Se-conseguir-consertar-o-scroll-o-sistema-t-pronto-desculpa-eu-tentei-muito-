@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Teste Rápido da API</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #333; color: white; }
+        .resultado { margin: 10px 0; padding: 10px; border-radius: 5px; }
+        .sucesso { background: #28a745; }
+        .erro { background: #dc3545; }
+        .info { background: #007bff; }
+    </style>
+</head>
+<body>
+    <h1>🔧 Teste da API MacDavis</h1>
+    <button onclick="testarAPI()">Testar API</button>
+    <div id="resultados"></div>
+
+    <script>
+        async function testarAPI() {
+            const resultados = document.getElementById('resultados');
+            resultados.innerHTML = '<div class="info">Testando API...</div>';
+            
+            try {
+                const response = await fetch('/api/motorcycles');
+                const data = await response.json();
+                
+                let html = `<div class="sucesso">✅ API funcionando! ${data.length} motocicletas encontradas</div>`;
+                
+                if (data.length > 0) {
+                    html += '<div class="info">Primeiras 3 motocicletas:</div>';
+                    data.slice(0, 3).forEach(moto => {
+                        html += `<div class="info">• ${moto.marca || moto.name} ${moto.modelo || ''} (ID: ${moto.id})</div>`;
+                    });
+                }
+                
+                resultados.innerHTML = html;
+                
+            } catch (error) {
+                resultados.innerHTML = `<div class="erro">❌ Erro na API: ${error.message}</div>`;
+            }
+        }
+
+        // Testar automaticamente ao carregar
+        window.onload = testarAPI;
+    </script>
+</body>
+</html>

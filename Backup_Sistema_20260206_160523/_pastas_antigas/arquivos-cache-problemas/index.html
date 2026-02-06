@@ -1,0 +1,638 @@
+<!doctype html>
+<html lang="pt-BR">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Agendar Visita</title>
+		<link rel="stylesheet" href="CSS.css" />
+		<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+		<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+	</head>
+	<body>
+		<!-- Elementos decorativos animados -->
+		<div class="decorative-elements">
+			<div class="floating-shape shape-1"></div>
+			<div class="floating-shape shape-2"></div>
+			<div class="floating-shape shape-3"></div>
+			<div class="floating-shape shape-4"></div>
+			<div class="floating-shape shape-5"></div>
+		</div>
+		
+		<!-- Header com informações do usuário -->
+		<div class="user-header">
+			<div class="user-info">
+				<span id="userName">Carregando...</span>
+				<button id="adminPanelBtn" class="admin-panel-btn" style="display:none;">⚙️ Painel Admin</button>
+				<button id="logoutBtn" class="logout-btn">🚪 Sair</button>
+			</div>
+		</div>
+		
+		<header class="top">
+			<h1>MacDavis Motos — Agendamento</h1>
+			<p class="subtitle">Veja as motos disponíveis e agende uma visita à concessionária</p>
+		</header>
+
+		<main class="container">
+				<!-- admin controls removed (no displacement corrections) -->
+			<section class="vitrine">
+				<h2>Catálogo de Motocicletas</h2>
+				<div id="services" class="services-list-flat">
+					<!-- motos serão renderizadas via JS -->
+				</div>
+			</section>
+
+			<!-- Modal de correção de cilindrada -->
+			<div id="fixModal" class="modal" aria-hidden="true">
+				<div class="modal-content">
+					<button id="closeFixModal" class="modal-close">×</button>
+					<div class="modal-body">
+						<div style="flex:1;padding:8px">
+							<h3>Corrigir cilindradas</h3>
+							<p>Lista de motos onde a cilindrada não foi detectada automaticamente. Informe o valor em cc (ex: 125, 250).</p>
+							<div id="fixList" style="max-height:50vh;overflow:auto"></div>
+							<div style="margin-top:8px;text-align:right">
+								<button id="applyFixes" class="primary">Aplicar e Ordenar</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Modal de detalhe da moto -->
+			<div id="detailModal" class="modal" aria-hidden="true">
+				<div class="modal-content">
+					<button id="closeModal" class="modal-close">×</button>
+					<div class="modal-body">
+						<div class="modal-image" id="modalImage"></div>
+						<div class="modal-info">
+							<h3 id="modalTitle">Título da moto</h3>
+							<p id="modalDesc">Descrição</p>
+							<ul id="modalSpecs"></ul>
+							<button id="interesseBtn" class="primary">Tenho interesse (Agendar visita)</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<section class="agendamento">
+				<h2>Agendar Serviço</h2>
+				<form id="bookingForm" class="form">
+					<label>Nome
+						<input type="text" id="name" required placeholder="Seu nome" />
+					</label>
+
+					<label>Telefone
+						<input type="tel" id="phone" placeholder="(00) 00000-0000" />
+					</label>
+
+					<label>Serviço
+						<select id="service" required>
+							<!-- options via JS -->
+						</select>
+					</label>
+
+					<label>Data
+						<input type="date" id="date" required />
+					</label>
+
+					<label>Horário
+						<input type="time" id="time" required />
+					</label>
+
+					<label>Observações
+						<textarea id="notes" rows="2" placeholder="Observações (opcional)"></textarea>
+					</label>
+
+					<div class="form-actions">
+						<button type="submit" id="submitBtn">Agendar</button>
+						<button type="button" id="clearBtn">Limpar formulário</button>
+					</div>
+				</form>
+
+				<div class="appointments">
+					<h3>Agendamentos</h3>
+					<div id="appointmentsList">
+						<!-- lista de agendamentos -->
+					</div>
+					<div class="appointments-actions">
+						<button id="clearAll">Limpar todos</button>
+						<button id="exportCsv">Exportar CSV</button>
+						<input type="file" id="importCsv" accept="text/csv" />
+					</div>
+				</div>
+			</section>
+		</main>
+
+		<footer class="foot">
+			<small>Dados armazenados localmente no navegador (localStorage).</small>
+		</footer>
+
+			<script>
+				// Carrega catálogo dinamicamente de motorcycles.json (fallback para array vazio)
+				let motorcycles = [];
+
+				async function loadMotorcycles() {
+					// Try multiple locations for motorcycles.json to be resilient to server root differences
+					// If you open the page via another dev server (ex: Live Server on :5500),
+					// relative '/api/..' will point to that origin — so try explicit localhost:3000 URLs too.
+					const candidates = [
+						'http://localhost:3000/api/motorcycles',
+						'http://127.0.0.1:3000/api/motorcycles',
+						'/api/motorcycles',
+						'/motorcycles.json',
+						'./motorcycles.json',
+						'motorcycles.json'
+					];
+					let loaded = false;
+					for (const url of candidates){
+						try{
+							const res = await fetch(url);
+							if (!res.ok) throw new Error('HTTP ' + res.status);
+							const data = await res.json();
+							if (Array.isArray(data)){
+								motorcycles = data;
+								console.debug('Carregado', motorcycles.length, 'motos de', url);
+								loaded = true; break;
+							} else {
+								console.debug('Resposta de', url, 'não é um array:', data);
+							}
+						} catch(e){
+							console.debug('Falha ao carregar', url, e);
+						}
+					}
+					if (!loaded){
+						console.debug('Nenhum motorcycles.json encontrado nas rotas esperadas. Catálogo ficará vazio.');
+						motorcycles = [];
+					}
+				}
+
+				// handler de erro de imagem usado por atributos onerror inline
+				function handleImgError(imgEl, fallback){
+					try{
+						if (!imgEl._triedFallback){
+							imgEl._triedFallback = true;
+							imgEl.src = fallback || (imgEl.dataset && imgEl.dataset.fallback) || '/images/moto-1.jpg';
+							return;
+						}
+						// mark parent thumb as no-image
+						const p = imgEl.closest('.thumb'); if (p) p.classList.add('no-image');
+						imgEl.style.display = 'none';
+					} catch(e){ /* ignore */ }
+				}
+
+				// Inicialização
+				const servicesContainer = document.getElementById('services');
+				const serviceSelect = document.getElementById('service');
+				const motorcycleSelect = document.getElementById('service');
+				const detailModal = document.getElementById('detailModal');
+				const modalTitle = document.getElementById('modalTitle');
+				const modalDesc = document.getElementById('modalDesc');
+				const modalSpecs = document.getElementById('modalSpecs');
+				const modalImage = document.getElementById('modalImage');
+				const closeModal = document.getElementById('closeModal');
+				const interesseBtn = document.getElementById('interesseBtn');
+				const form = document.getElementById('bookingForm');
+				const appointmentsList = document.getElementById('appointmentsList');
+				const clearAllBtn = document.getElementById('clearAll');
+				const clearFormBtn = document.getElementById('clearBtn');
+
+				function renderVitrine() {
+					// Usar React para renderizar o catálogo
+					if (!motorcycles || motorcycles.length === 0){
+						servicesContainer.innerHTML = `
+							<div class="vitrine-empty">
+								<p>Catálogo vazio — não foi possível carregar <code>motorcycles.json</code>.</p>
+								<p>Abra o Console (F12) e verifique as mensagens de carregamento. <button id="reloadCatalogBtn">Recarregar catálogo</button></p>
+							</div>
+						`;
+						const btn = document.getElementById('reloadCatalogBtn');
+						if (btn) btn.addEventListener('click', async ()=>{
+							btn.disabled = true; btn.textContent = 'Recarregando...';
+							await reloadCatalog();
+							btn.disabled = false; btn.textContent = 'Recarregar catálogo';
+						});
+						return;
+					}
+					try{
+						// Try to render with React first (catalog.js)
+						renderVitrineReact(motorcycles);
+					} catch(err){
+						console.error('React render failed:', err);
+						// show error in the UI so the user can copy it
+						const diag = document.createElement('div'); diag.className = 'vitrine-error';
+						diag.innerHTML = `<strong>Erro ao renderizar com React:</strong> <pre style="white-space:pre-wrap">${String(err)}</pre>`;
+						servicesContainer.appendChild(diag);
+						// fallback para renderização simples do DOM
+						renderVitrineFallback(motorcycles);
+					}
+				}
+
+				function renderVitrineFallback(list){
+					servicesContainer.innerHTML = '';
+					const listWrap = document.createElement('div');
+					listWrap.className = 'services-list-flat';
+					list.forEach(m => {
+						const card = document.createElement('div');
+						card.className = 'service-card moto-card';
+						const thumbSrc = m.thumb || m.image || ('http://localhost:3000/images/thumb-' + m.id + '.jpg');
+						const fullSrc = m.image || ('http://localhost:3000/images/' + m.id + '.jpg');
+						card.innerHTML = `
+							<div class="thumb"><img data-fallback="${fullSrc}" src="${thumbSrc}" alt="${m.name}" onerror="handleImgError(this,'${fullSrc}')"/></div>
+							<div class="service-info">
+								<strong>${m.name} (${m.year})</strong>
+								<div class="meta">${m.displacement ? 'Cilindrada: ' + m.displacement + ' cc' : ''}${m.mileage_display ? ' • ' + m.mileage_display : ''}</div>
+								<div class="moto-desc">${m.desc}</div>
+							</div>
+							<div class="service-actions">
+								<button data-id="${m.id}" class="view-moto">Ver detalhes</button>
+								<button data-id="${m.id}" class="select-service">Tenho interesse</button>
+							</div>
+						`;
+						listWrap.appendChild(card);
+					});
+					servicesContainer.appendChild(listWrap);
+				}
+
+				function populateServiceOptions() {
+					serviceSelect.innerHTML = '';
+					motorcycles.forEach(s => {
+						const opt = document.createElement('option');
+						opt.value = s.id;
+						opt.textContent = `${s.name} — ${s.year}`;
+						serviceSelect.appendChild(opt);
+					});
+				}
+
+				// localStorage helpers (fallback)
+				const STORAGE_KEY = 'simple_schedule_appointments_v1';
+				function loadFromLocal() {
+					try {
+						const raw = localStorage.getItem(STORAGE_KEY);
+						return raw ? JSON.parse(raw) : [];
+					} catch (e) {
+						console.error('Erro ao carregar agendamentos (local)', e);
+						return [];
+					}
+				}
+				function saveToLocal(list) {
+					localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+				}
+
+				function generateId() {
+					return Date.now().toString() + '-' + Math.random().toString(36).slice(2);
+				}
+
+				// API helpers
+				async function apiAvailableCheck() {
+					try {
+						const res = await fetch('/api/appointments', { method: 'GET' });
+						return res.ok;
+					} catch (e) {
+						return false;
+					}
+				}
+
+				async function loadFromApi() {
+					const res = await fetch('/api/appointments');
+					if (!res.ok) throw new Error('API error');
+					return res.json();
+				}
+
+				async function addToApi(appt) {
+					const res = await fetch('/api/appointments', {
+						method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(appt)
+					});
+					if (!res.ok) throw new Error('Falha ao salvar no servidor');
+					return res.json();
+				}
+
+				async function deleteFromApi(id) {
+					const res = await fetch(`/api/appointments/${id}`, { method: 'DELETE' });
+					if (!res.ok) throw new Error('Falha ao excluir no servidor');
+					return res.json();
+				}
+
+				async function clearAllApi() {
+					const res = await fetch('/api/appointments', { method: 'DELETE' });
+					if (!res.ok) throw new Error('Falha ao limpar no servidor');
+					return res.json();
+				}
+
+				// Rendering
+				function renderAppointments(list) {
+					appointmentsList.innerHTML = '';
+					if (!list || !list.length) {
+						appointmentsList.innerHTML = '<p class="empty">Nenhum agendamento.</p>';
+						return;
+					}
+					list.forEach((a, idx) => {
+						const el = document.createElement('div');
+						el.className = 'appointment';
+						// support old 'service' field or new 'motorcycle'
+						const motoId = a.motorcycle || a.service;
+						const moto = motorcycles.find(s => s.id === motoId) || { name: motoId };
+						el.innerHTML = `
+							<div class="appt-main">
+								<div><strong>${a.name}</strong> — <em>${moto.name}</em></div>
+								<div class="meta">${a.date} ${a.time}</div>
+								${a.notes ? `<div class="notes">${a.notes}</div>` : ''}
+							</div>
+							<div class="appt-actions">
+								<button data-id="${a.id || idx}" class="delete">Excluir</button>
+							</div>
+						`;
+						appointmentsList.appendChild(el);
+					});
+				}
+
+				// Controller: decide between API or localStorage
+				let usingApi = false;
+				async function refreshAppointments() {
+					try {
+						if (usingApi) {
+							const list = await loadFromApi();
+							renderAppointments(list);
+						} else {
+							const list = loadFromLocal();
+							renderAppointments(list);
+						}
+					} catch (e) {
+						console.debug('API indisponível, usando localStorage', e);
+						usingApi = false;
+						renderAppointments(loadFromLocal());
+					}
+				}
+
+				// Form handlers (agendamento)
+				form.addEventListener('submit', async function (e) {
+					e.preventDefault();
+					const name = document.getElementById('name').value.trim();
+					const phone = document.getElementById('phone').value.trim();
+					const service = serviceSelect.value; // motorcycle id
+					const date = document.getElementById('date').value;
+					const time = document.getElementById('time').value;
+					const notes = document.getElementById('notes').value.trim();
+
+					if (!name || !service || !date || !time) {
+						alert('Por favor preencha os campos obrigatórios.');
+						return;
+					}
+
+					const selected = new Date(date + 'T' + time);
+					const now = new Date();
+					if (selected < now) {
+						if (!confirm('A data/horário selecionado é no passado. Deseja continuar?')) return;
+					}
+
+					const appt = { id: generateId(), name, phone, motorcycle: service, date, time, notes };
+
+					if (usingApi) {
+						try {
+							await addToApi(appt);
+							await refreshAppointments();
+							form.reset();
+							alert('Agendamento salvo no servidor!');
+							return;
+						} catch (e) {
+							console.debug('Falha ao salvar no servidor, salvando localmente', e);
+							usingApi = false;
+						}
+					}
+
+					// fallback local
+					const list = loadFromLocal();
+					// ensure id and motorcycle fields locally
+					const localRec = { id: appt.id || generateId(), name: appt.name, phone: appt.phone, motorcycle: appt.motorcycle || appt.service, date: appt.date, time: appt.time, notes: appt.notes };
+					list.push(localRec);
+					saveToLocal(list);
+					renderAppointments(list);
+					form.reset();
+					alert('Agendamento salvo localmente!');
+				});
+
+				// Delegation: delete and select-service
+				document.body.addEventListener('click', async function (e) {
+					if (e.target.matches('.delete')) {
+						const id = e.target.dataset.id;
+						if (usingApi) {
+								try {
+								await deleteFromApi(id);
+								await refreshAppointments();
+								return;
+							} catch (err) {
+								console.debug('Falha ao excluir no servidor, tentando local', err);
+								usingApi = false;
+							}
+						}
+						const list = loadFromLocal();
+						const idx = list.findIndex(x => x.id === id || String(list.indexOf(x)) === id);
+						if (idx >= 0) {
+							if (confirm('Excluir este agendamento?')) {
+								list.splice(idx, 1);
+								saveToLocal(list);
+								renderAppointments(list);
+							}
+						}
+					}
+
+					if (e.target.matches('.select-service')) {
+						const id = e.target.dataset.id;
+						serviceSelect.value = id;
+						document.getElementById('name').focus();
+						window.scrollTo({ top: document.querySelector('.agendamento').offsetTop - 20, behavior: 'smooth' });
+					}
+
+					// abrir modal de detalhes
+					if (e.target.matches('.view-moto')) {
+						const id = e.target.dataset.id;
+						const m = motorcycles.find(x => x.id === id);
+						if (!m) return;
+						modalTitle.textContent = `${m.name} (${m.year})`;
+						modalDesc.textContent = m.desc;
+						modalSpecs.innerHTML = `
+								<li>Ano: ${m.year}</li>
+								<li>Quilometragem: ${m.mileage_display || m.mileage}</li>
+							`;
+						modalImage.style.background = "linear-gradient(#ddd,#bbb)";
+						detailModal.setAttribute('aria-hidden', 'false');
+						detailModal.classList.add('open');
+						// quando usuário clicar em 'Tenho interesse' abrimos o form com a moto pré-selecionada
+						interesseBtn.onclick = function () {
+							serviceSelect.value = m.id;
+							detailModal.setAttribute('aria-hidden', 'true');
+							detailModal.classList.remove('open');
+							document.getElementById('name').focus();
+							window.scrollTo({ top: document.querySelector('.agendamento').offsetTop - 20, behavior: 'smooth' });
+						};
+					}
+				});
+
+				clearAllBtn.addEventListener('click', async function () {
+					if (!confirm('Remover todos os agendamentos?')) return;
+					if (usingApi) {
+						try {
+							await clearAllApi();
+							await refreshAppointments();
+							return;
+						} catch (e) {
+							console.debug('Falha ao limpar no servidor, limpando local', e);
+							usingApi = false;
+						}
+					}
+					saveToLocal([]);
+					renderAppointments([]);
+				});
+
+				clearFormBtn.addEventListener('click', function () { form.reset(); });
+
+				// CSV export/import
+				const exportBtn = document.getElementById('exportCsv');
+				const importInput = document.getElementById('importCsv');
+				function toCSV(list) {
+					const header = ['id','name','phone','motorcycle','date','time','notes'];
+					const rows = list.map(r => header.map(h => '"' + (r[h] || '') + '"').join(','));
+					return header.join(',') + '\n' + rows.join('\n');
+				}
+				exportBtn.addEventListener('click', function () {
+					const list = usingApi ? null : loadFromLocal();
+					// if using api, try fetching
+					(async () => {
+						let data = list;
+						if (usingApi) data = await loadFromApi();
+						const csv = toCSV(data || []);
+						const blob = new Blob([csv], { type: 'text/csv' });
+						const url = URL.createObjectURL(blob);
+						const a = document.createElement('a');
+						a.href = url;
+						a.download = 'agendamentos.csv';
+						a.click();
+						URL.revokeObjectURL(url);
+					})();
+				});
+
+				importInput.addEventListener('change', function (e) {
+					const file = e.target.files[0];
+					if (!file) return;
+					const reader = new FileReader();
+					reader.onload = function () {
+						const text = reader.result;
+						const lines = text.split(/\r?\n/).filter(Boolean);
+						const [headerLine, ...dataLines] = lines;
+						const headers = headerLine.split(',').map(h => h.replace(/"/g,'').trim());
+						const imported = dataLines.map(l => {
+							const cols = l.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/).map(c => c.replace(/^"|"$/g,''));
+							const obj = {};
+							headers.forEach((h,i) => obj[h] = cols[i] || '');
+							return obj;
+						});
+						// merge into storage
+						(async () => {
+							if (usingApi) {
+								for (const it of imported) {
+									try { await addToApi(it); } catch (e) { console.debug('import fail', e); }
+								}
+								await refreshAppointments();
+							} else {
+								const local = loadFromLocal();
+								imported.forEach(it => {
+									local.push({ id: it.id || generateId(), name: it.name, phone: it.phone, motorcycle: it.motorcycle || it.service, date: it.date, time: it.time, notes: it.notes });
+								});
+								saveToLocal(local);
+								renderAppointments(local);
+							}
+						})();
+					};
+					reader.readAsText(file);
+					importInput.value = '';
+				});
+
+				// modal close
+				closeModal.addEventListener('click', function () {
+					detailModal.setAttribute('aria-hidden', 'true');
+					detailModal.classList.remove('open');
+				});
+
+				// Displacement correction UI removed per user request (no correction features)
+
+				// compatibility no-op helpers (we removed correction UI but other code still calls these)
+				function loadCorrections(){
+					try{ const raw = localStorage.getItem('motorcycle_corrections_v1'); return raw ? JSON.parse(raw) : {}; }catch(e){return {}; }
+				}
+				function saveCorrections(obj){ try{ localStorage.setItem('motorcycle_corrections_v1', JSON.stringify(obj)); }catch(e){} }
+				function applyCorrectionsToMotorcycles(){
+					// no-op: user requested no automatic cylinder corrections
+					return;
+				}
+				function normalizeAndSortMotorcycles(){
+					// ensure displacement field exists and sort by displacement desc, then year
+					motorcycles.forEach(m=>{ if(!m.displacement && m._displacement) m.displacement = m._displacement; });
+					motorcycles.sort((a,b)=>{
+						const da = Number(a.displacement)||0; const db = Number(b.displacement)||0;
+						if (db!==da) return db - da;
+						// fallback to year (newer first)
+						const ya = (a.year||'').slice(0,4); const yb = (b.year||'').slice(0,4);
+						return (Number(yb)||0) - (Number(ya)||0);
+					});
+				}
+
+				// startup
+				(async function init() {
+					usingApi = await apiAvailableCheck();
+					await loadMotorcycles();
+					// reload helper used by the UI reload button
+					window.reloadCatalog = async function(){ await loadMotorcycles(); normalizeAndSortMotorcycles(); renderVitrine(); populateServiceOptions(); };
+					async function reloadCatalog(){ await window.reloadCatalog(); }
+					// aplicar correções previamente salvas
+					applyCorrectionsToMotorcycles();
+					// ordenar/normalizar conforme cilindrada/ano/estilo
+					normalizeAndSortMotorcycles();
+					renderVitrine();
+					populateServiceOptions();
+					await refreshAppointments();
+					// Indicar ao usuário se está usando servidor (debug)
+					if (usingApi) console.debug('Usando API no servidor');
+					else console.debug('Usando localStorage (servidor indisponível)');
+					
+					// Carregar informações do usuário
+					loadUserInfo();
+				})();
+				
+				// Carregar e exibir informações do usuário
+				function loadUserInfo() {
+					const userData = localStorage.getItem('userData');
+					if (!userData) {
+						console.log('⚠️ [DEBUG] Sem dados de usuário, redirecionando para login');
+						window.location.href = 'login.html';
+						return;
+					}
+					
+					const user = JSON.parse(userData);
+					console.log('✅ [DEBUG] Usuário logado como:', user.tipo, '-', user.nome);
+					
+					// Mostrar informações do usuário independente do tipo
+					// Permitir que admin veja o catálogo também
+					const userNameEl = document.getElementById('userName');
+					const userType = user.tipo === 'admin' ? '🔐 Admin' : '👤 Cliente';
+					userNameEl.textContent = `${userType}: ${user.nome}`;
+					
+					// Mostrar botão do painel admin apenas para administradores
+					if (user.tipo === 'admin') {
+						const adminBtn = document.getElementById('adminPanelBtn');
+						adminBtn.style.display = 'block';
+						adminBtn.addEventListener('click', function() {
+							console.log('🔧 [DEBUG] Navegando para painel admin');
+							window.location.href = 'admin.html';
+						});
+					}
+				}
+				
+				// Controle do logout
+				document.getElementById('logoutBtn').addEventListener('click', function() {
+					if (confirm('Deseja realmente sair do sistema?')) {
+						localStorage.removeItem('userData');
+						window.location.href = 'login.html';
+					}
+				});
+			</script>
+	</body>
+</html>

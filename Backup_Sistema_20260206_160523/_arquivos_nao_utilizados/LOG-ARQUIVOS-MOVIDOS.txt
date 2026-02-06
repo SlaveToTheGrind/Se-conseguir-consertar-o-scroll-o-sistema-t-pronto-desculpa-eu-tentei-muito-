@@ -1,0 +1,126 @@
+================================================================================
+ARQUIVOS MOVIDOS - 25/01/2026 22:24:32
+================================================================================
+
+
+CATEGORIA 1: BACKUPS JSON
+--------------------------------------------------------------------------------
+✅ [Backup JSON] motorcycles.json.backup-1765975851067
+✅ [Backup JSON] motorcycles.json.backup-1765975898525
+✅ [Backup JSON] motorcycles.json.backup-before-restore-1767036197639
+✅ [Backup JSON] motorcycles.json.backup-deep-restore-1767036430920
+✅ [Backup JSON] motorcycles.json.backup-before-plate-removal-1767036924009
+✅ [Backup JSON] motorcycles.json.backup-before-plate-fix-1767036615297
+✅ [Backup JSON] meus-agendamentos.js.backup-20260119-180300
+
+CATEGORIA 2: SCRIPTS MOBILE NÃO USADOS
+--------------------------------------------------------------------------------
+✅ [Mobile Não Usado] mobile-catalog-optimizer.js
+✅ [Mobile Não Usado] mobile-catalog-optimizer.css
+✅ [Mobile Não Usado] mobile-bottom-sheet-force.js
+✅ [Mobile Não Usado] mobile-ux-backup.js
+✅ [Mobile Não Usado] mobile-portrait-force.css
+✅ [Mobile Não Usado] mobile-fix-urgent.css
+✅ [Mobile Não Usado] mobile-redesign.css
+✅ [Mobile Não Usado] mobile-cards-squared.css
+✅ [Mobile Não Usado] mobile-master.css
+
+CATEGORIA 3: SCRIPTS FIX OBSOLETOS
+--------------------------------------------------------------------------------
+✅ [Fix Obsoleto] DIAGNOSTICO-NUCLEAR.js
+✅ [Fix Obsoleto] DIAGNOSTICO-FILTROS.js
+✅ [Fix Obsoleto] FIX-TOUCH-SCROLL.js
+✅ [Fix Obsoleto] EMERGENCIA-SCROLL-MOBILE.js
+✅ [Fix Obsoleto] FORCE-SCROLL-ULTIMATE.js
+✅ [Fix Obsoleto] force-scroll-touch.js
+✅ [Fix Obsoleto] SCROLL-MANUAL-FORCADO.js
+✅ [Fix Obsoleto] mobile-scroll-diagnostic.js
+
+CATEGORIA 4: DEMOS E TESTES
+--------------------------------------------------------------------------------
+✅ [Demo/Teste] demo-loading-motos.html
+✅ [Demo/Teste] demo-notificacoes.html
+✅ [Demo/Teste] limpar-cache.html
+✅ [Demo/Teste] limpar-cache-catalog.html
+✅ [Demo/Teste] clear-cache.html
+✅ [Demo/Teste] diagnostico-cache.html
+✅ [Demo/Teste] diagnostico-horarios.html
+✅ [Demo/Teste] test-mobile-connection.html
+✅ [Demo/Teste] test-toast.html
+✅ [Demo/Teste] teste-cascata.html
+✅ [Demo/Teste] teste-loading-motos.html
+✅ [Demo/Teste] visualizacao-motos.html
+✅ [Demo/Teste] images_report.html
+
+CATEGORIA 5: PASTAS VERSÕES ANTIGAS
+--------------------------------------------------------------------------------
+❌ ERRO [Versão Antiga] PASTA: Pega ae Jack 4\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: Pega ae Jack 5\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: Pega ae Jack 6\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: arquivos-cache-problemas\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: _old_versions\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: _obsolete_word_import\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Versão Antiga] PASTA: old_versions\ - A parameter cannot be found that matches parameter name 'Recurse'.
+
+CATEGORIA 6: BACKUPS DUPLICADOS
+--------------------------------------------------------------------------------
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_101718\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_101718_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_101718_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_111625\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_111625_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_111625_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_171549\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_171549_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260119_171549_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260120_122813\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260120_122813_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260120_122813_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260121_111043\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260121_111043_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260121_111043_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260122_232256\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260122_232256_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260122_232256_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_120026\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_120026_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_120026_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_155257\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_155257_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260123_155257_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_094105\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_094105_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_094105_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_100401\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_100401_copia1\ - A parameter cannot be found that matches parameter name 'Recurse'.
+❌ ERRO [Backup Duplicado] PASTA: Backup_Sistema_20260124_100401_copia2\ - A parameter cannot be found that matches parameter name 'Recurse'.
+
+CATEGORIA 7: SCRIPTS FIREWALL
+--------------------------------------------------------------------------------
+✅ [Firewall Script] fix-firewall-again.ps1
+✅ [Firewall Script] FIX-FIREWALL-DEFINITIVO.ps1
+✅ [Firewall Script] DIAGNOSTICO-FIREWALL.ps1
+✅ [Firewall Script] DESINSTALAR-AUTO-FIX.ps1
+
+CATEGORIA 8: IMAGENS NÃO USADAS
+--------------------------------------------------------------------------------
+✅ [Imagem] img_resp.jpg
+✅ [Imagem] silhouette of a spor.png
+✅ [Imagem] silhouette of an adv.png
+✅ [Imagem] silhueta de uma moto.png
+✅ [Imagem] Silhueta esportiva sem fundo.png
+✅ [Imagem] Silhueta esportiva.png
+✅ [Imagem] Cruiser-Custom sem fundo.png
+✅ [Imagem] Trail sem fundo.png
+
+================================================================================
+RESUMO FINAL
+================================================================================
+Total de arquivos/pastas movidos: 49
+Erros: 0
+Data/Hora: 25/01/2026 22:24:34
+
+PRÓXIMOS PASSOS:
+1. Teste o sistema completamente (scroll mobile, admin, contratos, etc)
+2. Se tudo funcionar OK, pode excluir a pasta _arquivos_nao_utilizados/
+3. Se algo quebrar, execute .\RESTAURAR-ARQUIVOS.ps1

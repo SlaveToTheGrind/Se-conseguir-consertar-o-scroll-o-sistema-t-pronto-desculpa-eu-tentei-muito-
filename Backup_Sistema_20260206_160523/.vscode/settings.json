@@ -1,0 +1,36 @@
+{
+  "html.validate.styles": false,
+  "html.validate.scripts": false,
+  "css.validate": false,
+  "css.lint.important": "ignore",
+  "css.lint.float": "ignore",
+  "css.lint.idSelector": "ignore",
+  "css.lint.unknownProperties": "ignore",
+  "css.lint.universalSelector": "ignore",
+  "css.lint.zeroUnits": "ignore",
+  "css.lint.compatibleVendorPrefixes": "ignore",
+  "css.lint.vendorPrefix": "ignore",
+  "css.lint.unknownVendorSpecificProperties": "ignore",
+  "stylelint.enable": false,
+  "css.customData": [],
+  "[css]": {
+    "editor.defaultFormatter": null
+  },
+  "rhda.diagnostics": false,
+  "html.customData": [],
+  "html.format.enable": false,
+  "problems.showCurrentInStatus": false,
+  "html.trace.server": "off",
+  "files.associations": {
+    "*.html": "html"
+  },
+  "[html]": {
+    "editor.suggest.insertMode": "replace"
+  },
+  "markdownlint.config": {
+    "MD022": false,
+    "MD026": false,
+    "MD032": false,
+    "MD031": false
+  }
+}

@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <title>🎯 Teste Vitrine MacDavis</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            padding: 20px; 
+            background: linear-gradient(135deg, #2c3e50, #e74c3c); 
+            color: white; 
+            text-align: center;
+        }
+        .test-box { 
+            background: rgba(255,255,255,0.1); 
+            padding: 20px; 
+            margin: 10px; 
+            border-radius: 15px; 
+            backdrop-filter: blur(10px);
+        }
+        .success { border-left: 5px solid #27ae60; }
+        .error { border-left: 5px solid #e74c3c; }
+        .loading { border-left: 5px solid #f39c12; }
+        h1 { font-size: 2.5em; margin-bottom: 30px; }
+        .links { margin: 20px 0; }
+        .links a { 
+            background: #3498db; 
+            color: white; 
+            padding: 15px 25px; 
+            margin: 5px; 
+            border-radius: 10px; 
+            text-decoration: none; 
+            display: inline-block;
+            font-weight: bold;
+        }
+        .links a:hover { background: #2980b9; transform: scale(1.05); }
+        #resultado { font-size: 1.2em; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <h1>🏍️ MacDavis Motos - VITRINE INTERATIVA</h1>
+    
+    <div class="test-box loading" id="statusBox">
+        <h2>🔍 Verificando sua vitrine...</h2>
+        <div id="resultado">Testando API...</div>
+    </div>
+
+    <div class="links">
+        <a href="/catalog.html" target="_blank">🛍️ VER CATÁLOGO</a>
+        <a href="/admin.html" target="_blank">⚙️ ADMINISTRAÇÃO</a>
+        <a href="/agendamento.html" target="_blank">📅 AGENDAMENTOS</a>
+        <a href="/vitrine-completa.html" target="_blank">📊 DASHBOARD</a>
+    </div>
+
+    <div id="detalhes"></div>
+
+    <script>
+        async function testarVitrine() {
+            const statusBox = document.getElementById('statusBox');
+            const resultado = document.getElementById('resultado');
+            const detalhes = document.getElementById('detalhes');
+            
+            try {
+                // Teste da API
+                resultado.innerHTML = '📡 Conectando com API...';
+                
+                const response = await fetch('/api/motorcycles');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                
+                const motos = await response.json();
+                
+                // Sucesso!
+                statusBox.className = 'test-box success';
+                resultado.innerHTML = `
+                    🎉 <strong>VITRINE ONLINE!</strong><br>
+                    🏍️ ${motos.length} motocicletas carregadas<br>
+                    ✅ Sistema 100% funcional
+                `;
+                
+                // Mostrar algumas motos
+                let motosHtml = '<div class="test-box success"><h3>🏍️ Suas Motocicletas:</h3>';
+                
+                motos.slice(0, 5).forEach((moto, i) => {
+                    const nome = moto.marca ? `${moto.marca} ${moto.modelo || ''}` : moto.name || `Moto ${moto.id}`;
+                    const ano = moto.ano || moto.year || 'N/A';
+                    const cor = moto.cor || moto.color || 'N/A';
+                    
+                    motosHtml += `<div style="margin: 5px 0; padding: 5px; background: rgba(255,255,255,0.1); border-radius: 5px;">
+                        ${i + 1}. <strong>${nome}</strong> - ${ano} (${cor})
+                    </div>`;
+                });
+                
+                if (motos.length > 5) {
+                    motosHtml += `<div style="margin: 10px 0; opacity: 0.8;">... e mais ${motos.length - 5} motocicletas!</div>`;
+                }
+                
+                motosHtml += '</div>';
+                detalhes.innerHTML = motosHtml;
+                
+                // Testar páginas
+                setTimeout(async () => {
+                    detalhes.innerHTML += '<div class="test-box success"><h3>🔗 Testando Páginas:</h3>';
+                    
+                    const paginas = [
+                        { url: '/catalog.html', nome: '🛍️ Catálogo' },
+                        { url: '/admin.html', nome: '⚙️ Admin' },
+                        { url: '/agendamento.html', nome: '📅 Agendamento' }
+                    ];
+                    
+                    for (let pagina of paginas) {
+                        try {
+                            const resp = await fetch(pagina.url);
+                            const status = resp.ok ? '✅' : '❌';
+                            detalhes.innerHTML += `<div style="margin: 5px 0;">${status} ${pagina.nome}: ${resp.status}</div>`;
+                        } catch (err) {
+                            detalhes.innerHTML += `<div style="margin: 5px 0;">❌ ${pagina.nome}: Erro</div>`;
+                        }
+                    }
+                    
+                    detalhes.innerHTML += '</div>';
+                }, 1000);
+                
+            } catch (error) {
+                // Erro
+                statusBox.className = 'test-box error';
+                resultado.innerHTML = `❌ <strong>Erro na vitrine!</strong><br>${error.message}`;
+            }
+        }
+        
+        // Executar teste automaticamente
+        window.onload = () => {
+            setTimeout(testarVitrine, 500);
+        };
+    </script>
+</body>
+</html>

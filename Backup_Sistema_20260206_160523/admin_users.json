@@ -1,0 +1,20 @@
+[
+  {
+    "id": "admin-001",
+    "username": "vitin",
+    "password": "MacDavis@2026",
+    "fullName": "Victor Antônio Bortolete de Abreu",
+    "createdAt": "2026-01-04T00:00:00.000Z",
+    "lastLogin": "2026-02-06T18:32:22.160Z",
+    "active": true
+  },
+  {
+    "id": "admin-1767557404937",
+    "username": "jack",
+    "password": "220conto",
+    "fullName": "Carlos Augusto Veronezi Fernandes",
+    "createdAt": "2026-01-04T20:10:04.948Z",
+    "lastLogin": "2026-01-04T20:12:01.440Z",
+    "active": true
+  }
+]

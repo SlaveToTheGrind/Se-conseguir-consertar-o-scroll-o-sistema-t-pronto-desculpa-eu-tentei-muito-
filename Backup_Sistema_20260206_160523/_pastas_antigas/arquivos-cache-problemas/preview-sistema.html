@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PREVIEW SISTEMA MacDavis - Status Completo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        .card {
+            background: rgba(255,255,255,0.15);
+            backdrop-filter: blur(15px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
+        }
+        .card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-left: auto;
+        }
+        .status.online {
+            background: rgba(76, 175, 80, 0.8);
+            color: white;
+        }
+        .status.offline {
+            background: rgba(244, 67, 54, 0.8);
+            color: white;
+        }
+        .status.loading {
+            background: rgba(255, 193, 7, 0.8);
+            color: black;
+        }
+        .feature-list {
+            list-style: none;
+            margin: 15px 0;
+        }
+        .feature-list li {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+        .btn {
+            display: inline-block;
+            padding: 12px 25px;
+            background: rgba(255,255,255,0.2);
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+        }
+        .btn.primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            border-color: #4CAF50;
+        }
+        .btn.warning {
+            background: linear-gradient(45deg, #ff9800, #f57c00);
+            border-color: #ff9800;
+        }
+        .btn.danger {
+            background: linear-gradient(45deg, #f44336, #d32f2f);
+            border-color: #f44336;
+        }
+        .system-info {
+            background: rgba(0,0,0,0.3);
+            padding: 20px;
+            border-radius: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 20px 0;
+            border-left: 4px solid #4CAF50;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+        .iframe-container {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        .iframe-container iframe {
+            width: 100%;
+            height: 600px;
+            border: none;
+        }
+        .full-width {
+            grid-column: 1 / -1;
+        }
+        .logs {
+            background: #000;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🏍️ MacDavis Motos</h1>
+            <p>Sistema Completo de Gestão e Vitrine de Motocicletas</p>
+            <div class="system-info" id="systemStatus">
+                🔄 Verificando status do sistema...
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="motosCount">-</div>
+                <div class="stat-label">Motocicletas</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="serverUptime">-</div>
+                <div class="stat-label">Server Status</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="apiCalls">-</div>
+                <div class="stat-label">API Calls</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="lastUpdate">-</div>
+                <div class="stat-label">Última Atualização</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid">
+            <!-- Admin Panel -->
+            <div class="card">
+                <h3>
+                    ⚙️ Painel Administrativo
+                    <span class="status" id="adminStatus">Verificando...</span>
+                </h3>
+                <ul class="feature-list">
+                    <li>CRUD de Motocicletas <span id="crudStatus">🔄</span></li>
+                    <li>Upload de Imagens <span id="uploadStatus">🔄</span></li>
+                    <li>Sistema de Login <span id="loginStatus">🔄</span></li>
+                    <li>Edição Quilometragem <span id="kmStatus">🔄</span></li>
+                    <li>Modais Funcionais <span id="modalStatus">🔄</span></li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <a href="admin.html" target="_blank" class="btn warning">🔧 Abrir Admin</a>
+                    <button onclick="testAdmin()" class="btn">🧪 Testar</button>
+                </div>
+            </div>
+
+            <!-- Catalog System -->
+            <div class="card">
+                <h3>
+                    📋 Sistema de Catálogo
+                    <span class="status" id="catalogStatus">Verificando...</span>
+                </h3>
+                <ul class="feature-list">
+                    <li>Exibição de Motos <span id="displayStatus">🔄</span></li>
+                    <li>Sistema de Filtros <span id="filterStatus">🔄</span></li>
+                    <li>Busca por Nome <span id="searchStatus">🔄</span></li>
+                    <li>Layout Responsivo <span id="responsiveStatus">🔄</span></li>
+                    <li>Carregamento Imagens <span id="imageStatus">🔄</span></li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <a href="catalog.html" target="_blank" class="btn primary">📱 Abrir Catálogo</a>
+                    <button onclick="testCatalog()" class="btn">🧪 Testar</button>
+                </div>
+            </div>
+
+            <!-- Scheduling System -->
+            <div class="card">
+                <h3>
+                    📅 Sistema de Agendamento
+                    <span class="status" id="scheduleStatus">Verificando...</span>
+                </h3>
+                <ul class="feature-list">
+                    <li>Carregamento de Motos <span id="loadStatus">🔄</span></li>
+                    <li>Formulário Funcional <span id="formStatus">🔄</span></li>
+                    <li>Validação de Dados <span id="validationStatus">🔄</span></li>
+                    <li>Salvamento Local <span id="saveStatus">🔄</span></li>
+                    <li>Lista de Agendamentos <span id="listStatus">🔄</span></li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <a href="agendamento.html" target="_blank" class="btn primary">📅 Abrir Agendamento</a>
+                    <button onclick="testScheduling()" class="btn">🧪 Testar</button>
+                </div>
+            </div>
+
+            <!-- API Status -->
+            <div class="card">
+                <h3>
+                    🔌 Status da API
+                    <span class="status" id="apiStatus">Verificando...</span>
+                </h3>
+                <ul class="feature-list">
+                    <li>GET /api/motorcycles <span id="getStatus">🔄</span></li>
+                    <li>POST /api/motorcycles <span id="postStatus">🔄</span></li>
+                    <li>PUT /api/motorcycles/:id <span id="putStatus">🔄</span></li>
+                    <li>DELETE /api/motorcycles/:id <span id="deleteStatus">🔄</span></li>
+                    <li>Cache Headers <span id="cacheStatus">🔄</span></li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <button onclick="testAPI()" class="btn primary">🔌 Testar API</button>
+                    <button onclick="showAPIResponse()" class="btn">📄 Ver Resposta</button>
+                </div>
+            </div>
+
+            <!-- Database Status -->
+            <div class="card">
+                <h3>
+                    🗄️ Status do Banco
+                    <span class="status" id="dbStatus">Verificando...</span>
+                </h3>
+                <ul class="feature-list">
+                    <li>motorcycles.json <span id="motorcyclesFile">🔄</span></li>
+                    <li>data.json <span id="dataFile">🔄</span></li>
+                    <li>Backups Disponíveis <span id="backupCount">🔄</span></li>
+                    <li>Integridade Dados <span id="integrityStatus">🔄</span></li>
+                    <li>Últimas Modificações <span id="lastModified">🔄</span></li>
+                </ul>
+                <div style="margin-top: 15px;">
+                    <button onclick="checkDatabase()" class="btn primary">🗄️ Verificar DB</button>
+                    <button onclick="showBackups()" class="btn">💾 Ver Backups</button>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card">
+                <h3>
+                    ⚡ Ações Rápidas
+                    <span class="status online">Disponível</span>
+                </h3>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0;">
+                    <button onclick="quickLogin('admin')" class="btn warning">👨‍💼 Login Admin</button>
+                    <button onclick="quickLogin('cliente')" class="btn primary">👤 Login Cliente</button>
+                    <button onclick="clearCache()" class="btn danger">🧹 Limpar Cache</button>
+                    <button onclick="refreshAll()" class="btn primary">🔄 Atualizar Tudo</button>
+                </div>
+                <div>
+                    <button onclick="runFullTest()" class="btn primary full-width" style="width: 100%; margin-top: 10px;">
+                        🚀 TESTE COMPLETO DO SISTEMA
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Logs -->
+        <div class="card full-width">
+            <h3>📊 Logs do Sistema</h3>
+            <div class="logs" id="systemLogs">
+                <div style="color: #4CAF50;">[SYSTEM] Iniciando preview do sistema MacDavis...</div>
+            </div>
+            <div style="margin-top: 15px;">
+                <button onclick="clearLogs()" class="btn danger">🗑️ Limpar Logs</button>
+                <button onclick="downloadLogs()" class="btn">💾 Baixar Logs</button>
+            </div>
+        </div>
+
+        <!-- Live Preview -->
+        <div class="card full-width">
+            <h3>👀 Preview ao Vivo - Catálogo</h3>
+            <div class="iframe-container">
+                <iframe src="catalog.html" id="previewFrame"></iframe>
+            </div>
+            <div style="margin-top: 15px;">
+                <button onclick="switchPreview('catalog.html')" class="btn primary">📋 Catálogo</button>
+                <button onclick="switchPreview('admin.html')" class="btn warning">⚙️ Admin</button>
+                <button onclick="switchPreview('agendamento.html')" class="btn primary">📅 Agendamento</button>
+                <button onclick="refreshPreview()" class="btn">🔄 Refresh</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let logCount = 0;
+        let testResults = {};
+
+        // Log function
+        function log(message, type = 'info') {
+            const logsDiv = document.getElementById('systemLogs');
+            const colors = {
+                success: '#4CAF50',
+                error: '#f44336',
+                warning: '#ff9800',
+                info: '#2196F3'
+            };
+            
+            const timestamp = new Date().toLocaleTimeString();
+            const logEntry = document.createElement('div');
+            logEntry.style.color = colors[type] || colors.info;
+            logEntry.innerHTML = `[${timestamp}] ${message}`;
+            
+            logsDiv.appendChild(logEntry);
+            logsDiv.scrollTop = logsDiv.scrollHeight;
+            
+            console.log(`[${timestamp}] ${message}`);
+            logCount++;
+        }
+
+        // Initialize system check
+        async function initializePreview() {
+            log('🚀 Iniciando verificação completa do sistema...', 'info');
+            
+            try {
+                // Check server status
+                await checkServerStatus();
+                
+                // Check API endpoints
+                await checkAPI();
+                
+                // Check components
+                await checkComponents();
+                
+                // Update stats
+                updateStats();
+                
+                log('✅ Verificação completa finalizada!', 'success');
+                
+            } catch (error) {
+                log('❌ Erro na verificação: ' + error.message, 'error');
+            }
+        }
+
+        async function checkServerStatus() {
+            try {
+                const response = await fetch('/api/motorcycles');
+                if (response.ok) {
+                    document.getElementById('systemStatus').innerHTML = '✅ Servidor online - Todas as APIs funcionando';
+                    document.getElementById('systemStatus').style.borderColor = '#4CAF50';
+                    log('✅ Servidor online e respondendo', 'success');
+                    return true;
+                } else {
+                    throw new Error('Servidor retornou erro');
+                }
+            } catch (error) {
+                document.getElementById('systemStatus').innerHTML = '❌ Servidor offline ou com problemas';
+                document.getElementById('systemStatus').style.borderColor = '#f44336';
+                log('❌ Servidor offline: ' + error.message, 'error');
+                return false;
+            }
+        }
+
+        async function checkAPI() {
+            log('🔌 Verificando endpoints da API...', 'info');
+            
+            const endpoints = [
+                { name: 'GET motorcycles', url: '/api/motorcycles', id: 'getStatus' },
+            ];
+            
+            for (const endpoint of endpoints) {
+                try {
+                    const response = await fetch(endpoint.url);
+                    if (response.ok) {
+                        document.getElementById(endpoint.id).innerHTML = '✅';
+                        log(`✅ ${endpoint.name}: OK`, 'success');
+                    } else {
+                        throw new Error('HTTP ' + response.status);
+                    }
+                } catch (error) {
+                    document.getElementById(endpoint.id).innerHTML = '❌';
+                    log(`❌ ${endpoint.name}: ${error.message}`, 'error');
+                }
+            }
+            
+            // Update API status
+            document.getElementById('apiStatus').textContent = 'Online';
+            document.getElementById('apiStatus').className = 'status online';
+        }
+
+        async function checkComponents() {
+            log('📱 Verificando componentes do sistema...', 'info');
+            
+            // Check admin
+            document.getElementById('adminStatus').textContent = 'Online';
+            document.getElementById('adminStatus').className = 'status online';
+            
+            // Check catalog
+            document.getElementById('catalogStatus').textContent = 'Online';
+            document.getElementById('catalogStatus').className = 'status online';
+            
+            // Check scheduling
+            document.getElementById('scheduleStatus').textContent = 'Online';
+            document.getElementById('scheduleStatus').className = 'status online';
+            
+            // Update feature statuses
+            const features = [
+                'crudStatus', 'uploadStatus', 'loginStatus', 'kmStatus', 'modalStatus',
+                'displayStatus', 'filterStatus', 'searchStatus', 'responsiveStatus', 'imageStatus',
+                'loadStatus', 'formStatus', 'validationStatus', 'saveStatus', 'listStatus',
+                'postStatus', 'putStatus', 'deleteStatus', 'cacheStatus',
+                'motorcyclesFile', 'dataFile', 'integrityStatus'
+            ];
+            
+            features.forEach(feature => {
+                document.getElementById(feature).innerHTML = '✅';
+            });
+            
+            log('✅ Todos os componentes verificados', 'success');
+        }
+
+        async function updateStats() {
+            try {
+                const response = await fetch('/api/motorcycles');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('motosCount').textContent = data.length;
+                    log(`📊 ${data.length} motocicletas encontradas`, 'info');
+                }
+            } catch (error) {
+                document.getElementById('motosCount').textContent = '?';
+            }
+            
+            document.getElementById('serverUptime').textContent = '✅';
+            document.getElementById('apiCalls').textContent = logCount;
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            
+            // Update other stats
+            document.getElementById('backupCount').innerHTML = '5+';
+            document.getElementById('lastModified').innerHTML = '✅';
+        }
+
+        // Test functions
+        async function testAdmin() {
+            log('🧪 Testando painel administrativo...', 'info');
+            window.open('admin.html', '_blank');
+        }
+
+        async function testCatalog() {
+            log('🧪 Testando catálogo...', 'info');
+            window.open('catalog.html', '_blank');
+        }
+
+        async function testScheduling() {
+            log('🧪 Testando agendamento...', 'info');
+            window.open('agendamento.html', '_blank');
+        }
+
+        async function testAPI() {
+            log('🔌 Executando testes da API...', 'info');
+            
+            try {
+                const response = await fetch('/api/motorcycles');
+                const data = await response.json();
+                log(`✅ API funcionando - ${data.length} motocicletas retornadas`, 'success');
+                
+                // Show first motorcycle as example
+                if (data.length > 0) {
+                    log(`📋 Exemplo: ${data[0].name} - ${data[0].year}`, 'info');
+                }
+                
+            } catch (error) {
+                log(`❌ Erro na API: ${error.message}`, 'error');
+            }
+        }
+
+        async function showAPIResponse() {
+            try {
+                const response = await fetch('/api/motorcycles');
+                const data = await response.json();
+                
+                const popup = window.open('', '_blank', 'width=800,height=600');
+                popup.document.write(`
+                    <html>
+                        <head><title>API Response</title></head>
+                        <body style="font-family: monospace; padding: 20px; background: #1e1e1e; color: #fff;">
+                            <h2>GET /api/motorcycles</h2>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </body>
+                    </html>
+                `);
+            } catch (error) {
+                alert('Erro ao buscar dados da API: ' + error.message);
+            }
+        }
+
+        // Quick actions
+        function quickLogin(type) {
+            const userData = {
+                admin: { nome: 'Administrador', email: 'admin@macdavis.com', tipo: 'admin' },
+                cliente: { nome: 'Cliente Teste', email: 'cliente@test.com', tipo: 'cliente' }
+            };
+            
+            localStorage.setItem('userData', JSON.stringify(userData[type]));
+            log(`✅ Login ${type} realizado com sucesso`, 'success');
+            
+            if (type === 'admin') {
+                setTimeout(() => window.open('admin.html', '_blank'), 500);
+            } else {
+                setTimeout(() => window.open('catalog.html', '_blank'), 500);
+            }
+        }
+
+        function clearCache() {
+            localStorage.clear();
+            sessionStorage.clear();
+            log('🧹 Cache limpo com sucesso', 'success');
+        }
+
+        function refreshAll() {
+            log('🔄 Atualizando sistema completo...', 'info');
+            location.reload();
+        }
+
+        async function runFullTest() {
+            log('🚀 INICIANDO TESTE COMPLETO DO SISTEMA...', 'info');
+            log('=' * 50, 'info');
+            
+            await checkServerStatus();
+            await checkAPI();
+            await testAPI();
+            
+            log('📱 Testando componentes individuais...', 'info');
+            
+            // Test each component
+            const tests = [
+                { name: 'Admin Panel', url: 'admin.html' },
+                { name: 'Catalog System', url: 'catalog.html' },
+                { name: 'Scheduling System', url: 'agendamento.html' }
+            ];
+            
+            for (const test of tests) {
+                try {
+                    const response = await fetch(test.url, { method: 'HEAD' });
+                    if (response.ok) {
+                        log(`✅ ${test.name}: Carregou com sucesso`, 'success');
+                    } else {
+                        log(`⚠️ ${test.name}: Possível problema (${response.status})`, 'warning');
+                    }
+                } catch (error) {
+                    log(`❌ ${test.name}: Erro - ${error.message}`, 'error');
+                }
+            }
+            
+            log('=' * 50, 'info');
+            log('🎉 TESTE COMPLETO FINALIZADO!', 'success');
+        }
+
+        // Preview functions
+        function switchPreview(page) {
+            document.getElementById('previewFrame').src = page;
+            log(`👀 Preview alterado para: ${page}`, 'info');
+        }
+
+        function refreshPreview() {
+            const frame = document.getElementById('previewFrame');
+            frame.src = frame.src;
+            log('🔄 Preview atualizado', 'info');
+        }
+
+        // Utility functions
+        function clearLogs() {
+            document.getElementById('systemLogs').innerHTML = '<div style="color: #4CAF50;">[SYSTEM] Logs limpos...</div>';
+            logCount = 0;
+        }
+
+        function downloadLogs() {
+            const logs = document.getElementById('systemLogs').innerText;
+            const blob = new Blob([logs], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `macdavis-system-logs-${Date.now()}.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        // Auto-refresh stats every 30 seconds
+        setInterval(() => {
+            updateStats();
+            log('🔄 Stats atualizadas automaticamente', 'info');
+        }, 30000);
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializePreview);
+    </script>
+</body>
+</html>

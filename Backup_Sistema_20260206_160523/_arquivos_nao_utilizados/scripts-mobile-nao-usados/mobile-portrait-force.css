@@ -1,0 +1,555 @@
+/* ========================================
+   FORCE PORTRAIT MODE - MacDavis
+   CARREGA POR ÚLTIMO - MÁXIMA PRIORIDADE
+   ======================================== */
+
+@media (max-width: 1400px) and (orientation: portrait) {
+    
+    /* ===== TRANSIÇÕES SUAVES E RESPONSIVAS ===== */
+    * {
+        -webkit-tap-highlight-color: rgba(255, 102, 0, 0.2) !important;
+    }
+    
+    /* Scroll suave global */
+    html {
+        scroll-behavior: smooth !important;
+    }
+    
+    /* Transições suaves para elementos interativos */
+    button,
+    .btn,
+    .filter-btn,
+    .filter-select,
+    input,
+    select,
+    .moto-card,
+    .admin-card,
+    .modal {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    /* Feedback visual ao tocar */
+    button:active,
+    .btn:active,
+    .moto-card:active {
+        transform: scale(0.98) !important;
+        opacity: 0.9 !important;
+    }
+    
+    /* Animação de entrada dos cards */
+    .moto-card,
+    .admin-card {
+        animation: slideInUp 0.4s ease-out forwards !important;
+    }
+    
+    @keyframes slideInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* Delay progressivo para cards (efeito cascata) */
+    .moto-card:nth-child(1) { animation-delay: 0.05s !important; }
+    .moto-card:nth-child(2) { animation-delay: 0.1s !important; }
+    .moto-card:nth-child(3) { animation-delay: 0.15s !important; }
+    .moto-card:nth-child(4) { animation-delay: 0.2s !important; }
+    .moto-card:nth-child(5) { animation-delay: 0.25s !important; }
+    .moto-card:nth-child(6) { animation-delay: 0.3s !important; }
+    
+    /* Remover filtros e efeitos visuais pesados */
+    *::before,
+    *::after {
+        animation: none !important;
+        background: none !important;
+    }
+    
+    /* ===== MODAL - TRANSIÇÕES SUAVES ===== */
+    .modal {
+        backdrop-filter: blur(8px) !important;
+        -webkit-backdrop-filter: blur(8px) !important;
+        animation: fadeIn 0.3s ease-out !important;
+    }
+    
+    .modal-content {
+        animation: slideInFromBottom 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+    
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+    
+    @keyframes slideInFromBottom {
+        from {
+            opacity: 0;
+            transform: translateY(50px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    /* ===== INPUTS E SELECTS - FEEDBACK VISUAL ===== */
+    input:focus,
+    select:focus,
+    textarea:focus {
+        transform: scale(1.02) !important;
+        box-shadow: 0 0 0 3px rgba(255, 102, 0, 0.2) !important;
+    }
+    
+    /* ===== BOTÕES - EFEITOS SUAVES ===== */
+    button:hover,
+    .btn:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* ===== LOADING STATES - SUAVES ===== */
+    .loading {
+        animation: pulse 1.5s ease-in-out infinite !important;
+    }
+    
+    @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0.7; }
+    }
+    .admin-header {
+        background: linear-gradient(90deg, #ff6600 0%, #ff8533 25%, #333333 75%, #1a1a1a 100%) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 8px !important;
+        padding: 10px 6px 8px 6px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 999 !important;
+        margin: 0 !important;
+        border-bottom: 2px solid #ff6600 !important;
+        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .admin-header h2 {
+        color: #ffffff !important;
+        font-size: 13px !important;
+        width: 100% !important;
+        padding-left: 4px !important;
+        margin: 0 !important;
+        font-weight: 700 !important;
+        background: none !important;
+        -webkit-text-fill-color: #ffffff !important;
+        text-align: left !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5) !important;
+        line-height: 1.1 !important;
+    }
+    
+    .header-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 6px !important;
+        width: 100% !important;
+        padding: 0 !important;
+    }
+    
+    .header-actions button {
+        font-size: 9px !important;
+        padding: 7px 5px !important;
+        min-height: 32px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-align: center !important;
+        border-radius: 6px !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.2px !important;
+        text-transform: uppercase !important;
+    }
+    
+    /* ===== STAT CARDS ===== */
+    .stat-card h3 {
+        color: #ff6600 !important;
+        background: none !important;
+        -webkit-text-fill-color: #ff6600 !important;
+    }
+    
+    .stat-card p {
+        color: #999 !important;
+    }
+    
+    /* ===== MODAL ===== */
+    .modal-header {
+        background: #ff6600 !important;
+    }
+    
+    .modal-header h2,
+    .modal-header h3 {
+        color: white !important;
+        background: none !important;
+        -webkit-text-fill-color: white !important;
+    }
+    
+    /* ===== MOTO CARDS - CARD COMPLETO MOBILE ===== */
+    .moto-card,
+    .admin-card {
+        border-radius: 16px !important;
+        padding: 16px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        flex-direction: column !important;
+        overflow: hidden !important;
+        background: linear-gradient(145deg, rgba(26, 26, 26, 0.98), rgba(40, 40, 40, 0.95)) !important;
+        border: 2px solid rgba(255, 102, 0, 0.4) !important;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 102, 0, 0.1) !important;
+    }
+    
+    /* IMAGENS - GRANDE E IMPACTANTE */
+    .moto-image,
+    .moto-card img:first-child,
+    .moto-card > div:first-child img,
+    .moto-card > img {
+        width: 100% !important;
+        height: 220px !important;
+        max-height: 220px !important;
+        min-height: 220px !important;
+        object-fit: cover !important;
+        border-radius: 12px !important;
+        margin: 0 0 16px 0 !important;
+        padding: 0 !important;
+        flex-shrink: 0 !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4) !important;
+        border: 2px solid rgba(255, 102, 0, 0.2) !important;
+    }
+    
+    /* INFO DO CARD - BEM ESTRUTURADA */
+    .moto-info,
+    .moto-card > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        padding: 0 !important;
+        gap: 4px !important;
+        flex: 1 !important;
+        overflow: hidden !important;
+    }
+    
+    .moto-header {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 6px !important;
+        padding: 0 !important;
+    }
+    DESTAQUE MAIOR */
+    .moto-card .moto-title,
+    .moto-header .moto-title,
+    /* TÍTULO DA MOTO - BEM GRANDE E VISÍVEL */
+    .moto-card .moto-title,
+    .moto-header .moto-title,
+    .moto-info .moto-title,
+    .moto-card h3,
+    .moto-card h4,
+    h3.moto-title {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        color: #ffffff !important;
+        font-size: 18px !important;
+        font-weight: 900 !important;
+        margin: 0 0 12px 0 !important;
+        padding: 0 0 12px 0 !important;
+        line-height: 1.4 !important;
+        background: none !important;
+        -webkit-text-fill-color: #ffffff !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: 54px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        display: -webkit-box !important;
+        -webkit-line-clamp: 2 !important;
+        -webkit-box-orient: vertical !important;
+        word-wrap: break-word !important;
+        border-bottom: 3px solid rgba(255, 102, 0, 0.4) !important;
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    /* META INFO - ESPAÇAMENTO GENEROSO */
+    .moto-meta,
+    .moto-details,
+    .moto-card > div:nth-child(2) > div {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 10px !important;
+        font-size: 15px !important;
+        color: #e0e0e0 !important;
+        margin: 0 0 16px 0 !important;
+        padding: 0 !important;
+        overflow: visible !important;
+    }
+    
+    .moto-meta span,
+    .moto-details span,
+    .moto-details div {
+        font-size: 14px !important;
+        line-height: 1.5 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        margin: 0 !important;
+        padding: 12px 14px !important;
+        background: rgba(255, 102, 0, 0.12) !important;
+        border-radius: 10px !important;
+        border: 1px solid rgba(255, 102, 0, 0.3) !important;
+        text-align: center !important;
+        font-weight: 700 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    /* KM E TIPO/ESTILO - BEM VISÍVEIS */
+    .km-badge,
+    .style-badge {
+        grid-column: span 1 !important;
+        font-size: 13px !important;
+        padding: 8px 10px !important;
+        min-height: 36px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 800 !important;
+    }
+    
+    /* TIPO - LEGÍVEL */
+    .style-badge {
+        font-size: 11px !important;
+        font-weight: 700 !important;
+        padding: 8px 8px !important;
+    }
+    
+    /* RENAVAM E CHASSI - LARGURA TOTAL E LEGÍVEL */
+    .doc-badge {
+        grid-column: 1 / -1 !important;
+        font-size: 9px !important;
+        font-family: 'Consolas', 'Courier New', monospace !important;
+        white-space: normal !important;
+        word-break: break-all !important;
+        text-align: center !important;
+        padding: 6px 10px !important;
+        line-height: 1.4 !important;
+        min-height: 32px !important;
+        letter-spacing: 0.5px !important;
+    }
+    ULTRA DESTACADO E LEGÍVEL */
+    .moto-price,
+    .price {
+        font-size: 15px !important;
+        font-weight: 900 !important;
+        color: #ff6600 !important;
+        margin: 5px 0 6px 0 !important;
+        padding: 5px 6px !important;
+        text-shadow: 0 2px 5px rgba(0,0,0,0.5) !important;
+        background: linear-gradient(135deg, rgba(255, 102, 0, 0.12) 0%, rgba(255, 102, 0, 0.05) 100%) !important;
+        border-radius: 6px !important;
+        border: 2px solid rgba(255, 102, 0, 0.35) !important;
+        text-align: center !important;
+        display: block !important;
+        box-shadow: 0 2px 4px rgba(255, 102, 0, 0.15)nter !important;
+        display: block !important;
+    }
+    ULTRA TOUCH FRIENDLY */
+    .moto-card button,
+    .moto-card .btn,
+    .moto-actions button {
+        font-size: 8px !important;
+        padding: 6px 4px !important;
+        border-radius: 6px !important;
+        min-height: 30px !important;
+        margin: 2px 0 !important;
+        font-weight: 800 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.3px !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15)case !important;
+        letter-spacing: 0.3px !important;
+    }
+    
+    /* BADGES - VISÍVEIS */
+    .status-badge,
+    .doc-badge,
+    .badge {
+        display: inline-block !important;
+        padding: 3px 8px !important;
+        border-radius: 10px !important;
+        font-size: 9px !important;
+        font-weight: 700 !important;
+        margin: 3px 0 !important;
+        text-transform: uppercase !important;
+    }
+    
+    .status-badge.disponivel {
+        background: rgba(0, 255, 136, 0.2) !important;
+        color: #00ff88 !important;
+        border: 1px solid #00ff88 !important;
+    }
+    
+    .status-badge.vendido {
+        background: rgba(255, 102, 0, 0.2) !important;
+        color: #ff6600 !important;
+        border: 1px solid #ff6600 !important;
+    }
+    
+    /* ===== MODAL DE VENDAS - 1 COLUNA ===== */
+    #soldMotorcyclesModal .month-section > div:last-child {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 16px !important;
+    }
+    
+    /* Modal - Scroll otimizado */
+    .modal-content {
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    
+    /* Modal header compacto */
+    .modal-header {
+        padding: 10px 12px !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 1000 !important;
+        background: #ff6600 !important;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+    }
+    
+    .modal-header h2,
+    .modal-header h3 {
+        font-size: 14px !important;
+        margin: 0 !important;
+        line-height: 1.2 !important;
+    }
+    
+    /* Modal body - padding otimizado */
+    .modal-body {
+        padding: 8px !important;
+    }
+    
+    /* ===== OTIMIZAÇÕES DE ESPAÇO ===== */
+    .admin-content {
+        padding: 10px !important;
+    }
+    
+    /* ===== 1 CARD POR LINHA - MOBILE DE VERDADE ===== */
+    .admin-grid,
+    #motorcycles-grid,
+    .motorcycles-grid,
+    .month-section > div:last-child > div,
+    #soldMotorcyclesModal .month-section > div:last-child,
+    .motos-grid {
+        display: flex !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+        padding: 16px !important;
+        margin: 0 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+    }
+    
+    /* ===== STAT CARDS - COMPACTOS 2x2 ===== */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 5px !important;
+        padding: 0 0 6px 0 !important;
+        margin: 0 0 6px 0 !important;
+    }
+    
+    .stat-card {
+        padding: 8px 6px !important;
+        border-radius: 8px !important;
+        min-height: 62px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+    
+    .stat-card h3 {
+        font-size: 20px !important;
+        font-weight: 800 !important;
+        margin: 0 0 3px 0 !important;
+        line-height: 1 !important;
+    }
+    
+    .stat-card p {
+        font-size: 8px !important;
+        margin: 0 !important;
+        text-transform: uppercase !important;
+        letter-spacing: 0.4px !important;
+        font-weight: 600 !important;
+    }
+    
+    /* ===== FILTROS COMPACTOS E ORGANIZADOS ===== */
+    .admin-filters {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        padding: 6px !important;
+        gap: 5px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        margin: 0 0 6px 0 !important;
+        background: rgba(0, 0, 0, 0.015) !important;
+        border-radius: 8px !important;
+    }
+    
+    /* CAMPO DE BUSCA - LINHA INTEIRA E DESTACADO */
+    .admin-filters .search-input,
+    .admin-filters input[type="text"],
+    .admin-filters #searchInput {
+        grid-column: 1 / -1 !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        font-size: 12px !important;
+        padding: 9px 10px !important;
+        min-height: 38px !important;
+        border-radius: 8px !important;
+        border: 2px solid rgba(255, 102, 0, 0.2) !important;
+        background: #ffffff !important;
+        font-weight: 500 !important;
+    }
+    
+    /* SELECTS - COMPACTOS 2x2 */
+    .filter-btn,
+    .filter-select,
+    .admin-filters select {
+        font-size: 9px !important;
+        padding: 7px 6px !important;
+        min-height: 34px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        text-align: left !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        border-radius: 6px !important;
+        border: 1px solid rgba(0, 0, 0, 0.1) !important;
+        background: #ffffff !important;
+        font-weight: 600 !important;
+    }
+    
+    /* Botões - Manter transições */
+    button,
+    .btn {
+        transition: transform 0.2s ease, opacity 0.2s ease !important;
+    }
+}
+
