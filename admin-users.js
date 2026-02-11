@@ -113,7 +113,11 @@ function showAddAdminModal() {
 function editAdminUser(userId) {
     const user = currentAdminUsers.find(u => u.id === userId);
     if (!user) {
-        alert('Administrador não encontrado!');
+        if (window.MDDialog && typeof MDDialog.alert === 'function') {
+            MDDialog.alert('Administrador não encontrado!');
+        } else {
+            alert('Administrador não encontrado!');
+        }
         return;
     }
     
@@ -196,14 +200,17 @@ async function deleteAdminUser(userId) {
         const data = await response.json();
         
         if (response.ok) {
-            alert('✅ Administrador excluído com sucesso!');
+            if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('✅ Administrador excluído com sucesso!');
+            else alert('✅ Administrador excluído com sucesso!');
             loadAdminUsers();
         } else {
-            alert('❌ ' + (data.error || 'Erro ao excluir administrador'));
+            if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('❌ ' + (data.error || 'Erro ao excluir administrador'));
+            else alert('❌ ' + (data.error || 'Erro ao excluir administrador'));
         }
     } catch (error) {
         console.error('❌ Erro ao excluir admin:', error);
-        alert('Erro ao excluir administrador');
+        if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('Erro ao excluir administrador');
+        else alert('Erro ao excluir administrador');
     }
 }
 
@@ -227,7 +234,8 @@ function formatDate(dateString) {
 
 // Mostrar erro
 function showAdminError(message) {
-    const container = document.getElementById('adminUsersList');
+    // Pode haver duas possíveis containers dependendo da versão do HTML
+    const container = document.getElementById('adminUsersList') || document.getElementById('adminUsersListContent');
     if (container) {
         container.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: #e74c3c;">
@@ -238,7 +246,14 @@ function showAdminError(message) {
                 </button>
             </div>
         `;
+        return;
     }
+
+    // Fallback quando nenhum container estiver disponível (ex.: carregamento parcial do DOM)
+    console.error('Admin users error (no container):', message);
+    try {
+        alert(message);
+    } catch (e) {}
 }
 
 // Submit do formulário
@@ -256,12 +271,14 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Validações
             if (password && password !== passwordConfirm) {
-                alert('❌ As senhas não coincidem!');
+                if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('❌ As senhas não coincidem!');
+                else alert('❌ As senhas não coincidem!');
                 return;
             }
-            
+
             if (password && password.length < 6) {
-                alert('❌ A senha deve ter no mínimo 6 caracteres!');
+                if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('❌ A senha deve ter no mínimo 6 caracteres!');
+                else alert('❌ A senha deve ter no mínimo 6 caracteres!');
                 return;
             }
             
@@ -290,15 +307,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
                 
                 if (response.ok) {
-                    alert(isEdit ? '✅ Administrador atualizado com sucesso!' : '✅ Administrador criado com sucesso!');
+                    if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert(isEdit ? '✅ Administrador atualizado com sucesso!' : '✅ Administrador criado com sucesso!');
+                    else alert(isEdit ? '✅ Administrador atualizado com sucesso!' : '✅ Administrador criado com sucesso!');
                     closeAdminUserModal();
                     loadAdminUsers();
                 } else {
-                    alert('❌ ' + (data.error || 'Erro ao salvar administrador'));
+                    if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('❌ ' + (data.error || 'Erro ao salvar administrador'));
+                    else alert('❌ ' + (data.error || 'Erro ao salvar administrador'));
                 }
             } catch (error) {
                 console.error('❌ Erro ao salvar admin:', error);
-                alert('Erro ao salvar administrador');
+                if (window.MDDialog && typeof MDDialog.alert === 'function') await MDDialog.alert('Erro ao salvar administrador');
+                else alert('Erro ao salvar administrador');
             }
         });
     }

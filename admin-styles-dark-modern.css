@@ -2212,6 +2212,8 @@ select.filter-select option:hover {
             left: -300px !important;
             width: 280px !important;
             height: 100vh !important;
+            height: 100svh !important;
+            height: 100dvh !important;
             background: linear-gradient(135deg, #1a1a1a 0%, #0a0a0a 100%) !important;
             border-right: 3px solid #ff6600 !important;
             padding: 0 !important;
@@ -2219,6 +2221,7 @@ select.filter-select option:hover {
             z-index: 9999 !important;
             transition: left 0.3s ease !important;
             overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch !important;
             box-shadow: 2px 0 10px rgba(0,0,0,0.5) !important;
         }
 
@@ -2249,6 +2252,7 @@ select.filter-select option:hover {
             flex-direction: column !important;
             height: 100% !important;
             padding: 20px 15px !important;
+            min-height: 0 !important;
         }
         
         .nav-actions {
@@ -2258,6 +2262,9 @@ select.filter-select option:hover {
             margin-top: 20px !important;
             flex: 1 !important;
             overflow-y: auto !important;
+            min-height: 0 !important;
+            padding-bottom: calc(12px + env(safe-area-inset-bottom)) !important;
+            -webkit-overflow-scrolling: touch !important;
         }
         
         .nav-actions button {
@@ -4017,6 +4024,22 @@ body::-webkit-scrollbar-thumb:hover,
     box-shadow: 0 2px 8px rgba(255, 102, 0, 0.2);
 }
 
+/* Cursor for copyable sales values/rows */
+.sold-card-plate,
+.sale-info-row {
+    cursor: pointer;
+}
+
+.sold-card-plate.copy-doc-btn {
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+}
+
+.sold-card-plate.copy-doc-btn:hover {
+    background: rgba(255, 102, 0, 0.18);
+    color: #ff8533;
+}
+
 /* Specs Grid Minimalista */
 .sold-card-specs {
     display: grid;
@@ -4074,6 +4097,17 @@ body::-webkit-scrollbar-thumb:hover,
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
+.sale-info-row.copy-doc-btn {
+    cursor: pointer;
+    padding: 8px 6px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sale-info-row.copy-doc-btn:hover {
+    background: rgba(255, 102, 0, 0.12);
+}
+
 .sale-info-row:last-child {
     border-bottom: none;
 }
@@ -4093,6 +4127,33 @@ body::-webkit-scrollbar-thumb:hover,
     color: white;
     text-align: right;
     flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+}
+
+.info-value[data-copy] {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+}
+
+/* Superficie clicavel para copiar RENAVAM/Chassi */
+.sold-card-sale-info .copy-doc-btn {
+    cursor: pointer;
+    padding: 4px 6px;
+    border-radius: 6px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.sold-card-sale-info .copy-doc-btn:hover {
+    background: rgba(255, 102, 0, 0.12);
+    color: #ff8533;
+}
+
+.sold-card-sale-info .copy-doc-btn:active {
+    transform: translateY(1px);
 }
 
 .chassi-text {

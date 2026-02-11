@@ -2,6 +2,7 @@ const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const cors = require('cors');
+const crypto = require('crypto');
 const { initBackupScheduler, getBackupScheduler } = require('./backup-scheduler');
 const { getTelegramNotifier } = require('./telegram-notifier');
 
@@ -41,6 +42,18 @@ console.error = function(...args) {
 // Middlewares básicos
 app.use(cors());
 app.use(express.json());
+
+// Debug: log all incoming API requests to help diagnose 404s and routing
+app.use((req, res, next) => {
+  try {
+    if (req.path && req.path.startsWith('/api/')) {
+      console.log(`➡️ Incoming API request: ${req.method} ${req.path} from ${req.ip}`);
+    }
+  } catch (e) {
+    // ignore logging failures
+  }
+  return next();
+});
 
 // Anti-cache headers (mais agressivo para JS e CSS) + Mobile optimizations
 app.use((req, res, next) => {
@@ -167,6 +180,9 @@ const contractGenerator = require('./contract-generator');
 const DATA_FILE = path.join(__dirname, 'data.json');
 const MOTORCYCLES_FILE = path.join(__dirname, 'motorcycles.json');
 const ADMIN_USERS_FILE = path.join(__dirname, 'admin_users.json');
+const STATUS_FILE = path.join(__dirname, 'system-status.json');
+const CONFIG_FILE = path.join(__dirname, 'system-config.json');
+const AUDIT_FILE = path.join(__dirname, 'system-config-audit.log');
 
 // Sistema de lock para evitar race conditions no writeData
 let isWritingData = false;
@@ -265,6 +281,17 @@ function normalizeType(value) {
   return map[v] || v;
 }
 
+// Gera slug seguro para nomes de pastas/URLs: remove acentos, caracteres inválidos
+function slugify(input) {
+  if (!input) return '';
+  let s = String(input).normalize('NFKD').replace(/[\u0300-\u036f]/g, ''); // remove diacritics
+  s = s.replace(/[^a-zA-Z0-9\-\_ ]+/g, '');
+  s = s.trim().toLowerCase().replace(/\s+/g, '-');
+  if (s.length > 80) s = s.slice(0, 80);
+  if (!s) s = 'moto';
+  return s;
+}
+
 // Função para garantir que as imagens existam na pasta images/
 function ensureImageExists(imagePath) {
   if (!imagePath || !imagePath.startsWith('images/')) return;
@@ -344,6 +371,487 @@ app.get('/api/test', (req, res) => {
     timestamp: new Date().toISOString(),
     message: 'API Admin funcionando'
   });
+});
+
+// POST - Upload de imagens via multipart/form-data
+// Recebe campos `images[]` (até 8 arquivos por requisição por segurança)
+try {
+  const multer = require('multer');
+  const uploadDir = path.join(__dirname, 'images');
+  if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+
+  const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+      // prefixa timestamp para evitar colisões
+      const safeName = file.originalname.replace(/[^a-zA-Z0-9.\-_]/g, '_');
+      cb(null, Date.now() + '-' + safeName);
+    }
+  });
+
+  const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
+  app.post('/api/upload-images', upload.array('images[]', 8), (req, res) => {
+    try {
+      if (!req.files || req.files.length === 0) return res.status(400).json({ error: 'Nenhum arquivo enviado' });
+      const paths = req.files.map(f => {
+        // Caminho público relativo ao servidor
+        const rel = path.relative(__dirname, f.path).replace(/\\/g, '/');
+        return rel;
+      });
+      console.log('📁 Imagens recebidas via upload:', paths);
+      return res.json({ paths });
+    } catch (err) {
+      console.error('❌ Erro em /api/upload-images:', err && err.message);
+      return res.status(500).json({ error: 'Erro ao salvar imagens' });
+    }
+  });
+} catch (e) {
+  console.warn('⚠️ Multer não disponível para rota /api/upload-images:', e && e.message);
+}
+
+// POST - Upload de CRLV para uma motocicleta específica
+try {
+  const multerCr = require('multer');
+
+  const storageCr = multerCr.diskStorage({
+    destination: function (req, file, cb) {
+      try {
+        const id = req.params.id;
+        const motorcycles = readMotorcycles();
+        const moto = motorcycles.find(m => String(m.id) === String(id));
+        let slug = moto && moto.docsFolder ? moto.docsFolder : null;
+        if (!slug) {
+          const nameForSlug = (moto && (moto.name || moto.nome || moto.modelo || moto.model)) || `moto-${Date.now()}`;
+          slug = `${id || Date.now()}-${slugify(nameForSlug)}`;
+        }
+        const baseDocs = path.join(__dirname, 'DOCS Motos');
+        const destDir = path.join(baseDocs, slug);
+        if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+        return cb(null, destDir);
+      } catch (err) {
+        return cb(new Error('Erro ao determinar pasta de destino'));
+      }
+    },
+    filename: function (req, file, cb) {
+      const safe = file.originalname.replace(/[^a-zA-Z0-9.\-\_]/g, '_');
+      const ext = path.extname(safe) || '.pdf';
+      const name = 'CRLV' + '-' + Date.now() + ext;
+      cb(null, name);
+    }
+  });
+
+  const uploadCr = multerCr({ storage: storageCr, limits: { fileSize: 12 * 1024 * 1024 } });
+
+  app.post('/api/motorcycles/:id/crlv', uploadCr.single('crlv'), (req, res) => {
+    try {
+      if (!req.file) return res.status(400).json({ success: false, message: 'Nenhum arquivo enviado' });
+      const id = req.params.id;
+      const motorcycles = readMotorcycles();
+      const idx = motorcycles.findIndex(m => String(m.id) === String(id));
+      if (idx === -1) return res.status(404).json({ success: false, message: 'Motocicleta não encontrada' });
+
+      // determinar slug/pasta
+      const moto = motorcycles[idx];
+      const slug = moto.docsFolder || `${moto.id || Date.now()}-${slugify(moto.name || moto.nome || moto.modelo || moto.model || moto.id)}`;
+
+      // Atualizar caminho relativo público
+      const rel = path.relative(__dirname, req.file.path).replace(/\\/g, '/');
+      // Normalizar para o prefixo público /docs/
+      let publicPath = rel;
+      if (publicPath.startsWith('DOCS Motos/')) publicPath = publicPath.replace(/^DOCS Motos\//, '');
+      publicPath = `docs/${publicPath}`;
+
+      const absolutePath = req.file.path;
+      // Public path served by the server
+      const publicDocPath = `docs/${slug}/${req.file.filename}`;
+      moto.documentoPDF = publicDocPath;
+      moto.docsFolder = slug;
+      moto.updatedAt = new Date().toISOString();
+
+      if (!writeMotorcycles(motorcycles)) {
+        return res.status(500).json({ success: false, message: 'Erro ao salvar referência da moto' });
+      }
+
+      console.log('✅ CRLV salvo:', req.file.path, '→ registro atualizado:', moto.id);
+      return res.json({ success: true, file: { name: req.file.filename, path: publicDocPath, absolutePath } });
+    } catch (err) {
+      console.error('❌ Erro em /api/motorcycles/:id/crlv:', err && err.message);
+      return res.status(500).json({ success: false, message: 'Erro no upload do CRLV' });
+    }
+  });
+
+} catch (e) {
+  console.warn('⚠️ Multer não disponível para rota /api/motorcycles/:id/crlv:', e && e.message);
+}
+
+// POST - Importar arquivo existente (caminho absoluto) para a pasta da moto
+app.post('/api/motorcycles/:id/import-file', (req, res) => {
+  try {
+    const { path: srcPathRaw, type } = req.body || {};
+    if (!srcPathRaw) return res.status(400).json({ success: false, message: 'Parâmetro path é obrigatório' });
+    let srcPath = String(srcPathRaw).trim();
+
+    // Tentar decodificar URIs (ex: %2F etc)
+    try { srcPath = decodeURIComponent(srcPath); } catch (e) { /* ignore */ }
+
+    // Permitir quando o usuário colou uma URL pública /docs/..., converter para caminho físico
+    // Normalize barras e remover prefixos duplicados
+    const normalized = srcPath.replace(/\\/g, '/').replace(/^\/+/,'').replace(/\\/g, '/');
+
+    let resolvedSrc = null;
+
+    // Caso o usuário tenha colado um URL completo (http://host/docs/...), extrair pathname
+    if (/^https?:\/\//i.test(normalized)) {
+      try {
+        const u = new URL(normalized);
+        srcPath = u.pathname || normalized;
+      } catch (e) {
+        // fallback: keep original
+        srcPath = normalized;
+      }
+    }
+
+    // Re-normalizar
+    let candidate = String(srcPath).replace(/^file:\/\//i, '').replace(/^\/+/,'').replace(/\\/g, '/');
+
+    // If starts with docs/ or /docs/, map to physical DOCS Motos folder
+    if (/^docs\//i.test(candidate)) {
+      let rel = candidate.replace(/^docs\//i, '');
+      // collapse duplicated docs/docs
+      rel = rel.replace(/^docs\//i, '');
+      // If points to Contratos, try project Contratos first
+      if (/^Contratos\//i.test(rel)) {
+        const after = rel.replace(/^Contratos\//i, '');
+        const c1 = path.join(__dirname, 'Contratos', after);
+        const c2 = path.join(__dirname, 'DOCS Motos', 'Contratos', after);
+        if (fs.existsSync(c1)) resolvedSrc = c1;
+        else if (fs.existsSync(c2)) resolvedSrc = c2;
+        else resolvedSrc = c2; // fallback
+      } else {
+        resolvedSrc = path.join(__dirname, 'DOCS Motos', rel);
+      }
+    }
+
+    // If contains literal "DOCS Motos" path (user pasted Windows absolute), map accordingly
+    if (!resolvedSrc && /docs\s*motos/i.test(candidate)) {
+      const idx = candidate.toLowerCase().indexOf('docs motos');
+      const rel = candidate.substring(idx + 'DOCS Motos'.length).replace(/^[\\\/]+/, '');
+      resolvedSrc = path.join(__dirname, 'DOCS Motos', rel);
+    }
+
+    // If still not resolved, and candidate looks like absolute path on Windows or POSIX, use it
+    if (!resolvedSrc) {
+      if (path.isAbsolute(candidate) || /^[a-zA-Z]:\//.test(candidate) || candidate.startsWith('/')) {
+        resolvedSrc = candidate;
+      } else {
+        // try relative to project root
+        resolvedSrc = path.join(__dirname, candidate);
+      }
+    }
+
+    console.log('🔍 import-file: src provided=', srcPathRaw, '=> resolved=', resolvedSrc);
+
+    // Apenas permitir PDF
+    if (!String(resolvedSrc).toLowerCase().endsWith('.pdf')) return res.status(400).json({ success: false, message: 'Apenas arquivos PDF são suportados', resolved: resolvedSrc });
+
+    // Verificar existência
+    if (!fs.existsSync(resolvedSrc)) return res.status(404).json({ success: false, message: 'Arquivo de origem não encontrado', resolved: resolvedSrc });
+    const stat = fs.statSync(resolvedSrc);
+    if (!stat.isFile()) return res.status(400).json({ success: false, message: 'Caminho de origem não é um arquivo', resolved: resolvedSrc });
+
+    // Localizar moto
+    const motorcycles = readMotorcycles();
+    const motoIndex = motorcycles.findIndex(m => String(m.id) === String(req.params.id));
+    if (motoIndex === -1) return res.status(404).json({ success: false, message: 'Motocicleta não encontrada' });
+    const moto = motorcycles[motoIndex];
+
+    // Determinar slug/pasta
+    const slug = moto.docsFolder || `${moto.id || Date.now()}-${slugify(moto.name || moto.nome || moto.modelo || moto.model || moto.id)}`;
+    const baseDocs = path.join(__dirname, 'DOCS Motos');
+
+    let destDir = path.join(baseDocs, slug);
+    let publicPrefix = 'docs';
+    if (String(type || '').toLowerCase() === 'contrato') {
+      destDir = path.join(baseDocs, 'Contratos', slug);
+      publicPrefix = 'docs/Contratos';
+    }
+
+    if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+    // Gerar nome seguro no destino
+    const baseName = path.basename(resolvedSrc).replace(/[^a-zA-Z0-9.\\-_]/g, '_');
+    const timestamp = Date.now();
+    const destName = `${timestamp}-${baseName}`;
+    const destPath = path.join(destDir, destName);
+
+    // Copiar para a pasta da moto
+    fs.copyFileSync(resolvedSrc, destPath);
+
+    // Se a origem não estiver dentro de 'DOCS Motos' (ou for diferente do destino), remover o arquivo original
+    try {
+      const normalizedSrc = path.resolve(resolvedSrc);
+      const normalizedDest = path.resolve(destPath);
+      const docsRoot = path.resolve(path.join(__dirname, 'DOCS Motos'));
+      const srcInsideDocs = normalizedSrc.startsWith(docsRoot + path.sep);
+      // Só remover se origem for diferente e estiver fora de DOCS Motos
+      if (normalizedSrc !== normalizedDest && !srcInsideDocs) {
+        try { fs.unlinkSync(normalizedSrc); console.log('🗑️ Arquivo fonte movido (removido):', normalizedSrc); } catch (e) { console.warn('⚠️ Não foi possível remover arquivo fonte:', e && e.message); }
+      }
+    } catch (e) {
+      console.warn('⚠️ Erro ao tentar remover arquivo fonte (move fallback):', e && e.message);
+    }
+
+    // Atualizar registro da moto com caminho público relativo (rota /docs/...)
+    const publicRel = `${slug}/${destName}`.replace(/\\/g, '/');
+    if (String(type || '').toLowerCase() === 'contrato') {
+      moto.contratoPath = `docs/${publicRel}`;
+    } else {
+      moto.documentoPDF = `docs/${publicRel}`;
+    }
+    moto.updatedAt = new Date().toISOString();
+    const ok = writeMotorcycles(motorcycles);
+    if (!ok) return res.status(500).json({ success: false, message: 'Erro ao salvar referência da moto' });
+
+    console.log('✅ Arquivo importado para moto:', destPath, 'tipo=', type || 'crlv');
+    return res.json({ success: true, file: { name: destName, path: `docs/${publicRel}`, absolutePath: destPath } });
+
+  } catch (err) {
+    console.error('❌ Erro em /api/motorcycles/:id/import-file:', err && err.message);
+    return res.status(500).json({ success: false, message: 'Erro ao importar arquivo' });
+  }
+});
+
+// GET - Health check para administração: verifica leitura/escrita e pasta de imagens
+app.get('/api/health', (req, res) => {
+  try {
+    const health = {
+      server: { ok: true, timestamp: new Date().toISOString() },
+      motorcyclesFile: {},
+      imagesDir: {},
+      multerAvailable: false
+    };
+
+    // Checar motorcycles.json (leitura)
+    try {
+      health.motorcyclesFile.exists = fs.existsSync(MOTORCYCLES_FILE);
+      if (health.motorcyclesFile.exists) {
+        const raw = fs.readFileSync(MOTORCYCLES_FILE, 'utf8');
+        JSON.parse(raw || '[]');
+        health.motorcyclesFile.readable = true;
+      } else {
+        health.motorcyclesFile.readable = false;
+      }
+    } catch (e) {
+      health.motorcyclesFile.readable = false;
+      health.motorcyclesFile.error = String(e && e.message);
+    }
+
+    // Checar escrita no diretório (tentativa segura: criar e remover arquivo temporário)
+    try {
+      const tmpPath = path.join(__dirname, 'health_write_test.tmp');
+      fs.writeFileSync(tmpPath, 'ok');
+      fs.unlinkSync(tmpPath);
+      health.motorcyclesFile.writable = true;
+    } catch (e) {
+      health.motorcyclesFile.writable = false;
+      health.motorcyclesFile.writeError = String(e && e.message);
+    }
+
+    // Checar pasta images
+    try {
+      const imagesDir = path.join(__dirname, 'images');
+      health.imagesDir.exists = fs.existsSync(imagesDir);
+      if (health.imagesDir.exists) {
+        // testar criação temporária dentro de images
+        try {
+          const tmpImg = path.join(imagesDir, 'health_write_test.tmp');
+          fs.writeFileSync(tmpImg, 'ok');
+          fs.unlinkSync(tmpImg);
+          health.imagesDir.writable = true;
+        } catch (e) {
+          health.imagesDir.writable = false;
+          health.imagesDir.writeError = String(e && e.message);
+        }
+      } else {
+        health.imagesDir.writable = false;
+      }
+    } catch (e) {
+      health.imagesDir.exists = false;
+      health.imagesDir.writable = false;
+      health.imagesDir.error = String(e && e.message);
+    }
+
+    // Verificar disponibilidade do multer (indicador se upload lida no servidor)
+    try {
+      require.resolve('multer');
+      health.multerAvailable = true;
+    } catch (e) {
+      health.multerAvailable = false;
+      health.multerError = String(e && e.message);
+    }
+
+    res.json(health);
+  } catch (err) {
+    console.error('❌ Erro em /api/health:', err && err.message);
+    res.status(500).json({ error: 'Erro ao executar healthcheck', detail: String(err && err.message) });
+  }
+});
+
+// ============= SYSTEM STATUS OVERRIDE (arquivo simples para mensagens) =============
+// GET - Retorna o override se existir
+function requireAdmin(req, res, next) {
+  try {
+    const adminId = req.header('x-admin-id') || req.header('X-Admin-Id');
+    console.log(`🔐 requireAdmin check for path=${req.path} method=${req.method} adminHeader=${adminId}`);
+    if (!adminId) {
+      console.warn('❌ requireAdmin: missing x-admin-id header for request from', req.ip);
+      return res.status(401).json({ error: 'Admin header missing' });
+    }
+    const users = readAdminUsers();
+    const found = users.find(u => u.id === adminId && u.active);
+    if (!found) {
+      console.warn('❌ requireAdmin: invalid admin id', adminId, 'for request', req.path);
+      return res.status(403).json({ error: 'Admin not authorized' });
+    }
+    // attach user for logging if needed
+    req.adminUser = { id: found.id, username: found.username };
+    console.log('✅ requireAdmin: validated admin', req.adminUser.username);
+    return next();
+  } catch (e) {
+    return res.status(500).json({ error: 'Erro ao validar admin' });
+  }
+}
+
+app.get('/api/system-status', requireAdmin, (req, res) => {
+  try {
+    if (!fs.existsSync(STATUS_FILE)) return res.json({ override: null });
+    const raw = fs.readFileSync(STATUS_FILE, 'utf8');
+    const obj = JSON.parse(raw || '{}');
+    return res.json({ override: obj });
+  } catch (e) {
+    console.error('❌ Erro lendo system-status.json:', e && e.message);
+    return res.status(500).json({ error: 'Erro ao ler status do sistema' });
+  }
+});
+
+// POST - Atualizar override (simples, sem autenticação adicional)
+app.post('/api/system-status', requireAdmin, (req, res) => {
+  try {
+    const { message, level } = req.body || {};
+    if (!message) return res.status(400).json({ error: 'Campo message é obrigatório' });
+    const payload = { message: String(message), level: level || 'info', updatedAt: new Date().toISOString() };
+    fs.writeFileSync(STATUS_FILE, JSON.stringify(payload, null, 2), 'utf8');
+    console.log('📝 system-status atualizado:', payload);
+    return res.json({ success: true, override: payload });
+  } catch (e) {
+    console.error('❌ Erro escrevendo system-status.json:', e && e.message);
+    return res.status(500).json({ error: 'Erro ao salvar status do sistema' });
+  }
+});
+
+// DELETE - Limpar override
+app.delete('/api/system-status', requireAdmin, (req, res) => {
+  try {
+    if (fs.existsSync(STATUS_FILE)) fs.unlinkSync(STATUS_FILE);
+    console.log('🗑️ system-status removido');
+    return res.json({ success: true });
+  } catch (e) {
+    console.error('❌ Erro removendo system-status.json:', e && e.message);
+    return res.status(500).json({ error: 'Erro ao remover status do sistema' });
+  }
+});
+
+// ============= SYSTEM CONFIG (maintenance mode, etc) =============
+// GET - retorna config (protegido)
+app.get('/api/system-config', requireAdmin, (req, res) => {
+  try {
+    if (!fs.existsSync(CONFIG_FILE)) return res.json({ config: { maintenance: false } });
+    const raw = fs.readFileSync(CONFIG_FILE, 'utf8');
+    const obj = JSON.parse(raw || '{}');
+    return res.json({ config: obj });
+  } catch (e) {
+    console.error('❌ Erro lendo system-config.json:', e && e.message);
+    return res.status(500).json({ error: 'Erro ao ler config do sistema' });
+  }
+});
+
+// POST - atualizar config (protegido)
+app.post('/api/system-config', requireAdmin, (req, res) => {
+  try {
+    console.log('📡 [ADMIN] POST /api/system-config - headers:', JSON.stringify(req.headers, null, 2));
+    console.log('📡 [ADMIN] POST /api/system-config - body:', JSON.stringify(req.body, null, 2));
+    const incoming = req.body || {};
+    const current = fs.existsSync(CONFIG_FILE) ? JSON.parse(fs.readFileSync(CONFIG_FILE, 'utf8') || '{}') : {};
+    const merged = { ...current, ...incoming, updatedAt: new Date().toISOString() };
+    fs.writeFileSync(CONFIG_FILE, JSON.stringify(merged, null, 2), 'utf8');
+    console.log('⚙️ system-config atualizado por', req.adminUser && req.adminUser.username, merged);
+
+    // Append enhanced audit log (include before/after, action, request_id, source_ip)
+    try {
+      const before = current;
+      const after = merged;
+      // Determine action
+      let action = 'update_config';
+      if (Object.prototype.hasOwnProperty.call(incoming, 'maintenance')) {
+        action = incoming.maintenance ? 'start_maintenance' : 'stop_maintenance';
+      }
+      // Generate a request id (UUID) - use crypto.randomUUID when available
+      let request_id = null;
+      try {
+        request_id = (crypto && typeof crypto.randomUUID === 'function') ? crypto.randomUUID() : null;
+      } catch (e) { request_id = null; }
+      if (!request_id) {
+        // fallback simple UUIDv4
+        request_id = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+          var r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+          return v.toString(16);
+        });
+      }
+      const source_ip = (req.headers['x-forwarded-for'] || req.ip || (req.connection && req.connection.remoteAddress) || null);
+      const auditEntry = {
+        ts: new Date().toISOString(),
+        request_id,
+        admin: req.adminUser || null,
+        admin_role: (req.adminUser && req.adminUser.role) || null,
+        action,
+        before,
+        after,
+        incoming,
+        source_ip,
+        outcome: 'success'
+      };
+      fs.appendFileSync(AUDIT_FILE, JSON.stringify(auditEntry) + '\n', 'utf8');
+      console.log('📝 Audit log gravado:', request_id);
+    } catch (auditErr) {
+      console.warn('⚠️ Falha ao gravar audit log:', auditErr && auditErr.message);
+    }
+
+    return res.json({ success: true, config: merged });
+  } catch (e) {
+    console.error('❌ Erro escrevendo system-config.json:', e && e.message, e);
+    return res.status(500).json({ error: 'Erro ao salvar config do sistema', detail: String(e && e.message) });
+  }
+});
+
+// GET - retornar últimas entradas do audit log (protegido)
+app.get('/api/system-config/audit', requireAdmin, (req, res) => {
+  try {
+    if (!fs.existsSync(AUDIT_FILE)) return res.json({ entries: [] });
+    const raw = fs.readFileSync(AUDIT_FILE, 'utf8') || '';
+    const lines = raw.split(/\r?\n/).filter(l => l && l.trim());
+    const entries = lines.map(l => {
+      try { return JSON.parse(l); } catch (e) { return { raw: l }; }
+    });
+    // allow ?limit= to restrict size
+    const limit = parseInt(req.query.limit) || 200;
+    return res.json({ entries: entries.slice(-limit) });
+  } catch (e) {
+    console.error('❌ Erro lendo audit log:', e && e.message);
+    return res.status(500).json({ error: 'Erro ao ler audit log' });
+  }
 });
 
 // ============= ROTAS ADMIN USERS =============
@@ -510,6 +1018,42 @@ app.delete('/api/admin-users/:id', (req, res) => {
 
 // ============= ROTAS MOTORCYCLES =============
 
+// Middleware: bloquear writes quando modo manutenção ativo (exceto para admins)
+app.use((req, res, next) => {
+  try {
+    const method = (req.method || '').toUpperCase();
+    if (!['POST', 'PUT', 'DELETE'].includes(method)) return next();
+    // somente rotas /api/* são afetadas
+    if (!req.path || !req.path.startsWith('/api/')) return next();
+
+    // Ler config
+    let maintenance = false;
+    try {
+      if (fs.existsSync(CONFIG_FILE)) {
+        const raw = fs.readFileSync(CONFIG_FILE, 'utf8') || '{}';
+        const cfg = JSON.parse(raw || '{}');
+        maintenance = !!cfg.maintenance;
+      }
+    } catch (e) {
+      maintenance = false;
+    }
+
+    if (!maintenance) return next();
+
+    // Permitir se for request de admin (header x-admin-id válido)
+    const adminId = req.header('x-admin-id');
+    if (!adminId) return res.status(503).json({ error: 'Sistema em manutenção - escrita bloqueada' });
+    const users = readAdminUsers();
+    const found = users.find(u => u.id === adminId && u.active);
+    if (!found) return res.status(503).json({ error: 'Sistema em manutenção - escrita bloqueada' });
+
+    // admin válido -> permitir
+    return next();
+  } catch (e) {
+    return next();
+  }
+});
+
 // GET - Listar motocicletas
 app.get('/api/motorcycles', (req, res) => {
   try {
@@ -548,6 +1092,7 @@ app.get('/api/motorcycles/:id', (req, res) => {
 app.post('/api/motorcycles', (req, res) => {
   try {
     console.log('📡 [ADMIN] POST /api/motorcycles');
+    console.log('📦 Dados recebidos (POST):', JSON.stringify(req.body, null, 2));
     const motorcycles = readMotorcycles();
     const newMoto = {
       id: req.body.id || `moto-${Date.now()}`,
@@ -555,9 +1100,56 @@ app.post('/api/motorcycles', (req, res) => {
       createdAt: new Date().toISOString()
     };
 
+    // Normalizar showInCatalog para booleano
+    try {
+      if (typeof newMoto.showInCatalog === 'string') {
+        const v = newMoto.showInCatalog.toLowerCase().trim();
+        newMoto.showInCatalog = (v === 'true' || v === 'on' || v === '1');
+      } else {
+        newMoto.showInCatalog = !!newMoto.showInCatalog;
+      }
+    } catch (e) {
+      newMoto.showInCatalog = false;
+    }
+
+    // Log de imagens recebidas para depuração de persistência
+    try {
+      if (newMoto.images && Array.isArray(newMoto.images)) {
+        console.log('🖼️ Imagens recebidas (POST):', JSON.stringify(newMoto.images, null, 2));
+      } else {
+        console.log('🖼️ Nenhuma imagem (POST) presente no payload');
+      }
+    } catch (e) {
+      console.warn('⚠️ Falha ao logar imagens (POST):', e && e.message);
+    }
+
     // Normalizar o tipo/categoria para chave canônica antes de salvar
     newMoto.type = normalizeType(newMoto.type || newMoto.tipo || newMoto.categoria || '');
     
+    // Criar pasta dedicada para os documentos/CRLV dessa moto dentro de 'DOCS Motos'
+    try {
+      const baseDocs = path.join(__dirname, 'DOCS Motos');
+      const nameForSlug = newMoto.name || newMoto.nome || newMoto.modelo || newMoto.model || newMoto.id;
+      const slug = `${newMoto.id || Date.now()}-${slugify(nameForSlug)}`;
+      const motoDocsDir = path.join(baseDocs, slug);
+      if (!fs.existsSync(motoDocsDir)) {
+        fs.mkdirSync(motoDocsDir, { recursive: true });
+        console.log('📁 Pasta DOCS criada para moto:', motoDocsDir);
+      }
+      // Criar a subpasta de contratos para esta moto
+      const contratosRoot = path.join(baseDocs, 'Contratos');
+      const motoContratosDir = path.join(contratosRoot, slug);
+      if (!fs.existsSync(motoContratosDir)) {
+        fs.mkdirSync(motoContratosDir, { recursive: true });
+        console.log('📁 Pasta Contratos criada para moto:', motoContratosDir);
+      }
+      // Guardar slug/pasta no objeto para referência (relativo)
+      newMoto.docsFolder = slug;
+      newMoto.contractsFolder = path.join('Contratos', slug).replace(/\\/g, '/');
+    } catch (e) {
+      console.warn('⚠️ Falha ao criar pasta DOCS para a moto:', e && e.message);
+    }
+
     motorcycles.push(newMoto);
     
     // Garantir que a imagem existe (copiar de Fotos motos se necessário)
@@ -603,6 +1195,18 @@ app.put('/api/motorcycles/:id', (req, res) => {
       ...req.body,
       updatedAt: new Date().toISOString()
     };
+    // Normalizar showInCatalog como booleano após merge
+    try {
+      const raw = motorcycles[index].showInCatalog;
+      if (typeof raw === 'string') {
+        const v = raw.toLowerCase().trim();
+        motorcycles[index].showInCatalog = (v === 'true' || v === 'on' || v === '1');
+      } else {
+        motorcycles[index].showInCatalog = !!raw;
+      }
+    } catch (e) {
+      motorcycles[index].showInCatalog = false;
+    }
     // Normalizar tipo/categoria após merge
     motorcycles[index].type = normalizeType(motorcycles[index].type || motorcycles[index].tipo || motorcycles[index].categoria || '');
     console.log('💾 Dados salvos:', JSON.stringify(motorcycles[index], null, 2));
@@ -817,24 +1421,39 @@ app.post('/api/generate-contract', async (req, res) => {
     }
     
     // Gerar PDF
-    const filePath = await contractGenerator.generateContract(contractData);
-    const fileName = path.basename(filePath);
-    
-    console.log('✅ Contrato gerado:', fileName);
-    
-    // Salvar caminho do contrato no motorcycles.json
+    // Determinar pasta destino por moto
     const motoId = contractData.motorcycle.id;
+    let destFolder = null;
+    let publicRel = null;
     if (motoId) {
       const motorcycles = readMotorcycles();
       const motoIndex = motorcycles.findIndex(m => m.id === motoId);
-      
       if (motoIndex !== -1) {
-        motorcycles[motoIndex].contratoPath = filePath;
+        const moto = motorcycles[motoIndex];
+        const slug = moto.docsFolder || `${moto.id || Date.now()}-${slugify(moto.name || moto.nome || moto.modelo || moto.model || moto.id)}`;
+        const contratosRoot = path.join(__dirname, 'DOCS Motos', 'Contratos');
+        destFolder = path.join(contratosRoot, slug);
+        if (!fs.existsSync(destFolder)) fs.mkdirSync(destFolder, { recursive: true });
+        publicRel = `docs/Contratos/${slug}`;
+      }
+    }
+
+    const filePath = await contractGenerator.generateContract(contractData, destFolder);
+    const fileName = path.basename(filePath);
+    console.log('✅ Contrato gerado:', fileName, '->', filePath);
+
+    // Salvar caminho do contrato no motorcycles.json (como caminho público relativo)
+    if (motoId && publicRel) {
+      const motorcycles = readMotorcycles();
+      const motoIndex = motorcycles.findIndex(m => m.id === motoId);
+      if (motoIndex !== -1) {
+        const rel = path.relative(path.join(__dirname, 'DOCS Motos'), filePath).replace(/\\/g, '/');
+        motorcycles[motoIndex].contratoPath = `docs/${rel}`;
         writeMotorcycles(motorcycles);
         console.log('✅ Caminho do contrato salvo para moto ID:', motoId);
       }
     }
-    
+
     res.json({
       success: true,
       message: 'Contrato gerado com sucesso',

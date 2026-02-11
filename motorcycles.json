@@ -55,7 +55,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "CBX 250 Twister",
-    "updatedAt": "2026-01-19T19:04:25.214Z",
+    "updatedAt": "2026-02-07T19:22:32.945Z",
     "nome": "CBX 250 Twister",
     "ano": "2007",
     "cor": "Amarela",
@@ -79,10 +79,10 @@
     "renavam": "00905235266",
     "chassi": "9C2MC35007R026638",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CBX 250 Twister 2007 (AOI-3997)\\CRLVe_905235266.pdf",
-    "contratoPath": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Contratos\\Contrato_Honda_CBX 250 Twister_2007_Mateus_Vinicius_Paes_de_Andrade_1768841164858.pdf",
+    "contratoPath": "/docs/Contratos/Contrato_Honda_CBX 250 Twister_2007_Mateus_Vinicius_Paes_de_Andrade_1768836958867.pdf",
     "showInCatalog": true,
     "buyerName": "MATEUS ANDRADE",
-    "saleDate": "2026-01-19",
+    "saleDate": "2026-01-19T03:00:00.000Z",
     "saleNotes": "",
     "paymentMethod": "pix",
     "paymentDetails": "",
@@ -99,16 +99,13 @@
     "desc": "CBX 200 STRADA 1999/99 (Roxa)",
     "displacement": 200,
     "images": [
-      "images/CBX STRADA 1999/Foto 1.jpg",
-      "images/CG 160 Titan 2025/Foto 2.jpg",
-      "images/CG 160 Titan 2025/Foto 3.jpg",
-      "images/Crosser 150 Z 2024/Foto 4.jpg"
+      "images/CBX STRADA 1999/Foto 1.jpg"
     ],
     "thumb": "images/CBX STRADA 1999/Foto 1.jpg",
     "marca": "Honda",
     "categoria": "",
     "modelo": "CBX 200 Strada",
-    "updatedAt": "2026-02-04T16:25:11.599Z",
+    "updatedAt": "2026-02-08T17:12:24.808Z",
     "nome": "CBX 200 Strada",
     "ano": "1999/1999",
     "cor": "Roxa",
@@ -127,7 +124,13 @@
     "renavam": "00724851453",
     "chassi": "9C2MC2700XR024527",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CBX 200 Strada 1999 (AIX-6G25)\\CRLVe_724851453.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 9900,
+    "preco": 9900,
+    "price_display": "R$ 9.900,00",
+    "fipe": 6690,
+    "FIPE": 6690,
+    "fipe_display": "R$ 6.690,00"
   },
   {
     "id": "moto-15",
@@ -149,7 +152,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "CG 160 Titan",
-    "updatedAt": "2026-02-04T16:24:40.150Z",
+    "updatedAt": "2026-02-08T17:12:18.906Z",
     "nome": "CG 160 Titan",
     "ano": "2025/2025",
     "cor": "Laranja",
@@ -168,7 +171,13 @@
     "fuel": "Flex",
     "combustivel": "Flex",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 160 Titan 2025 (TBG-8D45)\\CRLVe_1435163971.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 22900,
+    "preco": 22900,
+    "price_display": "R$ 22.900,00",
+    "fipe": 22955,
+    "FIPE": 22955,
+    "fipe_display": "R$ 22.955,00"
   },
   {
     "id": "moto-13",
@@ -190,7 +199,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "NXR 160 Bros",
-    "updatedAt": "2026-02-04T16:24:03.578Z",
+    "updatedAt": "2026-02-08T17:12:14.802Z",
     "nome": "NXR 160 Bros",
     "ano": "2022/2023",
     "cor": "Cinza",
@@ -209,7 +218,13 @@
     "fuel": "Flex",
     "combustivel": "Flex",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\NXR 160 BROS 2023 (SEF-6I34)\\CRLV BROS PRETA.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 21900,
+    "preco": 21900,
+    "price_display": "R$ 21.900,00",
+    "fipe": 20388,
+    "FIPE": 20388,
+    "fipe_display": "R$ 20.388,00"
   },
   {
     "id": "moto-14",
@@ -231,7 +246,7 @@
     "marca": "Yamaha",
     "categoria": "",
     "modelo": "Crosser 150 Z",
-    "updatedAt": "2026-02-04T16:23:30.390Z",
+    "updatedAt": "2026-02-08T17:12:09.287Z",
     "nome": "Crosser 150 Z",
     "ano": "2023/2024",
     "cor": "Beje",
@@ -250,7 +265,13 @@
     "fuel": "Flex",
     "combustivel": "Flex",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Crosser 150Z 2024 (SFB-2A88)\\CRLVe_1373613529-SFB2A88.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 21900,
+    "preco": 21900,
+    "price_display": "R$ 21.900,00",
+    "fipe": 19784,
+    "FIPE": 19784,
+    "fipe_display": "R$ 19.784,00"
   },
   {
     "id": "moto-11",
@@ -265,7 +286,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "CG 150 Titan EX",
-    "updatedAt": "2026-02-04T16:22:49.853Z",
+    "updatedAt": "2026-02-08T17:12:04.339Z",
     "nome": "CG 150 Titan EX",
     "ano": "2011/2011",
     "cor": "Preta",
@@ -288,7 +309,13 @@
     "renavam": "00308044789",
     "chassi": "9C2KC1660BR503892",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 150 Titan EX 2011 (IRT-0A31)\\CRLVe_308044789.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 11900,
+    "preco": 11900,
+    "price_display": "R$ 11.900,00",
+    "fipe": 11757,
+    "FIPE": 11757,
+    "fipe_display": "R$ 11.757,00"
   },
   {
     "id": "moto-10",
@@ -307,7 +334,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "CG 150 Titan ES ",
-    "updatedAt": "2026-02-04T16:22:33.147Z",
+    "updatedAt": "2026-02-11T14:02:24.707Z",
     "nome": "CG 150 Titan ES ",
     "ano": "2005/2005",
     "cor": "Verm.",
@@ -315,7 +342,7 @@
     "cilindradas": 150,
     "type": "street",
     "tipo": "street",
-    "status": "disponivel",
+    "status": "vendido",
     "description": "CG Titan 150cc ES 2005/05 (Verm.)",
     "placa": "AMM-2993",
     "renavam": "00847591301",
@@ -326,7 +353,20 @@
     "fuel": "Gasolina",
     "combustivel": "Gasolina",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 150 Titan ES 2005 (AMM-2993)\\CRLV CG TITAN 150 ES 2005  AMM - 2J93.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 9900,
+    "preco": 9900,
+    "price_display": "R$ 9.900,00",
+    "fipe": 8497,
+    "FIPE": 8497,
+    "fipe_display": "R$ 8.497,00",
+    "buyerName": "Adriana",
+    "saleDate": "2026-02-10T03:00:00.000Z",
+    "saleNotes": "",
+    "paymentMethod": "misto",
+    "paymentDetails": "R$ 5.000,00 em dinheiro\nR$ 4.400,00 no cartão de crédito em 12x",
+    "contratoPath": "/docs/Contratos/Contrato.pdf",
+    "soldAt": "2026-02-11T13:06:01.831Z"
   },
   {
     "id": "moto-6",
@@ -347,7 +387,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "Elite 125",
-    "updatedAt": "2026-02-04T15:22:18.428Z",
+    "updatedAt": "2026-02-08T17:11:44.103Z",
     "nome": "Elite 125",
     "ano": "2025/2025",
     "cor": "Branca",
@@ -366,7 +406,13 @@
     "fuel": "Gasolina",
     "combustivel": "Gasolina",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Elite 2025 (TBG-8C73)\\CRLVe_1435148018.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 17900,
+    "preco": 17900,
+    "price_display": "R$ 17.900,00",
+    "fipe": 16894,
+    "FIPE": 16894,
+    "fipe_display": "R$ 16.894,00"
   },
   {
     "id": "moto-4",
@@ -385,7 +431,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "Biz 125",
-    "updatedAt": "2026-02-04T15:22:03.264Z",
+    "updatedAt": "2026-02-08T17:11:38.830Z",
     "nome": "Biz 125",
     "ano": "2023/2023",
     "cor": "Prata",
@@ -408,7 +454,13 @@
     "renavam": "01342841546",
     "chassi": "9C2JC4830PR050476",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Biz 125 2023 (SEG-0E37)\\CRLVe_1342841546.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 17900,
+    "preco": 17900,
+    "price_display": "R$ 17.900,00",
+    "fipe": 16662,
+    "FIPE": 16662,
+    "fipe_display": "R$ 16.662,00"
   },
   {
     "id": "moto-2",
@@ -425,7 +477,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "Biz EX 125",
-    "updatedAt": "2026-02-04T15:21:32.419Z",
+    "updatedAt": "2026-02-08T17:11:32.636Z",
     "nome": "Biz EX 125",
     "ano": "2014/2014",
     "cor": "Preta",
@@ -448,7 +500,13 @@
     "renavam": "01004857567",
     "chassi": "9C2JC4830ER043029",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Biz 125 EX 2014 (AYG-7704)\\CRLVe_1004857567.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 13900,
+    "preco": 13900,
+    "price_display": "R$ 13.900,00",
+    "fipe": 12560,
+    "FIPE": 12560,
+    "fipe_display": "R$ 12.560,00"
   },
   {
     "id": "moto-8",
@@ -467,7 +525,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "CG 125 Fan KS",
-    "updatedAt": "2026-02-04T15:24:45.308Z",
+    "updatedAt": "2026-02-08T17:11:51.749Z",
     "nome": "CG 125 Fan KS",
     "ano": "2009/2010",
     "cor": "Preta",
@@ -486,7 +544,13 @@
     "renavam": "00181528967",
     "chassi": "9C2JC4110AR001560",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 125 Fan KS 2010 (ASA-7F87)\\CRLVe_181528967.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 8900,
+    "preco": 8900,
+    "price_display": "R$ 8.900,00",
+    "fipe": 8502,
+    "FIPE": 8502,
+    "fipe_display": "R$ 8.502,00"
   },
   {
     "id": "moto-7",
@@ -505,7 +569,7 @@
     "marca": "Honda",
     "categoria": "",
     "ano": "2007/2007",
-    "updatedAt": "2026-02-04T15:24:25.422Z",
+    "updatedAt": "2026-02-08T17:11:17.301Z",
     "modelo": "CG 125 Fan KS",
     "nome": "CG 125 Fan KS",
     "cor": "Preta",
@@ -524,7 +588,13 @@
     "renavam": "00920468918",
     "chassi": "9C2JC30707R167770",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 125 Fan KS 2007 (AOU-1C38)\\CRLVe_920468918.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 7900,
+    "preco": 7900,
+    "price_display": "R$ 7.900,00",
+    "fipe": 7879,
+    "FIPE": 7879,
+    "fipe_display": "R$ 7.879,00"
   },
   {
     "id": "moto-5",
@@ -545,7 +615,7 @@
     "marca": "Honda",
     "categoria": "",
     "modelo": "Biz 110-i",
-    "updatedAt": "2026-02-04T15:20:30.067Z",
+    "updatedAt": "2026-02-08T17:11:28.519Z",
     "nome": "Biz 110-i",
     "ano": "2023/2023",
     "cor": "Branca",
@@ -564,7 +634,13 @@
     "renavam": "01344426295",
     "chassi": "9C2JC7000PR024671",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Biz 110-I 2023 (RWG-4G30)\\CRLV Biz 110 2023.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 14900,
+    "preco": 14900,
+    "price_display": "R$ 14.900,00",
+    "fipe": 14056,
+    "FIPE": 14056,
+    "fipe_display": "R$ 14.056,00"
   },
   {
     "id": "moto-21",
@@ -634,7 +710,7 @@
     "description": "Suzuki Bandit 1200S 2008 - Touring com motor potente de 1200cc",
     "image": "images/Bandit 1200S 2008/Foto 1.jpg",
     "createdAt": "2025-12-03T14:31:30.797Z",
-    "updatedAt": "2026-02-04T16:26:23.859Z",
+    "updatedAt": "2026-02-08T17:12:37.004Z",
     "thumb": "images/Bandit 1200S 2008/Foto 1.jpg",
     "images": [
       "images/Bandit 1200S 2008/Foto 1.jpg"
@@ -650,7 +726,13 @@
     "fuel": "Gasolina",
     "combustivel": "Gasolina",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\Bandit 1200S (AYV-2F00)\\CRLVe_929148312.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 29900,
+    "preco": 29900,
+    "price_display": "R$ 29.900,00",
+    "fipe": 27964,
+    "FIPE": 27964,
+    "fipe_display": "R$ 27.964,00"
   },
   {
     "id": "moto-1764782439999",
@@ -677,7 +759,7 @@
       "images/CG Titan 150 KS 2008/Foto 1.jpg"
     ],
     "createdAt": "2025-12-03T17:20:40.009Z",
-    "updatedAt": "2026-02-04T16:22:41.437Z",
+    "updatedAt": "2026-02-08T17:11:58.958Z",
     "modelo": "CG 150 Titan KS",
     "placa": "AQP-4A48",
     "renavam": "00985944285",
@@ -689,7 +771,13 @@
     "fuel": "Gasolina",
     "combustivel": "Gasolina",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 150 Titan KS 2008 (AQP-4A48)\\CRLVe_985944285.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 10900,
+    "preco": 10900,
+    "price_display": "R$ 10.900,00",
+    "fipe": 9294,
+    "FIPE": 9294,
+    "fipe_display": "R$ 9.294,00"
   },
   {
     "id": "moto-1764783387101",
@@ -708,27 +796,33 @@
     "type": "street",
     "tipo": "street",
     "status": "disponivel",
-    "desc": "Vai tomando",
-    "description": "Vai tomando",
+    "desc": "",
+    "description": "",
     "image": "images/CB 300R 2012/Foto 1.jpg",
     "thumb": "images/CB 300R 2012/Foto 1.jpg",
     "images": [
       "images/CB 300R 2012/Foto 1.jpg"
     ],
     "createdAt": "2025-12-03T17:36:27.154Z",
-    "updatedAt": "2026-02-04T16:25:52.382Z",
+    "updatedAt": "2026-02-08T17:12:28.860Z",
     "modelo": "CB 300R",
     "engine_cc": 300,
     "cc": 300,
     "category": "",
     "categoria": "",
-    "fuel": "Gasolina",
-    "combustivel": "Gasolina",
+    "fuel": "Flex",
+    "combustivel": "Flex",
     "placa": "AUU-5H37",
     "renavam": "00404728570",
     "chassi": "9C2NC4310CR011220",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CB 300R 2012 (AUU-5H37)\\CRLVe_404728570.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 14900,
+    "preco": 14900,
+    "price_display": "R$ 14.900,00",
+    "fipe": 12616,
+    "FIPE": 12616,
+    "fipe_display": "R$ 12.616,00"
   },
   {
     "id": "moto-1765973849889",
@@ -760,12 +854,18 @@
     "thumb": "",
     "images": [],
     "createdAt": "2025-12-17T12:17:30.103Z",
-    "updatedAt": "2026-02-04T16:27:14.508Z",
+    "updatedAt": "2026-02-08T17:12:45.821Z",
     "placa": "HRX-6160",
     "renavam": "00741409399",
     "chassi": "9C64XT000Y0007051",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\XV 250S Virago 2000 (HRX-6160)\\CRLVe_741409399.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 18900,
+    "preco": 18900,
+    "price_display": "R$ 18.900,00",
+    "fipe": 14765,
+    "FIPE": 14765,
+    "fipe_display": "R$ 14.765,00"
   },
   {
     "id": "moto-1765974691713",
@@ -840,19 +940,25 @@
       "images/S1000RR 2019/Foto 1.jpeg"
     ],
     "createdAt": "2025-12-17T12:35:24.878Z",
-    "updatedAt": "2026-02-05T19:19:05.343Z",
+    "updatedAt": "2026-02-08T17:12:33.441Z",
     "placa": "BCX-7E89",
     "renavam": "01194730986",
     "chassi": "99Z0D7001KZM34484",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\S1000 RR 2019 (BCX-7E89)\\CRLVe_1184730986.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 81990,
+    "preco": 81990,
+    "price_display": "R$ 81.990,00",
+    "fipe": 81679,
+    "FIPE": 81679,
+    "fipe_display": "R$ 81.679,00"
   },
   {
     "id": "moto-1765980574921",
     "marca": "Yamaha",
-    "name": "XV250 S VIRAGO",
-    "nome": "XV250 S VIRAGO",
-    "modelo": "XV250 S VIRAGO",
+    "name": "XV 250S VIRAGO",
+    "nome": "XV 250S VIRAGO",
+    "modelo": "XV 250S VIRAGO",
     "year": 1998,
     "ano": "1998/1998",
     "color": "Preta",
@@ -885,9 +991,15 @@
     "placa": "AHY-3B85",
     "renavam": "00702025267",
     "chassi": "9C64XT000W0003689",
-    "updatedAt": "2026-02-04T16:26:51.993Z",
+    "updatedAt": "2026-02-08T17:12:42.188Z",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\XV 250S Virago 1998 (AHY-3B85)\\CRLVe_702025267 (2).pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 15900,
+    "preco": 15900,
+    "price_display": "R$ 15.900,00",
+    "fipe": 13264,
+    "FIPE": 13264,
+    "fipe_display": "R$ 13.264,00"
   },
   {
     "id": "moto-1765993729150",
@@ -922,9 +1034,15 @@
     "placa": "ATK-1488",
     "renavam": "00271355123",
     "chassi": "9C2JC4120BR512592",
-    "updatedAt": "2026-02-04T15:25:06.732Z",
+    "updatedAt": "2026-02-07T18:56:40.013Z",
     "documentoPDF": "C:\\Users\\W10\\Documents\\TCC - teste\\DOCS Motos\\CG 125 Fan ES 2011 (ATK-1488)\\CRLVe_271355123.pdf",
-    "showInCatalog": true
+    "showInCatalog": true,
+    "price": 9900,
+    "preco": 9900,
+    "price_display": "R$ 9.900,00",
+    "fipe": 8721,
+    "FIPE": 8721,
+    "fipe_display": "R$ 8.721,00"
   },
   {
     "id": "moto-1766233803696",

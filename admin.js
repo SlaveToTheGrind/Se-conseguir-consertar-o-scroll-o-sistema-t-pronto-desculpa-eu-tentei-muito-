@@ -385,6 +385,109 @@ document.addEventListener('DOMContentLoaded', async function() {
 // Event listeners
 let eventListenersSetup = false; // Flag para evitar duplicação
 
+function copyDocValue(value, type) {
+    try {
+        const safeValue = value || '';
+        const safeType = type || '';
+        if (!safeValue) {
+            showError('Nada para copiar');
+            return;
+        }
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(safeValue).then(() => {
+                showSuccess((safeType ? safeType.toUpperCase() + ' ' : '') + 'copiado');
+            }).catch(() => {
+                const ta = document.createElement('textarea');
+                ta.value = safeValue;
+                document.body.appendChild(ta);
+                ta.select();
+                try { document.execCommand('copy'); showSuccess((safeType ? safeType.toUpperCase() + ' ' : '') + 'copiado'); } catch(e) { showError('Erro ao copiar'); }
+                ta.remove();
+            });
+        } else {
+            const ta = document.createElement('textarea');
+            ta.value = safeValue;
+            document.body.appendChild(ta);
+            ta.select();
+            try { document.execCommand('copy'); showSuccess((safeType ? safeType.toUpperCase() + ' ' : '') + 'copiado'); } catch(e) { showError('Erro ao copiar'); }
+            ta.remove();
+        }
+    } catch (err) {
+        console.error('Erro ao copiar:', err);
+        showError('Erro ao copiar');
+    }
+}
+
+// Expose for inline handlers and fallback click hooks
+try { window.copyDocValue = copyDocValue; } catch (e) {}
+
+function getSoldCopyPayload(target) {
+    try {
+        if (!target) return null;
+        // Avoid stealing clicks from action buttons
+        if (target.closest('.sold-card-actions') || target.closest('button')) return null;
+
+        const plateEl = target.closest('.sold-card-plate');
+        if (plateEl) {
+            const plate = (plateEl.textContent || '').trim();
+            if (plate && plate !== '---') return { value: plate, type: 'placa' };
+        }
+
+        const rowEl = target.closest('.sale-info-row');
+        if (rowEl) {
+            const labelEl = rowEl.querySelector('.info-label');
+            const valueEl = rowEl.querySelector('.info-value');
+            const label = (labelEl && labelEl.textContent ? labelEl.textContent : '').trim().toLowerCase();
+            const value = (valueEl && valueEl.textContent ? valueEl.textContent : '').trim();
+            if (!value) return null;
+            if (label.includes('renavam')) return { value, type: 'renavam' };
+            if (label.includes('chassi')) return { value, type: 'chassi' };
+        }
+    } catch (e) { /* noop */ }
+    return null;
+}
+
+function enhanceSoldCopySurfaces(rootEl) {
+    try {
+        const root = rootEl || document.getElementById('soldMotorcyclesModal') || document;
+        // Placa
+        root.querySelectorAll('.sold-card-plate').forEach(el => {
+            const text = (el.textContent || '').trim();
+            if (!text || text === '---') return;
+            el.classList.add('copy-doc-btn');
+            el.setAttribute('data-copy', text);
+            el.setAttribute('data-type', 'placa');
+            el.setAttribute('role', 'button');
+            el.setAttribute('tabindex', '0');
+        });
+
+        // RENAVAM / Chassi por label
+        root.querySelectorAll('.sale-info-row').forEach(row => {
+            const labelEl = row.querySelector('.info-label');
+            const valueEl = row.querySelector('.info-value');
+            if (!labelEl || !valueEl) return;
+            const label = (labelEl.textContent || '').trim().toLowerCase();
+            if (!label) return;
+            const value = (valueEl.textContent || '').trim();
+            if (!value) return;
+            if (label.includes('renavam')) {
+                row.classList.add('copy-doc-btn');
+                row.setAttribute('data-copy', value);
+                row.setAttribute('data-type', 'renavam');
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
+            }
+            if (label.includes('chassi')) {
+                row.classList.add('copy-doc-btn');
+                row.setAttribute('data-copy', value);
+                row.setAttribute('data-type', 'chassi');
+                row.setAttribute('role', 'button');
+                row.setAttribute('tabindex', '0');
+            }
+        });
+    } catch (e) { /* noop */ }
+}
+
 function setupEventListeners() {
         // Botão de backups no desktop (header-actions)
         const backupsButtonMenuDesktop = document.getElementById('backupsButtonMenuDesktop');
@@ -456,6 +559,24 @@ function setupEventListeners() {
     } else {
         console.error('❌ Formulário motorcycleForm não encontrado!');
     }
+
+    // Melhorias para o campo `ano` — desativar autocomplete e fechar custom-selects quando focar
+    try {
+        const anoInput = document.getElementById('ano');
+        if (anoInput) {
+            anoInput.setAttribute('autocomplete', 'off');
+            anoInput.setAttribute('autocorrect', 'off');
+            anoInput.setAttribute('spellcheck', 'false');
+            anoInput.setAttribute('autocapitalize', 'off');
+            anoInput.addEventListener('focus', function() {
+                // fechar quaisquer custom-selects abertos que possam sobrescrever a UI
+                try {
+                    document.querySelectorAll('.custom-select.open').forEach(cs => cs.classList.remove('open'));
+                    document.querySelectorAll('.custom-select-options').forEach(opt => opt.style.display = 'none');
+                } catch (e) {}
+            }, { passive: true });
+        }
+    } catch (e) { console.warn('⚠️ Não foi possível aplicar melhorias ao campo ano', e); }
     
     // Botões de filtro
     document.querySelectorAll('.filter-btn').forEach(btn => {
@@ -532,6 +653,7 @@ function setupEventListeners() {
             const deleteBtn = e.target.closest('.delete-btn');
             const sellBtn = e.target.closest('.sell-btn');
             const viewBtn = e.target.closest('.view-btn');
+            const copyBtn = e.target.closest('.copy-doc-btn');
             
             if (editBtn) {
                 e.preventDefault();
@@ -557,9 +679,58 @@ function setupEventListeners() {
                 const motoId = viewBtn.getAttribute('data-moto-id');
                 console.log('👁️ [DEBUG] Botão visualizar clicado para ID:', motoId);
                 viewMotoDetails(motoId);
+            } else if (copyBtn) {
+                e.preventDefault();
+                e.stopPropagation();
+                copyDocValue(copyBtn.getAttribute('data-copy') || '', copyBtn.getAttribute('data-type') || '');
             }
         });
         console.log('✅ Delegação de eventos configurada no adminGrid');
+    }
+
+    // Captura global para copiar RENAVAM/CHASSI/PLACA no painel de vendas
+    if (!document.body.dataset.globalCopyListener) {
+        document.addEventListener('click', function(e) {
+            const copyBtn = e.target.closest('.copy-doc-btn');
+            if (copyBtn) {
+                const value = copyBtn.getAttribute('data-copy') || '';
+                const type = copyBtn.getAttribute('data-type') || '';
+                if (!value) return;
+                e.preventDefault();
+                e.stopPropagation();
+                copyDocValue(value, type);
+                return;
+            }
+
+            const payload = getSoldCopyPayload(e.target);
+            if (!payload || !payload.value) return;
+            e.preventDefault();
+            e.stopPropagation();
+            copyDocValue(payload.value, payload.type);
+        }, true);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            const payload = getSoldCopyPayload(e.target);
+            if (!payload || !payload.value) return;
+            e.preventDefault();
+            copyDocValue(payload.value, payload.type);
+        }, true);
+
+        document.body.dataset.globalCopyListener = 'true';
+    }
+
+    // Delegação de cópia para cards do painel de vendas
+    const soldContent = document.getElementById('soldMotorcyclesContent');
+    if (soldContent && !soldContent.dataset.copyListener) {
+        soldContent.addEventListener('click', function(e) {
+            const copyBtn = e.target.closest('.copy-doc-btn');
+            if (!copyBtn) return;
+            e.preventDefault();
+            e.stopPropagation();
+            copyDocValue(copyBtn.getAttribute('data-copy') || '', copyBtn.getAttribute('data-type') || '');
+        });
+        soldContent.dataset.copyListener = 'true';
     }
     
     // Eventos de teclado para fechar modais com ESC
@@ -846,18 +1017,21 @@ function renderMobileFilterPills() {
 async function loadMotos() {
     try {
         // Sempre buscar do servidor para garantir atualização
+        let apiOk = false;
         try {
             const resp = await fetch('/api/motorcycles');
             if (!resp.ok) throw new Error('Falha ao buscar motocicletas: ' + resp.status);
             const dados = await resp.json();
             allMotos = Array.isArray(dados) ? dados : [];
             currentMotos = [...allMotos];
+            apiOk = true;
             console.log(`✅ [LOAD] ${allMotos.length} motocicletas carregadas do servidor`);
         } catch (fetchErr) {
             console.error('❌ [LOAD] Erro ao buscar motocicletas do servidor:', fetchErr);
             // seguir com array vazio para evitar bloqueio
             allMotos = [];
             currentMotos = [];
+            apiOk = false;
         }
         console.log('📊 [UPDATE] Atualizando contadores...');
         updateCounters(allMotos);
@@ -911,6 +1085,415 @@ async function loadMotos() {
             `;
         }
     }
+    // Atualizar indicador de API com base no resultado da última tentativa
+    try {
+        const adminApiStatus = document.getElementById('admin-api-status');
+        if (adminApiStatus) {
+            if (typeof apiOk !== 'undefined' && apiOk) {
+                adminApiStatus.textContent = '✅ Operacional';
+                adminApiStatus.style.color = '#000';
+            } else {
+                adminApiStatus.textContent = '❌ Indisponível';
+                adminApiStatus.style.color = '#c0392b';
+            }
+        }
+    } catch (e) { /* ignore */ }
+}
+
+// Health check helper: ping server /api/health and update the status indicator
+async function checkAdminApiHealth() {
+    try {
+        const adminApiStatus = document.getElementById('admin-api-status');
+        const res = await fetch('/api/health', { cache: 'no-store' });
+        if (!res.ok) {
+            if (adminApiStatus) {
+                adminApiStatus.textContent = '❌ Indisponível';
+                adminApiStatus.style.color = '#c0392b';
+            }
+            return false;
+        }
+        const info = await res.json();
+        if (adminApiStatus) {
+            adminApiStatus.textContent = '✅ Operacional';
+            adminApiStatus.style.color = '#000';
+        }
+        return true;
+    } catch (err) {
+        const adminApiStatus = document.getElementById('admin-api-status');
+        if (adminApiStatus) {
+            adminApiStatus.textContent = '❌ Indisponível';
+            adminApiStatus.style.color = '#c0392b';
+        }
+        return false;
+    }
+}
+
+// Agendar checagem periódica de health (corrige indicador caso outra chamada tenha falhado antes)
+setInterval(() => {
+    try { checkAdminApiHealth(); } catch(e) {}
+}, 10000); // a cada 10s
+
+// --- System status: load override and render friendly message ---
+async function deriveMessageFromHealth(health) {
+    try {
+        if (!health || !health.server) return { message: 'Sem informação de health', level: 'warning' };
+        const parts = [];
+        if (!health.motorcyclesFile || !health.motorcyclesFile.readable) parts.push('Problema no arquivo motorcycles.json');
+        if (!health.imagesDir || !health.imagesDir.exists) parts.push('Pasta images/ ausente');
+        if (health.imagesDir && !health.imagesDir.writable) parts.push('Sem permissão de escrita em images/');
+        if (!health.multerAvailable) parts.push('Upload multipart indisponível (multer)');
+
+        if (parts.length === 0) return { message: 'Sistema operacional', level: 'ok' };
+        return { message: parts.join('; '), level: 'warning' };
+    } catch (e) {
+        return { message: 'Erro ao interpretar health', level: 'warning' };
+    }
+}
+
+async function loadSystemStatus() {
+    try {
+        // Parallel fetch override and health
+        const headers = getAdminHeaders();
+        const [stRes, hRes] = await Promise.all([
+            fetch('/api/system-status', { cache: 'no-store', headers }),
+            fetch('/api/health', { cache: 'no-store' })
+        ]);
+
+        const overrideJson = stRes.ok ? await stRes.json() : { override: null };
+        const healthJson = hRes.ok ? await hRes.json() : null;
+
+        const override = overrideJson && overrideJson.override ? overrideJson.override : null;
+
+        let display = { message: '', level: 'info' };
+        if (override) {
+            display.message = override.message;
+            display.level = override.level || 'info';
+            display.updatedAt = override.updatedAt;
+        } else {
+            display = await deriveMessageFromHealth(healthJson);
+        }
+
+        renderSystemStatus(display);
+        return display;
+    } catch (e) {
+        renderSystemStatus({ message: 'Erro ao carregar status', level: 'error' });
+        return null;
+    }
+}
+
+function renderSystemStatus(display) {
+    try {
+        const msgEl = document.getElementById('admin-status-message');
+        if (!msgEl) return;
+        msgEl.textContent = display && display.message ? display.message : '—';
+        if (display.level === 'error') {
+            msgEl.style.color = '#c0392b';
+        } else if (display.level === 'warning') {
+            msgEl.style.color = '#e67e22';
+        } else {
+            msgEl.style.color = '#2c3e50';
+        }
+    } catch (e) { /* ignore */ }
+}
+
+// Editor modal handlers
+function openStatusEditor() {
+    try {
+        const modal = document.getElementById('systemConfigModal');
+        const text = document.getElementById('systemStatusText');
+        const level = document.getElementById('systemStatusLevel');
+        // Pre-fill with current override if any
+        fetch('/api/system-status', { cache: 'no-store', headers: getAdminHeaders() })
+            .then(r => r.ok ? r.json() : null)
+            .then(j => {
+                const o = j && j.override ? j.override : null;
+                text.value = o && o.message ? o.message : '';
+                level.value = o && o.level ? o.level : 'info';
+                modal.style.display = 'block';
+                if (typeof window.lockBodyScrollSafe === 'function') window.lockBodyScrollSafe(); else document.body.style.overflow = 'hidden';
+            }).catch(() => {
+                text.value = '';
+                level.value = 'info';
+                modal.style.display = 'block';
+            });
+    } catch (e) { console.error(e); }
+}
+
+// Return headers for admin-protected requests based on localStorage userData
+function getAdminHeaders() {
+    try {
+        const raw = localStorage.getItem('userData');
+        if (!raw) return {};
+        const u = JSON.parse(raw);
+        if (!u) return {};
+        // Support both `id` and older `userId` saved by the login page
+        const adminId = u.id || u.userId || u.userID || u.adminId;
+        if (!adminId) return {};
+        // Normalize: ensure localStorage has `id` for other code expecting it
+        try {
+            if (!u.id) {
+                u.id = adminId;
+                localStorage.setItem('userData', JSON.stringify(u));
+            }
+        } catch (e) {
+            // ignore storage errors
+        }
+        return { 'x-admin-id': String(adminId) };
+    } catch (e) {
+        return {};
+    }
+}
+
+async function saveSystemStatus() {
+    try {
+        const text = document.getElementById('systemStatusText').value || '';
+        const level = document.getElementById('systemStatusLevel').value || 'info';
+        if (!text || text.trim() === '') return alert('Mensagem vazia.');
+        const headers = Object.assign({'Content-Type':'application/json'}, getAdminHeaders());
+        if (!headers['x-admin-id']) return alert('Erro: admin header ausente. Faça login novamente.');
+        const res = await fetch('/api/system-status', { method: 'POST', headers, body: JSON.stringify({ message: text, level }) });
+        if (!res.ok) throw new Error('Falha ao salvar');
+        const j = await res.json();
+        renderSystemStatus({ message: j.override.message, level: j.override.level });
+        closeConfigModal();
+        showSuccess('Mensagem salva');
+    } catch (e) { console.error(e); alert('Erro ao salvar mensagem'); }
+}
+
+async function clearSystemStatus() {
+    try {
+        const res = await fetch('/api/system-status', { method: 'DELETE', headers: getAdminHeaders() });
+        if (!res.ok) throw new Error('Falha ao limpar');
+        renderSystemStatus({ message: 'Sistema operacional', level: 'ok' });
+        closeConfigModal();
+        showSuccess('Override removido');
+    } catch (e) { console.error(e); alert('Erro ao limpar mensagem'); }
+}
+
+function closeConfigModal() {
+    const modal = document.getElementById('systemConfigModal');
+    if (modal) modal.style.display = 'none';
+    if (typeof window.unlockBodyScrollSafe === 'function') window.unlockBodyScrollSafe(); else document.body.style.overflow = '';
+}
+
+// Wire UI buttons
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const refreshBtn = document.getElementById('refreshStatusBtn');
+        const editBtn = document.getElementById('editStatusBtn');
+        const saveBtn = document.getElementById('saveStatusBtn');
+        const closeBtn = document.getElementById('closeStatusModalBtn');
+        const clearBtn = document.getElementById('clearStatusBtn');
+
+        if (refreshBtn) refreshBtn.addEventListener('click', () => loadSystemStatus());
+        if (editBtn) editBtn.addEventListener('click', () => openStatusEditor());
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        if (saveConfigBtn) saveConfigBtn.addEventListener('click', () => saveSystemConfig());
+        // show/hide settings button based on admin presence
+        try {
+            const settingsBtn = document.getElementById('settingsButton');
+            const raw = localStorage.getItem('userData');
+            if (settingsBtn) {
+                if (!raw) settingsBtn.style.display = 'none';
+                else {
+                    try { const u = JSON.parse(raw); if (!u || u.tipo !== 'admin') settingsBtn.style.display = 'none'; }
+                    catch (e) { settingsBtn.style.display = 'none'; }
+                }
+            }
+        } catch (e) {}
+        if (saveBtn) saveBtn.addEventListener('click', () => saveSystemStatus());
+        if (closeBtn) closeBtn.addEventListener('click', () => closeConfigModal());
+        if (clearBtn) clearBtn.addEventListener('click', () => clearSystemStatus());
+        // Testar bloqueio button
+        const testBlockBtn = document.getElementById('testBlockBtn');
+        if (testBlockBtn) testBlockBtn.addEventListener('click', () => testMaintenanceBlocking());
+
+        // Audit viewer buttons
+        const openAuditBtn = document.getElementById('openAuditBtn');
+        const clearAuditBtn = document.getElementById('clearAuditResultsBtn');
+        if (openAuditBtn) openAuditBtn.addEventListener('click', () => openAudit());
+        if (clearAuditBtn) clearAuditBtn.addEventListener('click', () => clearAuditResults());
+
+        // Initial load of system status and config
+        setTimeout(() => {
+            loadSystemStatus();
+            loadSystemConfig();
+        }, 400);
+    } catch (e) {}
+});
+
+// Load system config (maintenance state)
+async function loadSystemConfig() {
+    try {
+        const res = await fetch('/api/system-config', { cache: 'no-store', headers: getAdminHeaders() });
+        if (!res.ok) return renderMaintenanceIndicator(false);
+        const j = await res.json();
+        const cfg = j && j.config ? j.config : { maintenance: false };
+        const chk = document.getElementById('systemMaintenanceCheckbox');
+        if (chk) chk.checked = !!cfg.maintenance;
+        renderMaintenanceIndicator(!!cfg.maintenance);
+        return cfg;
+    } catch (e) {
+        renderMaintenanceIndicator(false);
+        return null;
+    }
+}
+
+async function saveSystemConfig() {
+    try {
+        const chk = document.getElementById('systemMaintenanceCheckbox');
+        const maintenance = !!(chk && chk.checked);
+        const headers = Object.assign({'Content-Type':'application/json'}, getAdminHeaders());
+        if (!headers['x-admin-id']) return alert('Erro: admin header ausente. Faça login novamente.');
+        const res = await fetch('/api/system-config', { method: 'POST', headers, body: JSON.stringify({ maintenance }) });
+        const text = await res.text();
+        let j = null;
+        try { j = text ? JSON.parse(text) : null; } catch(e) { j = null; }
+        if (!res.ok) {
+            const errMsg = (j && (j.error || j.detail)) ? (j.error || j.detail) : `Status ${res.status}`;
+            throw new Error(errMsg);
+        }
+        const cfg = j && j.config ? j.config : { maintenance };
+        renderMaintenanceIndicator(!!cfg.maintenance);
+        showSuccess('Configurações salvas');
+        return cfg;
+    } catch (e) {
+        console.error(e);
+        alert('Erro ao salvar configuração: ' + (e && e.message));
+        return null;
+    }
+}
+
+// Test maintenance blocking: performs two POSTs to /api/appointments
+async function testMaintenanceBlocking() {
+    const resultsEl = document.getElementById('testBlockResults');
+    if (resultsEl) {
+        resultsEl.style.display = 'block';
+        resultsEl.innerHTML = '<em>Executando testes...</em>';
+    }
+
+    try {
+        // Show detected admin id (if any)
+        const adminHeaders = getAdminHeaders();
+        const detectedId = (adminHeaders && adminHeaders['x-admin-id']) ? adminHeaders['x-admin-id'] : null;
+
+        // Try to read current system-config using admin header (to avoid flipping maintenance state)
+        let currentConfig = null;
+        if (detectedId) {
+            try {
+                const r = await fetch('/api/system-config', { headers: Object.assign({'Content-Type':'application/json'}, adminHeaders), cache: 'no-store' });
+                if (r.ok) currentConfig = await r.json();
+            } catch (e) { /* ignore */ }
+        }
+
+        const bodyToSend = (currentConfig && currentConfig.config) ? JSON.stringify(currentConfig.config) : JSON.stringify({ maintenance: false });
+
+        // Test 1: POST to /api/system-config WITHOUT headers
+        let res1, body1;
+        try {
+            res1 = await fetch('/api/system-config', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: bodyToSend });
+            body1 = await res1.text();
+        } catch (e) {
+            body1 = String(e && e.message);
+        }
+
+        // Test 2: POST to /api/system-config WITH admin headers (if available)
+        let res2, body2;
+        if (!detectedId) {
+            body2 = 'Admin header ausente: faça login para testar com credenciais de administrador.';
+        } else {
+            try {
+                const headers = Object.assign({'Content-Type':'application/json'}, adminHeaders);
+                res2 = await fetch('/api/system-config', { method: 'POST', headers, body: bodyToSend });
+                body2 = await res2.text();
+            } catch (e) {
+                body2 = String(e && e.message);
+            }
+        }
+
+        // Auto-clean: delete any test appointments named 'test-block-check' if admin header available
+        let cleaned = 'skipped';
+        if (detectedId) {
+            try {
+                const listRes = await fetch('/api/appointments');
+                if (listRes.ok) {
+                    const list = await listRes.json();
+                    const toRemove = list.filter(a => (a.name || '').toString().toLowerCase() === 'test-block-check');
+                    for (const a of toRemove) {
+                        try {
+                            await fetch('/api/appointments/' + encodeURIComponent(a.id), { method: 'DELETE', headers: Object.assign({'Content-Type':'application/json'}, adminHeaders) });
+                        } catch (e) { /* ignore individual delete errors */ }
+                    }
+                    cleaned = String(toRemove.length) + ' removed';
+                }
+            } catch (e) { cleaned = 'error'; }
+        }
+
+        // Render results
+        let html = '<strong>Resultados do Teste de Bloqueio</strong><div style="margin-top:8px;">';
+        html += `<div style="margin-bottom:6px;padding:8px;border-radius:6px;background:#fff;border:1px solid #eee;"><strong>Detected x-admin-id:</strong> ${detectedId || '<em>none</em>'}</div>`;
+        html += `<div style="margin-bottom:6px;padding:8px;border-radius:6px;background:#fff;border:1px solid #eee;"><strong>POST /api/system-config (sem header):</strong> HTTP ${res1 ? res1.status : 'ERR'}<pre style="white-space:pre-wrap;margin:6px 0 0 0;color:#444;">${escapeHtml(body1)}</pre></div>`;
+        html += `<div style="margin-bottom:6px;padding:8px;border-radius:6px;background:#fff;border:1px solid #eee;"><strong>POST /api/system-config (com header):</strong> ${res2 ? 'HTTP ' + res2.status : ''}<pre style="white-space:pre-wrap;margin:6px 0 0 0;color:#444;">${escapeHtml(body2)}</pre></div>`;
+        html += `<div style="margin-top:8px;padding:8px;border-radius:6px;background:#fbfbfb;border:1px solid #eee;"><strong>Auto-clean results:</strong> ${escapeHtml(cleaned)}</div>`;
+        html += '</div>';
+        if (resultsEl) resultsEl.innerHTML = html;
+    } catch (e) {
+        if (resultsEl) resultsEl.innerHTML = '<div style="color:crimson;">Erro ao executar teste: ' + (e && e.message) + '</div>';
+    }
+}
+
+// Open audit viewer: fetch audit entries and render in modal area
+async function openAudit() {
+    const container = document.getElementById('auditResults');
+    const clearBtn = document.getElementById('clearAuditResultsBtn');
+    if (!container) return;
+    container.style.display = 'block';
+    if (clearBtn) clearBtn.style.display = 'inline-block';
+    container.innerHTML = '<em>Carregando auditoria...</em>';
+    try {
+        const res = await fetch('/api/system-config/audit', { headers: getAdminHeaders(), cache: 'no-store' });
+        if (!res.ok) {
+            const txt = await res.text();
+            container.innerText = 'Erro ao carregar auditoria: ' + txt;
+            return;
+        }
+        let entries = await res.json();
+        if (entries && typeof entries === 'object' && !Array.isArray(entries) && Array.isArray(entries.entries)) entries = entries.entries;
+        if (!Array.isArray(entries) || entries.length === 0) {
+            container.innerText = 'Nenhuma entrada de auditoria encontrada.';
+            return;
+        }
+        container.innerHTML = entries.map(e => {
+            const time = e.ts ? new Date(e.ts).toLocaleString() : '(sem data)';
+            const admin = e.admin || e.by || 'unknown';
+            const body = escapeHtml(typeof e.change === 'string' ? e.change : JSON.stringify(e.change || e, null, 2));
+            return `<div style="padding:8px;border-bottom:1px solid #eee;"><strong>${time}</strong> — <em>${admin}</em><div style="margin-top:6px;font-size:0.9rem;color:#333;">${body}</div></div>`;
+        }).join('');
+    } catch (err) {
+        container.innerText = 'Erro ao carregar auditoria: ' + (err && err.message);
+    }
+}
+
+function clearAuditResults() {
+    const container = document.getElementById('auditResults');
+    const clearBtn = document.getElementById('clearAuditResultsBtn');
+    if (container) {
+        container.style.display = 'none';
+        container.innerHTML = '';
+    }
+    if (clearBtn) clearBtn.style.display = 'none';
+}
+
+function escapeHtml(s) {
+    try { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); } catch(e) { return '' }
+}
+
+function renderMaintenanceIndicator(active) {
+    try {
+        const el = document.getElementById('admin-maintenance-indicator');
+        if (!el) return;
+        el.style.display = active ? 'inline-flex' : 'none';
+    } catch (e) {}
 }
 
 // Função para atualizar contadores
@@ -926,14 +1509,8 @@ function updateCounters(motos) {
     // Atualizar status do sistema
     const catalogMotoCount = document.getElementById('catalog-moto-count');
     const adminApiStatus = document.getElementById('admin-api-status');
-    
     if (catalogMotoCount) {
         catalogMotoCount.textContent = `${disponiveis} motocicletas`;
-    }
-    
-    if (adminApiStatus) {
-        adminApiStatus.textContent = '✅ Operacional';
-        adminApiStatus.style.color = '#000';
     }
     
     console.log('📊 Contadores atualizados:', { total, disponiveis, vendidos });
@@ -968,7 +1545,15 @@ async function loadAppointments(silent = false) {
         const previousCount = currentAppointments.length;
         
         // Criar hash dos dados para detectar mudanças
-        const currentHash = JSON.stringify(appointments.map(a => ({ id: a.id, status: a.status })));
+        const currentHash = JSON.stringify(
+            appointments.map(a => ({
+                id: a.id,
+                status: a.status,
+                confirmedByClient: !!a.confirmedByClient,
+                confirmedAt: a.confirmedAt || null,
+                confirmedBy: a.confirmedBy || null
+            }))
+        );
         
         // Se os dados não mudaram, pular atualização visual
         if (currentHash === lastAppointmentsHash) {
@@ -1081,8 +1666,16 @@ function groupAppointmentsByMonth(appointments) {
     const grouped = {};
     
     appointments.forEach(apt => {
-        const dateField = apt.data || apt.date;
-        const [year, month, day] = dateField.split('-');
+        const dateField = apt.data || apt.date || apt.saleDate || '';
+        // Defensive: ignore appointments without a parsable date
+        if (!dateField || typeof dateField !== 'string' || dateField.indexOf('-') === -1) {
+            console.warn('⚠️ Skipping appointment without valid date:', apt && (apt.id || apt.name));
+            return;
+        }
+        const parts = dateField.split('-');
+        const year = parts[0];
+        const month = parts[1] || '01';
+        const day = parts[2] || '01';
         const monthKey = `${year}-${month}`;
         const monthLabel = `${getMonthName(parseInt(month))} ${year}`;
         
@@ -1219,10 +1812,24 @@ function renderAppointmentCard(apt) {
     const moto = currentMotos.find(m => m.id === motorcycleId);
     const motoName = moto ? `${moto.marca || ''} ${moto.modelo || moto.name || moto.nome || ''}`.trim() : 'Moto não encontrada';
     
-    // Formatar data (aceitar ambos formatos)
-    const dateField = apt.data || apt.date;
-    const [year, month, day] = dateField.split('-');
-    const formattedDate = `${day}/${month}/${year}`;
+    // Formatar data (aceitar vários formatos). Defensive: handle missing/invalid dates.
+    const dateField = apt.data || apt.date || apt.saleDate || '';
+    let formattedDate = 'N/A';
+    try {
+        if (dateField && typeof dateField === 'string' && dateField.indexOf('-') !== -1) {
+            const parts = dateField.split('-');
+            const year = parts[0] || '0000';
+            const month = parts[1] || '01';
+            const day = parts[2] || '01';
+            formattedDate = `${day}/${month}/${year}`;
+        } else if (dateField) {
+            // try Date parsing
+            const d = new Date(dateField);
+            if (!isNaN(d.getTime())) formattedDate = d.toLocaleDateString('pt-BR');
+        }
+    } catch (e) {
+        console.warn('⚠️ renderAppointmentCard: failed to parse date for', apt && (apt.id || apt.name));
+    }
     
     const isRealizado = apt.status === 'realizado';
     const isCancelado = apt.status === 'cancelado';
@@ -1753,7 +2360,17 @@ function renderMotos(motos) {
     grid.innerHTML = motosSorted.map(moto => {
         // Codificar URL da imagem para lidar com espaços e caracteres especiais
         const imagePath = moto.image || moto.thumb || 'images/placeholder.svg';
-        const encodedImagePath = imagePath.split('/').map(part => encodeURIComponent(part)).join('/');
+        // Se for DataURL (preview local), não codificar — usar direto
+        let encodedImagePath;
+        if (typeof imagePath === 'string' && imagePath.startsWith('data:')) {
+            encodedImagePath = imagePath;
+        } else {
+            try {
+                encodedImagePath = (imagePath || '').split('/').map(part => encodeURIComponent(part)).join('/');
+            } catch (e) {
+                encodedImagePath = imagePath;
+            }
+        }
         
         // Verificar status
         const status = moto.status || 'disponivel';
@@ -1765,11 +2382,9 @@ function renderMotos(motos) {
         console.log('🔍 [DEBUG] Renderizando moto:', moto.id, moto.name || moto.nome, 'Status:', status);
         return `
         <div class="moto-card ${isVendido ? 'vendido' : ''}" data-id="${moto.id}">
-            <img src="${encodedImagePath}" 
-                 alt="${moto.name || moto.nome}" 
-                 class="moto-image"
-                 onerror="this.src='images/placeholder.svg'">
-            
+            <div class="moto-image">
+                <img src="${encodedImagePath}" alt="${moto.name || moto.nome}" onerror="this.src='images/placeholder.svg'">
+            </div>
             <div class="moto-info">
                 <div class="moto-header">
                     <h3 class="moto-title">${moto.name || moto.nome}</h3>
@@ -1782,8 +2397,10 @@ function renderMotos(motos) {
                     <span>${getModelYear(moto)}</span>
                     <span>${moto.color || moto.cor || ''}</span>
                     ${moto.placa ? `<span class="placa-badge">🏷️ ${moto.placa}</span>` : ''}
-                    ${moto.renavam ? `<span class="doc-badge">📋 RENAVAM: ${moto.renavam}</span>` : ''}
-                    ${moto.chassi ? `<span class="doc-badge">🔢 Chassi: ${moto.chassi}</span>` : ''}
+                    ${moto.renavam ? `<span class="doc-badge">RENAVAM: <span class="doc-value">${moto.renavam}</span> <button class="copy-doc-btn" data-copy="${moto.renavam}" data-type="renavam" title="Copiar RENAVAM">📋</button></span>` : ''}
+                    ${moto.chassi ? `<span class="doc-badge">Chassi: <span class="doc-value">${moto.chassi}</span> <button class="copy-doc-btn" data-copy="${moto.chassi}" data-type="chassi" title="Copiar Chassi">📋</button></span>` : ''}
+                    ${ (moto.price !== undefined && moto.price !== null) || (moto.preco !== undefined && moto.preco !== null) ? `<span class="price-badge">💲 ${((moto.price !== undefined && moto.price !== null) ? Number(moto.price) : Number(moto.preco)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>` : '' }
+                    ${ (moto.fipe !== undefined && moto.fipe !== null) || (moto.FIPE !== undefined && moto.FIPE !== null) ? `<span class="fipe-badge">📊 FIPE: ${((moto.fipe !== undefined && moto.fipe !== null) ? Number(moto.fipe) : Number(moto.FIPE)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>` : '' }
                 </div>
                 
                 <div class="moto-specs">
@@ -2055,6 +2672,39 @@ function showEditMotorcycleModal(id) {
         if (cilindradas) cilindradas.value = moto.displacement || moto.cilindradas || moto.engine_cc || moto.cc || '';
         if (categoria) categoria.value = moto.category || moto.categoria || '';
         if (combustivel) combustivel.value = moto.fuel || moto.combustivel || '';
+        // Preencher preço, se disponível
+        const priceField = document.getElementById('price');
+        if (priceField) {
+            const p = (moto.price !== undefined && moto.price !== null) ? moto.price : (moto.preco !== undefined ? moto.preco : null);
+            if (p !== null && p !== undefined && p !== '') {
+                try {
+                    // formatCurrency expects digits (cents), so provide cents string then format
+                    const cents = String(Math.round(Number(p) * 100));
+                    priceField.value = cents;
+                    formatCurrency(priceField);
+                } catch (err) {
+                    priceField.value = p;
+                }
+            } else {
+                priceField.value = '';
+            }
+        }
+        // Preencher FIPE, se disponível
+        const fipeField = document.getElementById('fipe');
+        if (fipeField) {
+            const f = (moto.fipe !== undefined && moto.fipe !== null) ? moto.fipe : (moto.FIPE !== undefined ? moto.FIPE : null);
+            if (f !== null && f !== undefined && f !== '') {
+                try {
+                    const centsF = String(Math.round(Number(f) * 100));
+                    fipeField.value = centsF;
+                    formatCurrency(fipeField);
+                } catch (err) {
+                    fipeField.value = f;
+                }
+            } else {
+                fipeField.value = '';
+            }
+        }
         
         // DEBUG: Verificar tipo da moto
         const tipoMoto = moto.type || moto.tipo || '';
@@ -2067,10 +2717,12 @@ function showEditMotorcycleModal(id) {
         if (status) status.value = moto.status || 'disponivel';
         if (descricao) descricao.value = moto.desc || moto.description || '';
         
-        // Checkbox de visibilidade no catálogo (padrão: true se undefined)
+        // Select de visibilidade no catálogo (padrão: true se undefined)
         const showInCatalog = document.getElementById('showInCatalog');
         if (showInCatalog) {
-            showInCatalog.checked = moto.showInCatalog !== false;
+            // Normalizar diferentes tipos (boolean ou string)
+            const flagFalse = moto.showInCatalog === false || (typeof moto.showInCatalog === 'string' && moto.showInCatalog.toLowerCase() === 'false');
+            showInCatalog.value = flagFalse ? 'false' : 'true';
         }
         
         // Preencher campos de imagem
@@ -2078,6 +2730,15 @@ function showEditMotorcycleModal(id) {
         if (imagem2 && moto.images && moto.images[1]) imagem2.value = moto.images[1];
         if (imagem3 && moto.images && moto.images[2]) imagem3.value = moto.images[2];
         if (imagem4 && moto.images && moto.images[3]) imagem4.value = moto.images[3];
+        // Preencher previews com imagens existentes (se houver)
+        try {
+            const existing = (moto.images && Array.isArray(moto.images) && moto.images.length > 0) ? moto.images.slice(0,4) : (moto.image ? [moto.image] : []);
+            // Salvar estado em memória (podem ser strings de caminho)
+            window._lastSelectedImageFiles = existing.slice();
+            window._lastSelectedImageDataURLs = existing.slice();
+            populateHiddenImageFields(existing);
+            showMultipleImagePreviews(existing);
+        } catch (e) { console.warn('⚠️ Falha ao preencher previews existentes:', e); }
         
         // Preencher campo de documento PDF
         if (documentoPDF) documentoPDF.value = moto.documentoPDF || '';
@@ -2123,6 +2784,61 @@ function closeModal() {
     modal.style.visibility = 'hidden';
     unlockBodyScrollAdmin();
     editingMoto = null;
+    window._selectedCRLVFile = null;
+}
+
+async function handleCrlvUploadAndImport(motoId, formEl, motoData, previousDocumentoPDF) {
+    if (!motoId) return;
+
+    let uploaded = false;
+    const selectedFile = window._selectedCRLVFile;
+    if (selectedFile) {
+        try {
+            const fd = new FormData();
+            fd.append('crlv', selectedFile);
+            const upResp = await fetch(`/api/motorcycles/${motoId}/crlv`, {
+                method: 'POST',
+                body: fd
+            });
+            if (!upResp.ok) {
+                console.warn('⚠️ Falha ao enviar CRLV:', await upResp.text());
+            } else {
+                const upJson = await upResp.json();
+                console.log('✅ CRLV enviado:', upJson);
+                uploaded = true;
+            }
+        } catch (err) {
+            console.warn('⚠️ Erro ao enviar CRLV:', err && err.message);
+        } finally {
+            window._selectedCRLVFile = null;
+        }
+    }
+
+    if (uploaded) return;
+
+    const inputValue = (
+        (formEl ? (formEl.querySelector('#documentoPDF')?.value || '') : '') ||
+        (motoData && motoData.documentoPDF ? motoData.documentoPDF : '')
+    ).trim();
+
+    if (!inputValue) return;
+    if (previousDocumentoPDF && inputValue === previousDocumentoPDF) return;
+
+    try {
+        const importResp = await fetch(`/api/motorcycles/${motoId}/import-file`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ path: inputValue, type: 'crlv' })
+        });
+        if (!importResp.ok) {
+            console.warn('⚠️ Falha ao importar CRLV via caminho:', await importResp.text());
+        } else {
+            const importJson = await importResp.json();
+            console.log('✅ Import CRLV result:', importJson);
+        }
+    } catch (err) {
+        console.warn('⚠️ Erro ao importar CRLV:', err && err.message);
+    }
 }
 
 // Handler para submissão do formulário de motocicleta
@@ -2133,11 +2849,21 @@ async function handleMotoSubmit(e) {
     const form = e.target;
     const formData = new FormData(form);
     
-    // Processar caminho da imagem
+    // Detectar arquivos selecionados pelo novo seletor (se houver)
+    let selectedFiles = [];
+    try {
+        const fileInput = document.getElementById('imageFiles');
+        if (fileInput && fileInput.files && fileInput.files.length > 0) {
+            selectedFiles = Array.from(fileInput.files);
+            console.log('🖼️ [DEBUG] Arquivos selecionados detectados:', selectedFiles.map(f=>f.name));
+        }
+    } catch (e) { selectedFiles = []; }
+
+    // Processar caminho da imagem (campos legacy/hidden usados como fallback)
     let imagePath = formData.get('imagem') || '';
-    console.log('🖼️ [DEBUG] Caminho original da imagem:', imagePath);
+    console.log('🖼️ [DEBUG] Caminho original da imagem (hidden):', imagePath);
     
-    // Processar imagens adicionais
+    // Processar imagens adicionais (hidden)
     const imagem2 = formData.get('imagem2') || '';
     const imagem3 = formData.get('imagem3') || '';
     const imagem4 = formData.get('imagem4') || '';
@@ -2179,8 +2905,24 @@ async function handleMotoSubmit(e) {
     const imagem4Path = processImagePath(imagem4);
     
     // Construir array de imagens (apenas caminhos não vazios)
-    const imagesArray = [imagePath, imagem2Path, imagem3Path, imagem4Path].filter(path => path && path !== 'images/');
-    console.log('📷 [DEBUG] Array de imagens:', imagesArray);
+    let imagesArray = [imagePath, imagem2Path, imagem3Path, imagem4Path].filter(path => path && path !== 'images/');
+    console.log('📷 [DEBUG] Array de imagens (fallback):', imagesArray);
+
+    // Se o usuário selecionou arquivos, tentar enviá-los ao servidor e usar os caminhos retornados
+    if (selectedFiles && selectedFiles.length > 0) {
+        try {
+            const uploadedPaths = await uploadImages(selectedFiles);
+            if (Array.isArray(uploadedPaths) && uploadedPaths.length > 0) {
+                imagesArray = uploadedPaths;
+                console.log('📤 [DEBUG] Imagens enviadas automaticamente, novos caminhos:', imagesArray);
+            } else {
+                console.warn('⚠️ uploadImages não retornou caminhos válidos; mantendo fallback.');
+            }
+        } catch (err) {
+            console.warn('❌ Falha ao enviar imagens automaticamente:', err);
+            showMessage('Não foi possível enviar imagens automaticamente. Verifique a conexão ou tente novamente.', 'warning');
+        }
+    }
     
     // DEBUG: Verificar valor do tipo no formulário
     const tipoValue = formData.get('tipo');
@@ -2222,7 +2964,7 @@ async function handleMotoSubmit(e) {
         fuel: formData.get('combustivel') || '',
         combustivel: formData.get('combustivel') || '',
         status: formData.get('status'),
-        showInCatalog: formData.get('showInCatalog') === 'on',
+        showInCatalog: formData.get('showInCatalog') === 'true',
         desc: formData.get('descricao'),
         description: formData.get('descricao'),
         image: imagesArray[0] || imagePath,
@@ -2231,10 +2973,38 @@ async function handleMotoSubmit(e) {
         documentoPDF: formData.get('documentoPDF') || '',
         id: editingMoto ? editingMoto.id : generateMotoId()
     };
+    // Preço (BRL) - opcional
+    try {
+        const rawPrice = formData.get('price') || '';
+        if (rawPrice && rawPrice.trim() !== '') {
+            // rawPrice formatted like "R$ 1.234,56"; extrair dígitos e converter para número
+            const digits = rawPrice.replace(/\D/g, ''); // apenas números (centavos)
+            const priceNumber = digits ? (parseFloat(digits) / 100) : 0;
+            motoData.price = priceNumber;
+            motoData.preco = priceNumber;
+            motoData.price_display = rawPrice;
+        }
+    } catch (err) {
+        console.warn('⚠️ Erro ao processar preço:', err);
+    }
+    // FIPE (BRL) - opcional
+    try {
+        const rawFipe = formData.get('fipe') || '';
+        if (rawFipe && rawFipe.trim() !== '') {
+            const digitsF = rawFipe.replace(/\D/g, '');
+            const fipeNumber = digitsF ? (parseFloat(digitsF) / 100) : 0;
+            motoData.fipe = fipeNumber;
+            motoData.FIPE = fipeNumber;
+            motoData.fipe_display = rawFipe;
+        }
+    } catch (err) {
+        console.warn('⚠️ Erro ao processar FIPE:', err);
+    }
     
     console.log('📤 [DEBUG] Dados que serão enviados:', JSON.stringify(motoData, null, 2));
     
     try {
+        const previousDocumentoPDF = editingMoto ? (editingMoto.documentoPDF || '') : '';
         if (editingMoto) {
             // Editar moto existente
             console.log('🔄 [DEBUG] Atualizando moto:', editingMoto.id);
@@ -2245,6 +3015,7 @@ async function handleMotoSubmit(e) {
             });
             
             if (response.ok) {
+                await handleCrlvUploadAndImport(editingMoto.id, form, motoData, previousDocumentoPDF);
                 showSuccess('Motocicleta atualizada com sucesso!');
                 closeModal();
                 loadMotos();
@@ -2261,6 +3032,7 @@ async function handleMotoSubmit(e) {
             
             if (response.ok) {
                 const newMoto = await response.json();
+                await handleCrlvUploadAndImport(newMoto.id, form, motoData, '');
                 showSuccess('Motocicleta adicionada com sucesso!');
                 closeModal();
                 
@@ -2298,6 +3070,7 @@ function openAddMotoModal() {
     try {
         console.log('➕ [DEBUG] openAddMotoModal chamado');
         editingMoto = null;
+        window._selectedCRLVFile = null;
         
         // Verificar se elementos existem
         const modalTitle = document.getElementById('modalTitle');
@@ -2463,6 +3236,7 @@ function closeMotoModal() {
     if (modal) modal.style.display = 'none';
     if (typeof window.unlockBodyScrollSafe === 'function') window.unlockBodyScrollSafe(); else document.body.style.overflow = 'auto';
     editingMoto = null;
+    window._selectedCRLVFile = null;
     clearImagePreview();
 }
 
@@ -2938,6 +3712,9 @@ async function showSoldMotorcycles() {
                 const saleDate = moto.saleDate ? new Date(moto.saleDate).toLocaleDateString('pt-BR') : 'N/A';
                 const buyerName = moto.buyerName || 'Não informado';
                 const saleNotes = moto.saleNotes || '';
+                const plateValue = moto.placa ? String(moto.placa).replace(/"/g, '&quot;') : '';
+                const renavamValue = moto.renavam ? String(moto.renavam).replace(/"/g, '&quot;') : '';
+                const chassiValue = moto.chassi ? String(moto.chassi).replace(/"/g, '&quot;') : '';
                 
                 html += `
                     <div data-marca="${moto.marca || ''}" class="sold-card-modern">
@@ -2951,7 +3728,9 @@ async function showSoldMotorcycles() {
                         <!-- Header -->
                         <div class="sold-card-header">
                             <h4>${moto.marca || ''} ${moto.modelo || moto.name || ''}</h4>
-                            <span class="sold-card-plate">${moto.placa || '---'}</span>
+                            ${moto.placa ? `
+                            <span class="sold-card-plate copy-doc-btn" role="button" tabindex="0" data-copy="${plateValue}" data-type="placa" title="Copiar Placa" onclick="copyDocValue(this.getAttribute('data-copy'), 'placa')">${moto.placa}</span>
+                            ` : '<span class="sold-card-plate">---</span>'}
                         </div>
                         
                         <!-- Specs -->
@@ -2985,13 +3764,13 @@ async function showSoldMotorcycles() {
                                 <span class="info-value">${buyerName}</span>
                             </div>
                             ${moto.renavam ? `
-                            <div class="sale-info-row">
+                            <div class="sale-info-row copy-doc-btn" role="button" tabindex="0" data-copy="${renavamValue}" data-type="renavam" title="Copiar RENAVAM" onclick="copyDocValue(this.getAttribute('data-copy'), 'renavam')">
                                 <span class="info-label">RENAVAM</span>
                                 <span class="info-value">${moto.renavam}</span>
                             </div>
                             ` : ''}
                             ${moto.chassi ? `
-                            <div class="sale-info-row">
+                            <div class="sale-info-row copy-doc-btn" role="button" tabindex="0" data-copy="${chassiValue}" data-type="chassi" title="Copiar Chassi" onclick="copyDocValue(this.getAttribute('data-copy'), 'chassi')">
                                 <span class="info-label">Chassi</span>
                                 <span class="info-value chassi-text">${moto.chassi}</span>
                             </div>
@@ -3047,6 +3826,7 @@ async function showSoldMotorcycles() {
         });
         
         content.innerHTML = html;
+        enhanceSoldCopySurfaces(modal);
         // Populate sold filters (brands and months) based on soldMotos data
         try {
             if (typeof populateSoldFilters === 'function') {
@@ -4414,11 +5194,17 @@ function removeImagePreview() {
     document.getElementById('uploadPlaceholder').style.display = 'flex';
     document.getElementById('imagePreview').style.display = 'none';
     document.getElementById('previewImg').src = '';
-    document.getElementById('imagemUpload').value = '';
+    try { document.getElementById('imagemUpload').value = ''; } catch(e) {}
 }
 
 function clearImagePreview() {
     removeImagePreview();
+    // Clear multi-image selector + previews if present
+    try {
+        const imgFiles = document.getElementById('imageFiles');
+        if (imgFiles) imgFiles.value = '';
+    } catch(e) {}
+    try { clearMultipleImagePreviews(); } catch(e) {}
 }
 
 // Setup do upload de imagem
@@ -4450,10 +5236,283 @@ function setupImageUpload() {
         
         const files = e.dataTransfer.files;
         if (files.length > 0) {
-            document.getElementById('imagemUpload').files = files;
-            previewImage(document.getElementById('imagemUpload'));
+            // Prefer new multi-file input if available
+            const multi = document.getElementById('imageFiles');
+            if (multi) {
+                try { multi.files = files; } catch(e) { /* readonly in some browsers */ }
+                try { handleImageFilesChange({ target: multi }); } catch(e) { /* ignore */ }
+            } else {
+                const single = document.getElementById('imagemUpload');
+                if (single) {
+                    try { single.files = files; } catch(e) {}
+                    previewImage(single);
+                }
+            }
         }
     });
+}
+
+// Upload helper: envia arquivos de imagem para o servidor e retorna array de caminhos públicos
+async function uploadImages(files) {
+    if (!files || files.length === 0) return [];
+    try {
+        const fd = new FormData();
+        files.forEach((f, i) => {
+            fd.append('images[]', f, f.name);
+        });
+
+        // Ajuste de endpoint conforme sua API; espera-se que retorne JSON: { paths: ['images/..', ...] } ou array direto
+        const resp = await fetch('/api/upload-images', {
+            method: 'POST',
+            body: fd
+        });
+
+        if (!resp.ok) {
+            const text = await resp.text().catch(()=>null);
+            throw new Error('Upload failed: ' + (text || resp.status));
+        }
+
+        const data = await resp.json();
+        // Suporte a duas formas de retorno: { paths: [...] } ou [...]
+        if (Array.isArray(data)) return data;
+        if (data && Array.isArray(data.paths)) return data.paths;
+        // Fallback: tentar extrair 'files' ou 'uploaded'
+        if (data && Array.isArray(data.uploaded)) return data.uploaded;
+        return [];
+    } catch (err) {
+        console.error('❌ [ERROR] uploadImages:', err);
+        throw err;
+    }
+}
+
+// --- Multi-image selector helpers (up to 4 files) ---
+function selectImageFiles() {
+    const inp = document.getElementById('imageFiles');
+    if (inp) inp.click();
+}
+
+function handleImageFilesChange(e) {
+    const input = e && e.target ? e.target : (document.getElementById('imageFiles') || null);
+    if (!input) return;
+    let files = input.files ? Array.from(input.files) : [];
+    if (files.length === 0) {
+        clearMultipleImagePreviews();
+        populateHiddenImageFields([]);
+        return;
+    }
+    if (files.length > 4) {
+        showMessage('Selecione no máximo 4 imagens', 'error');
+        files = files.slice(0,4);
+        // try to set limited files back to input
+        try {
+            const dt = new DataTransfer();
+            files.forEach(f => dt.items.add(f));
+            input.files = dt.files;
+        } catch (e) {}
+    }
+    // armazenar seleção atual em memória para manipulação (remoção individual)
+    window._lastSelectedImageFiles = files.slice();
+    populateHiddenImageFields(files);
+    showMultipleImagePreviews(files);
+    // Gerar DataURLs para previews imediatos e atualizar card/modal se estiver editando
+    try {
+        const readFileAsDataURL = (file) => new Promise((resolve, reject) => {
+            const r = new FileReader();
+            r.onload = () => resolve(r.result);
+            r.onerror = () => reject(new Error('Erro ao ler arquivo'));
+            r.readAsDataURL(file);
+        });
+
+        Promise.all(files.map(f => readFileAsDataURL(f))).then(dataUrls => {
+            // Armazenar em memória para uso local
+            window._lastSelectedImageDataURLs = dataUrls;
+            // garantir que _lastSelectedImageFiles exista (sincronizar)
+            if (!window._lastSelectedImageFiles) window._lastSelectedImageFiles = files.slice();
+
+            // Se estivermos editando uma moto existente, atualizar preview imediatamente
+            try {
+                if (typeof editingMoto === 'object' && editingMoto) {
+                    editingMoto.image = dataUrls[0] || editingMoto.image;
+                    editingMoto.images = dataUrls.slice();
+                    // Atualizar lista atual e re-renderizar grid
+                    const idx = currentMotos.findIndex(m => m.id === editingMoto.id);
+                    if (idx >= 0) currentMotos[idx] = editingMoto;
+                    const allIdx = allMotos.findIndex(m => m.id === editingMoto.id);
+                    if (allIdx >= 0) allMotos[allIdx] = editingMoto;
+                    renderMotos(currentMotos);
+                }
+            } catch (e) { console.warn('⚠️ Falha ao aplicar previews locais em editingMoto', e); }
+
+            // Se a modal de visualização estiver aberta para esta moto, atualizar também
+            try {
+                if (currentViewMoto && editingMoto && currentViewMoto.id === editingMoto.id) {
+                    currentViewMoto.images = dataUrls.slice();
+                    currentViewMoto.image = dataUrls[0] || currentViewMoto.image;
+                    // Atualizar view modal image
+                    const viewImg = document.getElementById('viewModalImage');
+                    if (viewImg) viewImg.src = currentViewMoto.images[0] || currentViewMoto.image || viewImg.src;
+                    const counter = document.getElementById('viewCounter');
+                    if (counter) counter.textContent = `1 / ${currentViewMoto.images.length}`;
+                }
+            } catch (e) { /* silent */ }
+        }).catch(err => console.warn('⚠️ Erro ao gerar DataURLs das imagens:', err));
+    } catch (e) { console.warn('⚠️ Erro ao processar previews de imagens:', e); }
+}
+
+function populateHiddenImageFields(files) {
+    const ids = ['imagem','imagem2','imagem3','imagem4'];
+    for (let i=0;i<4;i++) {
+        const el = document.getElementById(ids[i]);
+        if (!el) continue;
+        const f = files[i];
+        if (!f) {
+            el.value = '';
+            continue;
+        }
+        // Se for File, usar images/<name> (compatibilidade)
+        if (typeof File !== 'undefined' && f instanceof File) {
+            el.value = 'images/' + f.name;
+        } else if (typeof f === 'string') {
+            // já é um caminho ou dataURL
+            el.value = f;
+        } else {
+            el.value = '';
+        }
+    }
+}
+
+function showMultipleImagePreviews(files) {
+    const grid = document.getElementById('imagePreviewGrid');
+    if (!grid) return;
+    grid.innerHTML = '';
+    files.forEach((file, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.style.position = 'relative';
+        wrapper.style.width = '90px';
+        wrapper.style.height = '90px';
+        wrapper.style.border = '1px solid #ddd';
+        wrapper.style.borderRadius = '8px';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.display = 'flex';
+        wrapper.style.alignItems = 'center';
+        wrapper.style.justifyContent = 'center';
+        wrapper.style.background = '#f7f7f7';
+
+        const img = document.createElement('img');
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'cover';
+
+        // Suporta File, dataURL ou caminho (images/...)
+        if (typeof File !== 'undefined' && file instanceof File) {
+            const reader = new FileReader();
+            reader.onload = function(ev) { img.src = ev.target.result; };
+            reader.readAsDataURL(file);
+        } else if (typeof file === 'string') {
+            if (file.startsWith('data:')) {
+                img.src = file;
+            } else {
+                try {
+                    img.src = (file || '').split('/').map(part => encodeURIComponent(part)).join('/');
+                } catch (e) { img.src = file; }
+            }
+        } else {
+            // item inválido
+            return;
+        }
+
+        // botão de remoção (pequeno X no canto)
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.innerText = '×';
+        removeBtn.title = 'Remover imagem';
+        removeBtn.style.position = 'absolute';
+        removeBtn.style.top = '6px';
+        removeBtn.style.right = '6px';
+        removeBtn.style.width = '22px';
+        removeBtn.style.height = '22px';
+        removeBtn.style.borderRadius = '50%';
+        removeBtn.style.border = 'none';
+        removeBtn.style.background = 'rgba(0,0,0,0.6)';
+        removeBtn.style.color = '#fff';
+        removeBtn.style.cursor = 'pointer';
+        removeBtn.style.display = 'flex';
+        removeBtn.style.alignItems = 'center';
+        removeBtn.style.justifyContent = 'center';
+        removeBtn.style.fontSize = '14px';
+        removeBtn.style.lineHeight = '1';
+
+        removeBtn.addEventListener('click', (ev) => {
+            ev.preventDefault();
+            // Atualizar array global
+            const arr = (window._lastSelectedImageFiles && Array.isArray(window._lastSelectedImageFiles)) ? window._lastSelectedImageFiles.slice() : Array.from(files);
+            if (idx < 0 || idx >= arr.length) return;
+            arr.splice(idx, 1);
+            window._lastSelectedImageFiles = arr;
+
+            // Atualizar input.files via DataTransfer
+            const input = document.getElementById('imageFiles');
+            if (input) {
+                try {
+                    // Somente adicionar objetos File ao DataTransfer
+                    const dt = new DataTransfer();
+                    arr.forEach(f => { if (typeof File !== 'undefined' && f instanceof File) dt.items.add(f); });
+                    input.files = dt.files;
+                } catch (e) { /* alguns navegadores proíbem setar files; ignore */ }
+            }
+
+            // Atualizar campos hidden e previews
+            populateHiddenImageFields(arr);
+            // sincronizar dataURLs
+            if (window._lastSelectedImageDataURLs && Array.isArray(window._lastSelectedImageDataURLs)) {
+                window._lastSelectedImageDataURLs.splice(idx, 1);
+            }
+            // re-renderizar previews com novo array
+            showMultipleImagePreviews(arr);
+
+            // Atualizar estados de edição/visualização se aplicável
+            try {
+                if (typeof editingMoto === 'object' && editingMoto) {
+                    editingMoto.images = (editingMoto.images || []).slice();
+                    editingMoto.images.splice(idx, 1);
+                    editingMoto.image = editingMoto.images[0] || editingMoto.image;
+                    const i = currentMotos.findIndex(m => m.id === editingMoto.id);
+                    if (i >= 0) currentMotos[i] = editingMoto;
+                    const j = allMotos.findIndex(m => m.id === editingMoto.id);
+                    if (j >= 0) allMotos[j] = editingMoto;
+                    renderMotos(currentMotos);
+                }
+                if (currentViewMoto && editingMoto && currentViewMoto.id === editingMoto.id) {
+                    currentViewMoto.images = editingMoto.images.slice();
+                    currentViewMoto.image = editingMoto.image || currentViewMoto.image;
+                    const viewImg = document.getElementById('viewModalImage');
+                    if (viewImg) viewImg.src = currentViewMoto.images[0] || currentViewMoto.image || viewImg.src;
+                    const counter = document.getElementById('viewCounter');
+                    if (counter) counter.textContent = `1 / ${currentViewMoto.images.length}`;
+                }
+            } catch (e) { /* ignore errors here */ }
+        });
+
+        wrapper.appendChild(img);
+        wrapper.appendChild(removeBtn);
+        grid.appendChild(wrapper);
+    });
+}
+
+function clearMultipleImagePreviews() {
+    const grid = document.getElementById('imagePreviewGrid');
+    if (grid) grid.innerHTML = '';
+    // limpar seleção em memória e input
+    window._lastSelectedImageFiles = [];
+    window._lastSelectedImageDataURLs = [];
+    const input = document.getElementById('imageFiles');
+    if (input) {
+        try {
+            const dt = new DataTransfer();
+            input.files = dt.files;
+        } catch (e) {}
+    }
+    populateHiddenImageFields([]);
 }
 
 // Filtros e busca
@@ -5414,7 +6473,9 @@ function viewMotoDetails(id) {
                 </div>
             </div>
             <div class="view-details">
-                <h2>${moto.name}</h2>
+                <h2 style="display:flex; gap:12px; align-items:baseline; justify-content:space-between">${moto.name}
+                    ${ (moto.price !== undefined && moto.price !== null) || (moto.preco !== undefined && moto.preco !== null) ? `<span style="font-size:1rem;color:#ff6600;font-weight:700">R$ ${((moto.price !== undefined && moto.price !== null) ? Number(moto.price) : Number(moto.preco)).toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2})}</span>` : '' }
+                </h2>
                 <div class="details-grid">
                     <div><strong>Categoria:</strong> ${moto.category || 'Não informado'}</div>
                     <div><strong>Tipo:</strong> ${getCategoryName(moto.type || moto.tipo) || 'Não informado'}</div>
@@ -5427,6 +6488,8 @@ function viewMotoDetails(id) {
                     ${moto.placa ? `<div><strong>🏷️ Placa:</strong> ${moto.placa}</div>` : ''}
                     ${moto.renavam ? `<div><strong>📋 RENAVAM:</strong> ${moto.renavam}</div>` : ''}
                     ${moto.chassi ? `<div><strong>🔢 Chassi:</strong> ${moto.chassi}</div>` : ''}
+                    ${ (moto.price !== undefined && moto.price !== null) || (moto.preco !== undefined && moto.preco !== null) ? `<div><strong>Preço:</strong> R$ ${((moto.price !== undefined && moto.price !== null) ? Number(moto.price) : Number(moto.preco)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>` : '' }
+                    ${ (moto.fipe !== undefined && moto.fipe !== null) || (moto.FIPE !== undefined && moto.FIPE !== null) ? `<div><strong>FIPE:</strong> R$ ${((moto.fipe !== undefined && moto.fipe !== null) ? Number(moto.fipe) : Number(moto.FIPE)).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2})}</div>` : '' }
                 </div>
                 ${moto.description || moto.desc || moto.descricao ? `<div style="margin-top: 1rem;"><strong>Descrição:</strong><br>${moto.description || moto.desc || moto.descricao}</div>` : ''}
                 ${botoesDocs}
@@ -5536,22 +6599,37 @@ function abrirCRLV(caminhoCompleto, motoId) {
     // Caminho relativo já está OK
     else {
         let pdfPath = caminhoCompleto;
-        
-        // Se tiver "DOCS Motos", converter para URL
-            if (pdfPath.includes('DOCS Motos')) {
-            pdfPath = pdfPath.replace(/\\/g, '/');
-            pdfUrl = `${serverBase}/${encodeURI(pdfPath)}`;
-        } else {
-                // Se o usuário selecionou via file input, o helper formata como "documents/{filename}".
-                // Nesse caso extraímos somente o nome do arquivo e apontamos para a pasta correta no servidor.
-                if (pdfPath.startsWith('documents/') || pdfPath.startsWith('./documents/')) {
-                    const fileName = pdfPath.split('/').pop();
-                    pdfUrl = `${serverBase}/docs/${encodeURIComponent(fileName)}`;
-                } else {
-                    pdfUrl = `${serverBase}/docs/${encodeURIComponent(pdfPath)}`;
-                }
+
+        // remover barras iniciais
+        pdfPath = pdfPath.replace(/^\/+/, '').replace(/^\/+/, '');
+        // normalizar barras
+        pdfPath = pdfPath.replace(/\\/g, '/');
+
+        // Se já for uma URL absoluta, usa como está
+        if (/^https?:\/\//i.test(pdfPath)) {
+            pdfUrl = pdfPath;
         }
-        
+        // Se já aponta para docs/ (público), não prefixar novamente
+        else if (/^docs\//i.test(pdfPath)) {
+            pdfUrl = `${serverBase}/${encodeURI(pdfPath)}`;
+        }
+        // Se tiver "DOCS Motos" no caminho vindo do Windows, mapear para público
+        else if (pdfPath.includes('DOCS Motos')) {
+            // remover possível prefixo até a pasta
+            const rel = pdfPath.replace(/^.*DOCS Motos[\/]?/i, '');
+            const cleaned = rel.replace(/^\/+/, '');
+            pdfUrl = `${serverBase}/docs/${encodeURI(cleaned)}`;
+        }
+        // Se o usuário selecionou via file input, helper formata como "documents/{filename}" - extrair nome
+        else if (pdfPath.startsWith('documents/') || pdfPath.startsWith('./documents/')) {
+            const fileName = pdfPath.split('/').pop();
+            pdfUrl = `${serverBase}/docs/${encodeURI(fileName)}`;
+        }
+        // Caso genérico: apontar para /docs/<pdfPath>
+        else {
+            pdfUrl = `${serverBase}/docs/${encodeURI(pdfPath)}`;
+        }
+
         console.log('📄 [CRLV] URL gerada (relativo):', pdfUrl);
     }
     
@@ -5591,6 +6669,9 @@ function _handleFileSelection(fileInputId, targetFieldId) {
     input.onchange = function () {
         const file = input.files && input.files[0];
         if (!file) return;
+        if (targetFieldId && /(documento|crlv)/i.test(targetFieldId)) {
+            window._selectedCRLVFile = file;
+        }
         const formatted = _formatSelectedFilePath(file, targetFieldId);
         const target = document.getElementById(targetFieldId);
         if (target) target.value = formatted;

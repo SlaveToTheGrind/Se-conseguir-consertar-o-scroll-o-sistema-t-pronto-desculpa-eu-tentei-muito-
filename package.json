@@ -9,7 +9,7 @@
     "admin": "node server-admin.js",
     "dev": "echo Inicie 2 terminais: 'npm run client' e 'npm run admin'",
     "test-api": "node scripts/test_api.js",
-    "convert-docx": "node scripts/docx_to_json.js"
+    "convert-docx": "node scripts/convert-docx.js"
   },
   "dependencies": {
     "axios": "^1.13.2",

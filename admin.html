@@ -37,6 +37,33 @@
         }
     </style>
     <style>
+        /* Custom orange scrollbar for WebKit browsers */
+        html, body {
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: #ff6600 rgba(0,0,0,0.08);
+        }
+        ::-webkit-scrollbar {
+            width: 12px;
+            height: 12px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.04);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #ff8533, #ff6600);
+            border-radius: 10px;
+            border: 3px solid rgba(255,255,255,0.0);
+            background-clip: padding-box;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            filter: brightness(0.95);
+        }
+        /* Thicker scrollbar for large screens where desired */
+        @media (min-width: 1024px) {
+            ::-webkit-scrollbar { width: 14px; }
+        }
+    </style>
+    <style>
         /* Overrides to ensure filters and custom-selects receive pointer events and sit above overlays */
         .admin-filters, .filter-controls-wrapper, .filter-pill-group, .filter-pill-button {
             pointer-events: auto !important;
@@ -55,8 +82,8 @@
         /* Visuals for fixed filters inside Sales modal */
         .sold-filters-fixed {
             background: rgba(15,15,18,0.95) !important;
-            backdrop-filter: blur(6px) !important;
             -webkit-backdrop-filter: blur(6px) !important;
+            backdrop-filter: blur(6px) !important;
             border-radius: 10px !important;
             padding: 12px 14px !important;
         }
@@ -587,6 +614,35 @@
             font-size: 0.82rem !important;
         }
 
+        /* Badges de documento: manter em linha e compactos */
+        .doc-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.35rem !important;
+            white-space: nowrap !important;
+            padding: 0.18rem 0.45rem !important;
+            font-size: 0.82rem !important;
+        }
+        .doc-badge .doc-value { margin: 0 !important; font-weight: 600 !important; }
+
+        /* Botão de cópia compacto, sem aumentar a altura do badge */
+        .copy-doc-btn {
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 20px !important;
+            height: 20px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 0.9rem !important;
+            line-height: 1 !important;
+            color: #117a37 !important;
+        }
+        .copy-doc-btn:active { transform: translateY(1px); }
+
         /* Layout fix: usar flex-column para evitar saltos ao carregar imagens
            e manter os botões alinhados ao rodapé do card. */
         #adminGrid .moto-card,
@@ -914,6 +970,9 @@
                         }
                     }
                     </style>
+                <button class="btn-secondary" id="settingsButton" title="Configurações" onclick="openStatusEditor()" style="margin-right:8px;">
+                    ⚙️ Configurações
+                </button>
                 <button class="btn-secondary" onclick="goToClient()">
                     🌐 Visualizar como Cliente
                 </button>
@@ -943,6 +1002,10 @@
                 <button class="btn-secondary desktop-only" id="backupsButtonMenuDesktop" title="Gerenciar backups automáticos">
                     💾 Backups
                 </button>
+                <button class="btn-secondary desktop-only btn-admin-users" title="Gerenciar Administradores" onclick="showAdminUsersModal()" style="margin-left:6px;">
+                    👥 Administradores
+                </button>
+                <!-- settingsButton moved to header right side (near Visualizar/Sair) -->
                 <button class="btn-success" onclick="showSoldMotorcycles()" style="transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); cursor: pointer;" onmouseover="this.style.transform='translateY(-4px) scale(1.05)'; this.style.boxShadow='0 8px 25px rgba(0, 255, 136, 0.5)';" onmouseout="this.style.transform='translateY(0) scale(1)'; this.style.boxShadow='';">
                     💰 Ver Vendidas
                 </button>
@@ -1006,12 +1069,58 @@
                     <div class="status-info">
                         <span class="status-label">API</span>
                         <span class="status-value" id="admin-api-status">Verificando...</span>
+                        <div id="admin-status-extra" style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+                            <div id="admin-status-message" style="color:#444;font-weight:600">—</div>
+                            <div id="admin-maintenance-indicator" style="display:none;margin-left:8px;padding:4px 8px;border-radius:6px;background:#e74c3c;color:white;font-weight:700;font-size:12px;">MANUTENÇÃO</div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Seção de Agendamentos -->
+        <!-- Modal de edição rápida das Configurações do Sistema -->
+        <div id="systemConfigModal" class="modal" style="display:none;">
+            <div class="modal-content" style="max-width:640px;padding:18px;">
+            <h3>Configurações do Sistema</h3>
+                <p>Mensagem manual (sobrepõe o health). Use com cuidado.</p>
+                <textarea id="systemStatusText" style="width:100%;height:120px;margin-bottom:8px;padding:8px;"></textarea>
+                <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+                    <select id="systemStatusLevel" style="padding:6px;">
+                        <option value="info">Info</option>
+                        <option value="warning">Atenção</option>
+                        <option value="error">Crítico</option>
+                    </select>
+                    <button class="btn-secondary" id="clearStatusBtn">Limpar</button>
+                    <button class="btn-primary" id="saveStatusBtn">Salvar Mensagem</button>
+                </div>
+
+                <hr />
+                <h4>Manutenção</h4>
+                <div style="display:flex;gap:12px;align-items:center;margin-bottom:12px;">
+                    <label style="display:flex;align-items:center;gap:8px;">
+                        <input type="checkbox" id="systemMaintenanceCheckbox"> <span>Ativar Modo Manutenção (bloqueia operações de escrita para não-admins)</span>
+                    </label>
+                    <button class="btn-primary" id="saveConfigBtn">Aplicar</button>
+                    <button class="btn-secondary" id="testBlockBtn" title="Testar bloqueio">Testar Bloqueio</button>
+                </div>
+
+                <div id="testBlockResults" style="margin-top:8px;display:none;padding:10px;border-radius:8px;background:#f7f7f7;border:1px solid #eee;font-size:0.95rem;color:#222;">
+                    <!-- Results from Testar Bloqueio will appear here -->
+                </div>
+                <div style="margin-top:8px;display:flex;gap:8px;align-items:center;">
+                    <button class="btn-secondary" id="openAuditBtn">Abrir Auditoria</button>
+                    <button class="btn" id="clearAuditResultsBtn" style="display:none;">Limpar Auditoria</button>
+                </div>
+                <div id="auditResults" style="display:none;margin-top:8px;padding:10px;border-radius:8px;background:#fff;border:1px solid #eee;max-height:320px;overflow:auto;font-size:0.9rem;color:#111;">
+                    <!-- Audit log entries will render here -->
+                </div>
+
+                <div style="display:flex;gap:8px;justify-content:flex-end;">
+                    <button class="btn" id="closeStatusModalBtn">Fechar</button>
+                </div>
+            </div>
+        </div>
         <div class="appointments-section">
             <div class="section-header">
                 <h3>📅 Agendamentos de Clientes</h3>
@@ -1092,7 +1201,8 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="ano">Ano/Modelo:</label>
-                        <input type="text" id="ano" name="ano" maxlength="9" placeholder="YYYY/YYYY" inputmode="numeric" required
+                           <input type="text" id="ano" name="ano" maxlength="9" placeholder="YYYY/YYYY" inputmode="numeric" required
+                               autocomplete="off" autocorrect="off" spellcheck="false" autocapitalize="off"
                                oninput="this.value = this.value.replace(/[^0-9/]/g,'').replace(/^(\d{4})(\d)/,'$1/$2').slice(0,9)">
                         <small class="form-hint">Digite como 2015/2016 — a barra é inserida automaticamente.</small>
                     </div>
@@ -1111,6 +1221,19 @@
                     <div class="form-group">
                         <label for="quilometragem">Quilometragem:</label>
                         <input type="number" id="quilometragem" name="quilometragem" min="0">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="price">Preço (R$):</label>
+                        <input type="text" id="price" name="price" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+                        <small class="form-hint">Informe o preço de venda (somente no admin).</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="fipe">FIPE (R$):</label>
+                        <input type="text" id="fipe" name="fipe" placeholder="R$ 0,00" oninput="formatCurrency(this)">
+                        <small class="form-hint">Valor da tabela FIPE (opcional).</small>
                     </div>
                 </div>
                 
@@ -1166,9 +1289,12 @@
                     </select>
                 </div>
                 
-                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-                    <input type="checkbox" id="showInCatalog" name="showInCatalog" checked style="width: auto; margin: 0;">
-                    <label for="showInCatalog" style="margin: 0; cursor: pointer;">📱 Exibir no Catálogo de Clientes</label>
+                <div class="form-group">
+                    <label for="showInCatalog">📱 Exibir no Catálogo de Clientes:</label>
+                    <select id="showInCatalog" name="showInCatalog" required>
+                        <option value="true">Exibir</option>
+                        <option value="false">Não exibir</option>
+                    </select>
                 </div>
                 
                 <div class="form-group">
@@ -1177,26 +1303,19 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="imagem">Caminho da Imagem Principal:</label>
-                    <input type="text" id="imagem" name="imagem" placeholder="Cole o caminho completo ou relativo">
-                    <small class="form-hint">
-                        💡 Dica: Cole o caminho completo (ex: C:\Users\...\Fotos motos\Bandit\foto.jpg) ou apenas o caminho relativo (ex: images/Bandit/foto.jpg)
-                    </small>
-                </div>
-                
-                <div class="form-group">
-                    <label for="imagem2">Imagem Adicional 2 (Opcional):</label>
-                    <input type="text" id="imagem2" name="imagem2" placeholder="Cole o caminho da segunda imagem">
-                </div>
-                
-                <div class="form-group">
-                    <label for="imagem3">Imagem Adicional 3 (Opcional):</label>
-                    <input type="text" id="imagem3" name="imagem3" placeholder="Cole o caminho da terceira imagem">
-                </div>
-                
-                <div class="form-group">
-                    <label for="imagem4">Imagem Adicional 4 (Opcional):</label>
-                    <input type="text" id="imagem4" name="imagem4" placeholder="Cole o caminho da quarta imagem">
+                    <label>Imagens (até 4):</label>
+                    <div style="display:flex; gap:8px; align-items:center;">
+                        <button type="button" class="btn-secondary" onclick="selectImageFiles()">Selecionar imagens</button>
+                        <small class="form-hint">Escolha até 4 imagens; os campos serão preenchidos automaticamente.</small>
+                    </div>
+                    <input type="file" id="imageFiles" accept="image/*" multiple style="display:none" onchange="handleImageFilesChange(event)">
+                    <div id="imagePreviewGrid" style="display:flex; gap:8px; margin-top:10px; flex-wrap:wrap;"></div>
+
+                    <!-- Campos escondidos mantidos para compatibilidade com processamento atual -->
+                    <input type="hidden" id="imagem" name="imagem">
+                    <input type="hidden" id="imagem2" name="imagem2">
+                    <input type="hidden" id="imagem3" name="imagem3">
+                    <input type="hidden" id="imagem4" name="imagem4">
                 </div>
                 
                 <div class="form-group">
@@ -1636,7 +1755,7 @@
 
     <!-- 🎯 Toast Notifications - FORÇA RELOAD -->
     <script src="toast-notifications.js?v=20260116toast8"></script>
-    <script src="admin.js?v=20260116toast8"></script>
+    <script src="admin.js?v=20260211_salescopy"></script>
     <script src="contract-functions-macdavis.js?v=20260116toast8"></script>
     <script src="admin-users.js?v=20260116toast8"></script>
     <script src="scroll-emergency-fix.js"></script>

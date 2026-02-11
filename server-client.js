@@ -168,12 +168,21 @@ app.get('/api/motorcycles', (req, res) => {
     console.log('📡 [CLIENTE] GET /api/motorcycles');
     const motorcycles = readMotorcycles();
     // Filtrar apenas motocicletas disponíveis (status !== 'vendido')
+    // E ocultar explicitamente motos com showInCatalog == false (aceita boolean false ou string 'false')
     const availableMotorcycles = motorcycles.filter(moto => {
-      return moto.status !== 'vendido';
+      if (moto.status === 'vendido') return false;
+      if (moto.showInCatalog === false) return false;
+      if (typeof moto.showInCatalog === 'string' && moto.showInCatalog.toLowerCase() === 'false') return false;
+      return true;
     });
+
+    const hiddenByStatus = motorcycles.filter(m => m.status === 'vendido').length;
+    const hiddenByFlag = motorcycles.filter(m => m.showInCatalog === false || (typeof m.showInCatalog === 'string' && m.showInCatalog.toLowerCase() === 'false')).length;
+
     console.log('✅ Total de motos:', motorcycles.length);
-    console.log('✅ Motos disponíveis:', availableMotorcycles.length);
-    console.log('🚫 Motos vendidas (ocultas):', motorcycles.length - availableMotorcycles.length);
+    console.log('✅ Motos disponíveis (após filtros):', availableMotorcycles.length);
+    console.log('🚫 Motos vendidas (ocultas):', hiddenByStatus);
+    console.log('🚫 Motos ocultas por showInCatalog:false:', hiddenByFlag);
     res.json(availableMotorcycles);
   } catch (e) {
     console.error('❌ Erro na API motorcycles:', e.message);

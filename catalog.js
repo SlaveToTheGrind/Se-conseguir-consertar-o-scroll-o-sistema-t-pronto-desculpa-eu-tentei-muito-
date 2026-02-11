@@ -428,13 +428,9 @@ function renderCatalog() {
                 </div>
                 
                 <div class="moto-info">
-                    <h3 class="moto-title">${moto.marca ? moto.marca + ' ' : ''}${moto.name || moto.nome || 'Sem nome'}</h3>
+                    <h3 class="moto-title">${moto.name || moto.nome || moto.model || moto.modelo || 'Sem nome'}</h3>
                     
                     <div class="moto-details">
-                        <div class="detail-row">
-                            <span class="detail-label">Ano:</span>
-                            <span class="detail-value">${getModelYear(moto) || 'N/A'}</span>
-                        </div>
                         <div class="detail-row">
                             <span class="detail-label">Cor:</span>
                             <span class="detail-value">${moto.color || moto.cor || 'N/A'}</span>
@@ -640,7 +636,20 @@ function openMotoModal(motoId) {
     // Preencher informações do modal
     document.getElementById('modalBrand').textContent = moto.brand || moto.marca || 'N/A';
     document.getElementById('modalModel').textContent = moto.model || moto.modelo || 'N/A';
-    document.getElementById('modalYear').textContent = moto.year || moto.ano || 'N/A';
+    // Formatar ano: se vier no formato YYYY/YYYY exibir apenas a parte direita
+    (function(){
+        const rawAno = moto.ano || moto.year || '';
+        let anoDisplay = 'N/A';
+        try {
+            if (rawAno && typeof rawAno === 'string' && rawAno.includes('/')) {
+                const parts = rawAno.split('/').map(s => s.trim());
+                anoDisplay = parts[1] && parts[1].length ? parts[1] : rawAno;
+            } else if (rawAno) {
+                anoDisplay = rawAno;
+            }
+        } catch(e) { anoDisplay = rawAno || 'N/A'; }
+        document.getElementById('modalYear').textContent = anoDisplay;
+    })();
     document.getElementById('modalPlate').textContent = moto.plate || moto.placa || 'N/A';
     document.getElementById('modalChassi').textContent = moto.chassi || moto.chassis || 'N/A';
     document.getElementById('modalRenavam').textContent = moto.renavam || 'N/A';

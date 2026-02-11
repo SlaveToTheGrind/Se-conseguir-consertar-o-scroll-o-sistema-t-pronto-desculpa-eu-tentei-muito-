@@ -19,7 +19,7 @@ class ContractGenerator {
         }
     }
 
-    async generateContract(data) {
+    async generateContract(data, destFolder) {
         return new Promise((resolve, reject) => {
             try {
                 this.validateData(data);
@@ -34,7 +34,9 @@ class ContractGenerator {
                 let fileName = `Contrato_${safeMarca}_${safeModelo}_${safeAno}_${safeBuyer}_${timestamp}.pdf`;
                 // Extra sanitization: remove any remaining illegal filename chars
                 fileName = String(fileName).replace(/[<>:"|?*]/g, '').replace(/[\/\\]+/g, '-').trim();
-                const filePath = path.join(this.contractsPath, fileName);
+                // If destFolder provided, use it; otherwise use default contractsPath
+                const targetRoot = destFolder ? String(destFolder) : this.contractsPath;
+                const filePath = path.join(targetRoot, fileName);
 
                 // Garantir que a pasta destino exista (prevenir ENOENT se houver subpastas acidentais)
                 const outDir = path.dirname(filePath);

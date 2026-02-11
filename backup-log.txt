@@ -1,0 +1,23 @@
+No C:\Users\W10\Documents\TCC - teste\backup-rapido.ps1:46 caractere:37
++             $parts = $cmd -split ' '\n+            $exe = $parts[0]
++                                     ~~~
+Token '\n+' inesperado na expressão ou instrução.
+No C:\Users\W10\Documents\TCC - teste\backup-rapido.ps1:161 caractere:1
++ }
++ ~
+Token '}' inesperado na expressão ou instrução.
+No C:\Users\W10\Documents\TCC - teste\backup-rapido.ps1:170 caractere:36
++         Write-Host "   âo" $destino" -ForegroundColor Green
++                                    ~~~~~~~~~~~~~~~~~~~~~~~~
+A cadeia de caracteres não tem o terminador: ".
+No C:\Users\W10\Documents\TCC - teste\backup-rapido.ps1:169 caractere:29
++     if (Test-Path $destino) {
++                             ~
+'}' de fechamento ausente no bloco de instrução ou na definição de tipo.
+No C:\Users\W10\Documents\TCC - teste\backup-rapido.ps1:168 caractere:33
++ foreach ($destino in $Destinos) {
++                                 ~
+'}' de fechamento ausente no bloco de instrução ou na definição de tipo.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnexpectedToken
+ 

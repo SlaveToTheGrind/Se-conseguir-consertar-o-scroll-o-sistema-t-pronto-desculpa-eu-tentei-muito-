@@ -345,16 +345,30 @@ function verMoto(id) {
                     .replace(/^[\\\/]+/, '') // Remove barras iniciais
                     .replace(/\\/g, '/');     // Converte barras invertidas
                 pdfPath = `docs/${relativePath}`;
-            } 
+            }
             // Se for caminho completo mas sem "DOCS Motos", extrair nome do arquivo
             else if (pdfPath.includes('\\') || pdfPath.includes('/')) {
                 const fileName = pdfPath.split('\\').pop().split('/').pop();
                 pdfPath = `docs/${fileName}`;
-            } 
+            }
             // Se não tiver prefixo docs/, adicionar
             else if (!pdfPath.startsWith('docs/')) {
                 pdfPath = `docs/${pdfPath}`;
             }
+
+            // Sanitizar e normalizar o caminho: decodifica percent-encodings,
+            // remove barras iniciais, converte \\ para /, colapsa barras duplicadas
+            // e evita o prefixo duplicado `docs/docs/`.
+            try {
+                pdfPath = decodeURIComponent(String(pdfPath));
+            } catch (e) {
+                pdfPath = String(pdfPath);
+            }
+            pdfPath = pdfPath.replace(/^[\\\/]+/, '');
+            pdfPath = pdfPath.replace(/\\/g, '/');
+            pdfPath = pdfPath.replace(/\/+/g, '/');
+            pdfPath = pdfPath.replace(/^docs\/docs\//i, 'docs/');
+            if (!pdfPath.startsWith('docs/')) pdfPath = `docs/${pdfPath}`;
             
             botaoPDF = `<button onclick="window.open('${pdfPath}', '_blank')" class="btn-pdf" style="background: #e74c3c; color: white; padding: 10px 20px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; margin-top: 15px; display: inline-flex; align-items: center; gap: 8px;">
                 📄 Ver CRLV (PDF)
@@ -547,11 +561,12 @@ async function salvarMoto(evento) {
             },
             body: JSON.stringify(dados)
         });
-        
+
         if (!response.ok) {
             const erro = await response.json();
             throw new Error(erro.message || 'Falha ao salvar');
         }
+        const savedMoto = await response.json();
         
         // Garantir que o loading fique visível por pelo menos 500ms
         const loadingTime = Date.now() - loadingStart;
@@ -559,6 +574,54 @@ async function salvarMoto(evento) {
             await new Promise(resolve => setTimeout(resolve, 500 - loadingTime));
         }
         
+        // Se houver um arquivo CRLV no formulário, enviá-lo separadamente para o endpoint de upload
+        try {
+            const formEl = evento.target;
+            const fileInput = formEl.querySelector('input[type="file"][name="crlv"]') || document.getElementById('crlvInput');
+            if (fileInput && fileInput.files && fileInput.files.length > 0) {
+                showAdminLoading('Enviando CRLV...');
+                const fd = new FormData();
+                fd.append('crlv', fileInput.files[0]);
+                const upResp = await fetch(`/api/motorcycles/${savedMoto.id}/crlv`, {
+                    method: 'POST',
+                    body: fd
+                });
+                if (!upResp.ok) {
+                    console.warn('⚠️ Falha ao enviar CRLV:', await upResp.text());
+                } else {
+                    const upJson = await upResp.json();
+                    console.log('✅ CRLV enviado:', upJson);
+                }
+                // garantir pequeno delay para UX
+                await new Promise(r => setTimeout(r, 250));
+            }
+            // If a text path was provided in the form (input name="crlvPath"), call import endpoint
+            const crlvPathInput = formEl.querySelector('input[name="crlvPath"]') || document.getElementById('crlvPath');
+            // Accept legacy/document field names: prefer explicit crlvPath, fallback to dados.crlvPath or dados.documentoPDF
+            const crlvPathValue = (crlvPathInput ? (crlvPathInput.value || '').trim() : '') || (dados.crlvPath || dados.documentoPDF || '').trim();
+            if (crlvPathValue) {
+                try {
+                    showAdminLoading('Importando CRLV...');
+                    const importResp = await fetch(`/api/motorcycles/${savedMoto.id}/import-file`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ path: crlvPathValue, type: 'crlv' })
+                    });
+                    if (!importResp.ok) {
+                        console.warn('⚠️ Falha ao importar CRLV via caminho:', await importResp.text());
+                    } else {
+                        const importJson = await importResp.json();
+                        console.log('✅ Import CRLV result:', importJson);
+                    }
+                } catch (err) {
+                    console.warn('⚠️ Erro ao chamar import-file:', err && err.message);
+                }
+                await new Promise(r => setTimeout(r, 200));
+            }
+        } catch (e) {
+            console.warn('⚠️ Erro no upload do CRLV após salvar:', e && e.message);
+        }
+
         hideAdminLoading();
         Toast.success('Motocicleta salva com sucesso!');
         closeMotoModal();

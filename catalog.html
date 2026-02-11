@@ -1506,8 +1506,17 @@
                 
                 for (let i = start; i < end; i++) {
                     const moto = motosSorted[i];
-                    const nome = moto.marca ? `${moto.marca} ${moto.modelo || moto.name || moto.nome}` : (moto.name || moto.nome || 'Sem nome');
-                    const ano = moto.ano || moto.year || 'N/A';
+                    const nome = moto.modelo || moto.model || moto.name || moto.nome || 'Sem nome';
+                    const rawAno = moto.ano || moto.year || '';
+                    let ano = 'N/A';
+                    try {
+                        if (rawAno && typeof rawAno === 'string' && rawAno.includes('/')) {
+                            const parts = rawAno.split('/').map(s => s.trim());
+                            ano = parts[1] && parts[1].length ? parts[1] : rawAno;
+                        } else if (rawAno) {
+                            ano = rawAno;
+                        }
+                    } catch (e) { ano = rawAno || 'N/A'; }
                     const cor = moto.cor || moto.color || 'N/A';
                     const kmRaw = moto.mileage_display || moto.quilometragem || moto.mileage || 0;
                     const km = formatarNumero(kmRaw);

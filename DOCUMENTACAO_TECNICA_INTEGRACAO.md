@@ -92,6 +92,8 @@ admin-final-funcional.js  → CRUD de motocicletas
 admin-styles-dark-modern.css → Estilos do painel admin
 admin-login.html          → Login administrativo
 ```
+Nota: o painel administrativo gerencia também o **preço** das motocicletas (`price` / `preco`), campo não exibido no catálogo público.
+Também existe um campo `FIPE` (`fipe` / `FIPE`) no admin para armazenar o valor da tabela FIPE; ele é opcional e visível apenas no painel administrativo.
 
 #### **Servidor (Backend Atual)**
 ```
@@ -842,4 +844,141 @@ server {
 **Versão:** 1.0 - Frontend Completo  
 
 🏍️ **MacDavis Motos** - Sua moto dos sonhos está aqui! 🧡
+
+---
+
+## ⚠️ Scroll travando — diagnóstico e correções
+
+Este conteúdo descreve passos práticos para diagnosticar e corrigir travamentos de scroll em aplicações web — tanto em desktop quanto em mobile — e lista as causas comuns que temos encontrado no projeto.
+
+---
+
+## 1. Resumo rápido (uso imediato)
+- **Reproduzir**: confirme o fluxo exato que trava o scroll (passos, URL, dispositivo, navegador).
+- **Workaround temporário**: abrir DevTools e executar `document.body.style.overflow = 'auto'` ou remover classes que aplicam `overflow: hidden` ao `body`/`html`.
+- **Coletar evidências**: console logs, screenshot/vídeo, trace de performance (DevTools > Performance).
+
+---
+
+## 2. Passo a passo para diagnosticar
+
+1. Reproduza o problema e documente: navegador, versão, SO, dispositivo, hora, URL, usuário, commit/deploy.
+2. Abra o console do DevTools (F12 / Ctrl+Shift+I) e verifique erros JS na aba `Console`.
+3. Verifique elementos de overlay:
+  - Na aba `Elements`, inspecione `body` e elementos que cobrem a página (modais, banners, menus). Procure `overflow: hidden`, `position: fixed` ou elementos com `height`/`width` 100% e `z-index` alto.
+4. Teste rapidamente no console:
+  - `document.body.style.overflow = ''` (ou `'auto'`) para ver se o scroll volta.
+  - `document.querySelectorAll('*').forEach(e=>{ if(getComputedStyle(e).overflow==='hidden') console.log(e) })` — identificar elementos com overflow escondido.
+5. Verifique listeners de toque/scroll:
+  - Procure `addEventListener('touchmove', ...)` que chamam `preventDefault()` sem `passive: true`.
+  - No Chrome, veja avisos sobre eventos não-passivos no console ao registrar listeners.
+6. Registre um trace de performance (Performance tab):
+  - Grave ~5–10s durante a reprodução. Procure long tasks (>50ms), layout/paint recorrente, e frames caindo.
+7. Teste removendo scripts de terceiros (desabilitar extensões, DRM widgets ou anúncios) e veja se o problema some.
+8. Teste em outro navegador / modo incógnito / dispositivo físico (para issues mobile específicas do Safari/Chrome Android).
+
+---
+
+## 3. Causas comuns (e por que travam o scroll)
+
+- **`overflow: hidden` no `body`/`html`**: usado para bloquear scroll (modais, menus). Se aplicado erroneamente ou sem remoção, o scroll fica permanentemente desabilitado.
+- **Overlays invisíveis / elemento cobrindo a página**: elementos com `position: fixed; top:0; left:0; width:100%; height:100%; z-index:9999` que capturam eventos de ponteiro.
+- **Uso de `transform` em um ancestral do container scrollável**: quando um ancestor tem `transform` (ex: `transform: translateZ(0)`), o comportamento de `position: fixed` e alguns mecanismos de rolagem mudam, causando bloqueios ou perda de momentum.
+- **`touchmove` + `preventDefault()` sem `passive: true`**: bloqueia o comportamento de scroll nativo e causa problemas em mobile (especialmente iOS/Android).
+- **Listeners JS pesados / long tasks**: loops longos, `setInterval` intensivo, `synchronous XHR` ou tarefas que travam a main thread impedem o processamento de scroll.
+- **Reflow/paint contínuo (layout thrashing)**: leituras/escritas repetidas nos estilos durante scroll (ex.: medir `offsetHeight` dentro de um loop) levam a frames perdidos.
+- **Bibliotecas de virtual scroll mal configuradas**: contêineres que manipulam overflow interno e não atualizam corretamente.
+- **Problemas com 100vh em mobile**: `height:100vh` pode ser menor/maior que a viewport real em navegadores móveis, produzindo comportamento estranho quando a barra de endereço aparece/desaparece.
+- **`pointer-events` ou `touch-action` indevidos**: bloqueios de interação que impedem o scrolling por toque/gestos.
+- **Scroll-snap ou CSS `overscroll-behavior` mal configurados**: podem prender o scroll em certas posições ou impedir o comportamento nativo.
+
+---
+
+## 4. Correções e snippets práticos
+
+- Remoção temporária de bloqueio (console):
+
+```js
+// reativa scroll no body
+document.body.style.overflow = 'auto';
+// remove overflow escondido de todos os elementos
+document.querySelectorAll('*').forEach(el => {
+  if (getComputedStyle(el).overflow === 'hidden') el.style.overflow = '';
+});
+```
+
+- Tornar listeners passivos (evitar bloquear o scroll):
+
+```js
+// ruim
+window.addEventListener('touchmove', handler, { passive: false });
+// melhor (se handler não chama preventDefault)
+window.addEventListener('touchmove', handler, { passive: true });
+```
+
+- CSS para melhorar scroll mobile:
+
+```css
+html, body { height: 100%; }
+.scrollable { -webkit-overflow-scrolling: touch; overflow: auto; }
+/* evite usar height:100vh em elementos que devem rolar no mobile */
+```
+
+- Corrigir transform em ancestral:
+
+```
+/* Se um ancestral usa transform por performance, tente removê-lo ou aplicar hardware-accel de outra forma */
+```
+
+- Solução para modais que bloqueiam scroll: garantir que a classe que aplica `overflow: hidden` seja removida ao fechar o modal, ou usar um lock mais seguro (preservando posição):
+
+```js
+const scrollY = document.documentElement.style.getPropertyValue('--scroll-y');
+document.body.style.position = 'fixed';
+document.body.style.top = `-${scrollY}`;
+// ao fechar:
+const y = document.body.style.top;
+document.body.style.position = '';
+document.body.style.top = '';
+window.scrollTo(0, parseInt(y || '0') * -1);
+```
+
+---
+
+## 5. Verificações após correção
+- Reproduzir o fluxo original e verificar se o scroll está normal.
+- Rodar trace de performance e comparar (menos long tasks, menos layout/paint). 
+- Testar em múltiplos navegadores e em dispositivo móvel real (ou via remote debugging).
+
+---
+
+## 6. Escalonamento (quando envolver outro time)
+- Colete e anexe: URL, passos exatos, vídeo/screenshot, console errors, performance trace (`.json` exportado do DevTools), commit hash/deploy id, dispositivo e versão do navegador.
+- Se o problema ocorrer apenas após deploy recente, considerar rollback temporário enquanto investigamos.
+
+---
+
+## 7. Prevenção / checklist para code review
+- Evitar `preventDefault` em `touchmove` sem necessidade.
+- Usar `passive: true` quando o handler não precisa impedir o scroll.
+- Evitar `overflow: hidden` em `body` sem controlar restauração.
+- Não usar `transform` em elementos ancestrais dos containers scrolláveis sem testes.
+- Medir perfomance ao adicionar scripts pesados; estabelecer budget (long tasks < 50ms típicos).
+
+---
+
+## 8. Anexos: checklist rápido para quem recebe o bug
+1. Reproduzir e gravar vídeo.
+2. Console aberto: anotar erros/warnings.
+3. Executar snippet `document.body.style.overflow = 'auto'`.
+4. Gravar Performance trace (DevTools) e anexar.
+5. Testar com scripts de terceiros desativados.
+6. Push informações no ticket/issue e marcar desenvolvedor responsável.
+
+---
+
+Se quiser, posso:
+- adaptar esse guia para um checklist menor e imprimível;
+- inserir o arquivo em uma pasta de docs (ex.: `DOCUMENTACAO_TECNICA/`);
+- gerar um template de issue já preenchido para coleta de dados.
 

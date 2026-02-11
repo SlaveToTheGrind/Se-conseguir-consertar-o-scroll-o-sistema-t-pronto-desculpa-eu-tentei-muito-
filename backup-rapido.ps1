@@ -1,4 +1,10 @@
-# Backup Rápido - 3 Cópias do Sistema Atual
+# Param block must be first to allow named params when script is run
+Param(
+    [switch]$Force,
+    [switch]$DryRun
+)
+
+# Backup Rpido - 3 Cópias do Sistema Atual
 # Versao: 3.1.0
 # Data: 19/01/2026
 # 
@@ -9,151 +15,152 @@
 #
 # Uso: .\backup-rapido.ps1
 
-$ErrorActionPreference = "Continue"
-$Timestamp = Get-Date -Format "yyyyMMdd_HHmmss"
-$Origem = "C:\Users\W10\Documents\TCC - teste"
+# Keep a DateTime for arithmetic and a formatted string for filenames
+$ErrorActionPreference = 'Continue'
+$Timestamp = Get-Date
+$TimestampStr = $Timestamp.ToString('yyyyMMdd_HHmmss')
+# Use the script directory when available, otherwise the current location
+$Origem = if ($PSCommandPath) { Split-Path -Parent $PSCommandPath } elseif ($PSScriptRoot) { $PSScriptRoot } else { (Get-Location).Path }
 
-Write-Host "`n════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host "   BACKUP RAPIDO - 3 COPIAS" -ForegroundColor Cyan
-Write-Host "════════════════════════════════════════════`n" -ForegroundColor Cyan
+# Ensure $Origem is a single string (sometimes becomes an array in some shells)
+if ($Origem -is [System.Array]) { $Origem = $Origem[0] }
+$Origem = [string]$Origem
 
-# Verificar se documentacao foi atualizada recentemente
-Write-Host "⚠️  LEMBRETE: Documentacao atualizada?" -ForegroundColor Yellow
-Write-Host "    • CHANGELOG.md" -ForegroundColor Gray
-Write-Host "    • README.md" -ForegroundColor Gray
-Write-Host "    • DOCUMENTACAO_COMPLETA.md`n" -ForegroundColor Gray
+$LogFile = Join-Path $Origem 'backup-rapido.log'
+Write-Host "Using origin: $Origem" -ForegroundColor DarkCyan
+Write-Log "Origin path: $Origem"
 
-# Perguntar se o usuário quer atualizar a documentação agora
-$atualizar = Read-Host "Deseja atualizar a documentação agora antes do backup? (S/N)"
-if ($atualizar -eq 'S' -or $atualizar -eq 's') {
-    Write-Host "`n🔄 Atualizando documentação..." -ForegroundColor Cyan
-
-    # Tentar executar vários comandos possíveis para gerar documentação
-    $commands = @(
-        'npm run convert-docx',
-        'pnpm run convert-docx',
-        'yarn run convert-docx',
-        'node .\scripts\docx_to_json.js',
-        'node .\scripts\convert-docx.js',
-        'node .\scripts\generate-docs.js'
-    )
-
-    $updated = $false
-    foreach ($cmd in $commands) {
-        Write-Host "Tentando: $cmd" -ForegroundColor Gray
-        try {
-            $proc = Start-Process -FilePath 'cmd.exe' -ArgumentList "/c $cmd" -NoNewWindow -Wait -PassThru -ErrorAction Stop
-            if ($proc.ExitCode -eq 0) {
-                Write-Host "✅ Comando '$cmd' executado com sucesso." -ForegroundColor Green
-                $updated = $true
-                break
-            } else {
-                Write-Host "   -> comando retornou código $($proc.ExitCode)" -ForegroundColor Yellow
-            }
-        } catch {
-            Write-Host "   -> falha ao executar '$cmd': $_" -ForegroundColor Yellow
-        }
-    }
-
-    if (-not $updated) {
-        Write-Host "⚠️ Falha ao atualizar documentação (nenhum comando funcionou). Deseja continuar com o backup? (S/N)" -ForegroundColor Yellow
-        $cont = Read-Host
-        if ($cont -ne 'S' -and $cont -ne 's') {
-            Write-Host "`n❌ Backup cancelado pelo usuario." -ForegroundColor Red
-            exit 0
-        }
-    } else {
-        Write-Host "✅ Documentação atualizada com sucesso.`n" -ForegroundColor Green
-    }
+function Write-Log {
+    param([string]$m)
+    $ts = Get-Date -Format o
+    $line = "[$ts] $m"
+    Add-Content -Path $LogFile -Value $line
 }
 
-$resposta = Read-Host "Continuar backup? (S/N)"
-if ($resposta -ne 'S' -and $resposta -ne 's') {
-    Write-Host "`n❌ Backup cancelado pelo usuario." -ForegroundColor Red
-    exit 0
+Write-Host "`nBACKUP RAPIDO - 3 COPIAS`n" -ForegroundColor Cyan
+Write-Log "START backup. Force=$Force DryRun=$DryRun"
+
+if (-not $Force) {
+    $ans = Read-Host 'Continuar backup? (S/N)'
+    if ($ans -ne 'S' -and $ans -ne 's') {
+        Write-Host 'Backup cancelado pelo usuario.' -ForegroundColor Red
+        Write-Log 'User cancelled.'
+        exit 0
+    }
+} else {
+    Write-Host 'Modo forcado: pulando confirmacao.' -ForegroundColor Yellow
 }
 
-Write-Host ""
-
-# Criar 3 cópias
+# destinations
 $Destinos = @(
-    "C:\Users\W10\Documents\TCC - teste\Backup_Sistema_${Timestamp}",
-    "C:\Users\W10\Documents\TCC - teste\Backup_Sistema_${Timestamp}_copia1",
-    "C:\Users\W10\Documents\TCC - teste\Backup_Sistema_${Timestamp}_copia2"
+    Join-Path $Origem "Backup_Sistema_${TimestampStr}",
+    Join-Path $Origem "Backup_Sistema_${TimestampStr}_copia1",
+    Join-Path $Origem "Backup_Sistema_${TimestampStr}_copia2"
 )
 
-# Pastas e arquivos a EXCLUIR do backup
-$Excluir = @(
-    'node_modules',
-    'Backup_*',
-    '.git',
-    'Backups',
-    'Pega ae Jack*',
-    'teste-tcc',
-    '_obsolete_*',
-    '_old_versions',
-    'old_versions'
-)
+# exclusions
+$Excluir = @('node_modules','.git','Backups','Backup_*','_old_versions','old_versions')
 
-Write-Host "📦 Iniciando processo de backup..." -ForegroundColor Cyan
-Write-Host ""
+Write-Host 'Iniciando processo de backup...' -ForegroundColor Cyan
+Write-Log 'Starting copying loop.'
+
+# --- Step: generate/update documentation before making backups
+Write-Host 'Executando: npm run convert-docx (gerar/atualizar documentacao)...' -ForegroundColor Cyan
+Write-Log 'Running npm run convert-docx before backup.'
+
+# count json files before conversion (rough metric of generated docs)
+$beforeJson = (Get-ChildItem -Path $Origem -Recurse -Include *.json -File -ErrorAction SilentlyContinue | Measure-Object).Count
+
+Push-Location -Path $Origem
+try {
+    # Use cmd.exe to run npm on Windows (more reliable when npm is a cmd shim)
+    $cmdLine = "/c npm run convert-docx"
+    Write-Log "Running: cmd $cmdLine in $Origem"
+    $npmOut = & $env:COMSPEC $cmdLine 2>&1
+    $npmOut | ForEach-Object { Add-Content -Path $LogFile -Value "[npm] $_" }
+    $npmExit = $LASTEXITCODE
+} catch {
+    Write-Log "convert-docx invocation failed: $_"
+    $npmExit = 1
+}
+Pop-Location
+
+$afterJson = (Get-ChildItem -Path $Origem -Recurse -Include *.json -File -ErrorAction SilentlyContinue | Measure-Object).Count
+$deltaJson = $afterJson - $beforeJson
+Write-Log "convert-docx exitcode=$npmExit json_before=$beforeJson json_after=$afterJson delta=$deltaJson"
+
+if ($npmExit -ne 0) {
+    Write-Host "Aviso: 'convert-docx' retornou codigo $npmExit. Prosseguindo (logs em $LogFile)." -ForegroundColor Yellow
+    Write-Log "Warning: convert-docx returned $npmExit — continuing automatically"
+
+    # fallback: if npm failed but a local node script exists, try running it directly
+    $localScript = Join-Path $Origem 'scripts\convert-docx.js'
+    if ((Test-Path $localScript) -and (Get-Command node -ErrorAction SilentlyContinue)) {
+        Write-Host 'Tentando executar node scripts/convert-docx.js como fallback...' -ForegroundColor Cyan
+        Write-Log "Attempting fallback node $localScript"
+        Push-Location -Path $Origem
+        try {
+            $nodeOut = & node $localScript 2>&1
+            $nodeOut | ForEach-Object { Add-Content -Path $LogFile -Value "[node-convert] $_" }
+            $npmExit = $LASTEXITCODE
+            Write-Log "node convert-docx exitcode=$npmExit"
+        } catch {
+            Write-Log "node convert-docx failed: $_"
+        }
+        Pop-Location
+    }
+} else {
+    Write-Host "convert-docx finalizado (delta json: $deltaJson)." -ForegroundColor Green
+    Write-Log "convert-docx success. deltaJson=$deltaJson"
+}
+
 
 for ($i = 0; $i -lt $Destinos.Count; $i++) {
     $destino = $Destinos[$i]
     $numero = $i + 1
-    
-    Write-Host "📦 Criando cópia $numero de 3..." -ForegroundColor Yellow
-    Write-Host "   Destino: $destino" -ForegroundColor Gray
-    
-    # Criar pasta de destino
-    New-Item -ItemType Directory -Path $destino -Force | Out-Null
-    
-    # Usar robocopy para cópia rápida com exclusões
-    $excludeDirs = $Excluir -join ' '
-    $robocopyArgs = @(
-        $Origem,
-        $destino,
-        '/E',           # Copiar subdiretórios incluindo vazios
-        '/XD',          # Excluir diretórios
-        $Excluir,
-        '/XF',          # Excluir arquivos
-        '*.tmp',
-        '*.log',
-        '/NFL',         # Não listar arquivos
-        '/NDL',         # Não listar diretórios
-        '/NJH',         # Sem cabeçalho
-        '/NJS',         # Sem sumário
-        '/NP',          # Sem progresso
-        '/R:0',         # 0 tentativas em caso de erro
-        '/W:0'          # 0 segundos de espera entre tentativas
-    )
-    
-    $result = & robocopy @robocopyArgs
-    
-    # Robocopy retorna códigos 0-7 como sucesso
+    Write-Host "Criando copia $numero de 3 -> $destino" -ForegroundColor Yellow
+    Write-Log "Preparing destination: $destino"
+
+    if (-not $DryRun) {
+        New-Item -ItemType Directory -Path $destino -Force | Out-Null
+    } else {
+        Write-Host "[DryRun] Criar pasta: $destino" -ForegroundColor DarkYellow
+        Write-Log "DryRun: would create $destino"
+    }
+
+    $robocopyArgs = @($Origem, $destino, '/E', '/XD') + $Excluir + @('/XF','*.tmp','*.log','/NFL','/NDL','/NJH','/NJS','/NP','/R:0','/W:0')
+
+    if ($DryRun) {
+        $cmdLine = "robocopy $Origem $destino (dry-run)"
+        Write-Host "[DryRun] $cmdLine" -ForegroundColor DarkYellow
+        Write-Log "DryRun: $cmdLine"
+        $LASTEXITCODE = 0
+    } else {
+        Write-Log "Executing: robocopy $Origem -> $destino"
+        & robocopy @robocopyArgs | Out-Null
+        Write-Log "robocopy exitcode: $LASTEXITCODE"
+    }
+
     if ($LASTEXITCODE -le 7) {
-        # Contar arquivos copiados
-        $arquivos = (Get-ChildItem -Path $destino -File -Recurse).Count
-        $tamanho = [math]::Round((Get-ChildItem -Path $destino -File -Recurse | Measure-Object -Property Length -Sum).Sum / 1MB, 2)
-        
-        Write-Host "   ✅ Cópia $numero concluída!" -ForegroundColor Green
-        Write-Host "   • Arquivos: $arquivos" -ForegroundColor White
-        Write-Host "   • Tamanho: $tamanho MB`n" -ForegroundColor White
-    }
-    else {
-        Write-Host "   ⚠ Aviso: Código de saída $LASTEXITCODE" -ForegroundColor Yellow
-    }
-}
-
-Write-Host "════════════════════════════════════════════" -ForegroundColor Cyan
-Write-Host "✅ 3 CÓPIAS CRIADAS COM SUCESSO!" -ForegroundColor Green
-Write-Host "════════════════════════════════════════════" -ForegroundColor Cyan
-
-Write-Host "`n📋 Backups criados:" -ForegroundColor Cyan
-foreach ($destino in $Destinos) {
-    if (Test-Path $destino) {
-        Write-Host "   ✓ $destino" -ForegroundColor Green
+        if (-not $DryRun) {
+            $arquivos = (Get-ChildItem -Path $destino -File -Recurse -ErrorAction SilentlyContinue).Count
+            $tamanho = [math]::Round(((Get-ChildItem -Path $destino -File -Recurse -ErrorAction SilentlyContinue | Measure-Object -Property Length -Sum).Sum) / 1MB, 2)
+            Write-Host "[OK] Copia $numero concluida! - Arquivos: $arquivos - Tamanho: $tamanho MB" -ForegroundColor Green
+            Write-Log "Copy $numero ok. files=$arquivos sizeMB=$tamanho"
+        } else {
+            Write-Host "[DryRun] Copia $numero simulada." -ForegroundColor DarkYellow
+        }
+    } else {
+        Write-Host "Aviso: cod de saida robocopy $LASTEXITCODE" -ForegroundColor Yellow
+        Write-Log "robocopy exitcode non-success: $LASTEXITCODE"
     }
 }
 
-Write-Host ""
+Write-Host '============================================' -ForegroundColor Cyan
+Write-Host '[OK] Backup concluido.' -ForegroundColor Green
+Write-Host '============================================' -ForegroundColor Cyan
+
+Write-Log "Finished. Destinos: $($Destinos -join '; ')"
+Write-Log 'END script'
+exit 0
+    
